@@ -1,0 +1,381 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+.btn:focus,
+.btn:active:focus,
+.btn-link.nav-link:focus,
+.form-control:focus,
+.form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+:root {
+  --bg-color: #ffffff;
+  --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  --text-color: #212529;
+  --text-muted: #6c757d;
+  --card-bg: #ffffff;
+  --card-border: rgba(0, 0, 0, .08);
+  --input-bg: #f8f9fa;
+  --input-color: #212529;
+  --input-border: #dee2e6;
+  --navbar-bg: #ffffff;
+  --navbar-text: rgba(0, 0, 0, .7);
+  --table-border: #dee2e6;
+  --table-hover: rgba(0, 0, 0, 0.03);
+  --thead-bg: rgba(0, 123, 255, 0.05);
+}
+
+[data-theme="dark"] {
+  --bg-color: #0f111a;
+  --bg-gradient: linear-gradient(135deg, #0f111a 0%, #171923 100%);
+  --text-color: #e6edf3;
+  --text-muted: #8b949e;
+  --card-bg: #161b22;
+  --card-border: #30363d;
+  --input-bg: #0d1117;
+  --input-color: #e6edf3;
+  --input-border: #30363d;
+  --navbar-bg: #161b22;
+  --navbar-text: #e6edf3;
+  --table-border: #30363d;
+  --table-hover: rgba(255, 255, 255, 0.03);
+  --thead-bg: rgba(0, 123, 255, 0.1);
+}
+
+body {
+  margin-bottom: 60px;
+  background: var(--bg-color);
+  background-attachment: fixed;
+  color: var(--text-color);
+  min-height: 100vh;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Base Overrides */
+.card {
+  background-color: var(--card-bg);
+  border-color: var(--card-border);
+  color: var(--text-color);
+}
+
+.form-control,
+.form-select {
+  background-color: var(--input-bg);
+  color: var(--input-color);
+  border-color: var(--input-border);
+}
+
+.form-control:focus,
+.form-select:focus {
+  background-color: var(--input-bg);
+  color: var(--input-color);
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+/* Navbar */
+.navbar {
+  background-color: var(--navbar-bg) !important;
+  border-color: var(--card-border) !important;
+}
+
+.nav-link {
+  color: var(--navbar-text) !important;
+}
+
+/* Tables */
+.table {
+  color: var(--text-color) !important;
+  border-color: var(--table-border) !important;
+}
+
+thead tr {
+  background-color: var(--thead-bg);
+}
+
+.table th {
+  color: var(--text-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  border-bottom-width: 1px !important;
+}
+
+[data-theme="dark"] .table {
+  --bs-table-bg: transparent;
+  --bs-table-color: var(--text-color);
+  background-color: transparent !important;
+  color: var(--text-color) !important;
+}
+
+[data-theme="dark"] .table td,
+[data-theme="dark"] .table th {
+  background-color: transparent !important;
+  border-color: var(--table-border) !important;
+  color: var(--text-color) !important;
+}
+
+[data-theme="dark"] .table-hover tbody tr:hover {
+  background-color: var(--table-hover) !important;
+}
+
+.table-hover tbody tr:hover {
+  background-color: var(--table-hover) !important;
+}
+
+/* Modals */
+.modal-content {
+  background-color: var(--card-bg);
+  border: 1px solid var(--card-border);
+  color: var(--text-color);
+}
+
+.modal-header,
+.modal-footer {
+  border-color: var(--card-border);
+}
+
+/* SweetAlert2 Professional Dark Theme */
+[data-theme="dark"] .swal2-popup {
+  background: var(--card-bg);
+  color: var(--text-color);
+  border: 1px solid var(--card-border);
+}
+
+[data-theme="dark"] .swal2-title,
+[data-theme="dark"] .swal2-html-container {
+  color: var(--text-color) !important;
+}
+
+/* Utilities */
+.text-muted {
+  color: var(--text-muted) !important;
+}
+
+/* Glass Card */
+.glass-card {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid var(--card-border);
+}
+
+[data-theme="dark"] .glass-card {
+  background: rgba(22, 27, 34, 0.7) !important;
+}
+
+/* Action Icons (Used in Time Tracker & User Management) */
+.action-icon {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: rgba(0, 0, 0, 0.04);
+  border-radius: 10px;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  text-decoration: none;
+}
+
+[data-theme="dark"] .action-icon {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.action-icon:hover {
+  transform: translateY(-2px) scale(1.1);
+  background-color: var(--card-bg);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="dark"] .action-icon:hover {
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Specific icon colors */
+.action-icon .bi-pencil-fill,
+.action-icon .bi-eye-fill {
+  color: #0d6efd !important;
+}
+
+.action-icon .bi-trash-fill,
+.action-icon .bi-trash3-fill {
+  color: #dc3545 !important;
+}
+
+/* General button overrides for theme support */
+.btn-outline-dark {
+  border-color: var(--text-color) !important;
+  color: var(--text-color) !important;
+}
+
+.btn-outline-dark:hover {
+  background-color: var(--text-color) !important;
+  color: var(--bg-color) !important;
+}
+
+/* Fixes for badges & opacity */
+[data-theme="dark"] .bg-opacity-10 {
+  --bs-bg-opacity: 0.15;
+}
+
+/* Base text overrides */
+[data-theme="dark"] .text-dark {
+  color: var(--text-color) !important;
+}
+
+[data-theme="dark"] .bg-light {
+  background-color: var(--input-bg) !important;
+}
+
+[data-theme="dark"] .bg-white {
+  background-color: var(--card-bg) !important;
+}
+
+/* Subtle components (Bootstrap 5.3 icons/backgrounds) */
+[data-theme="dark"] .bg-primary-subtle {
+  background-color: rgba(13, 110, 253, 0.1) !important;
+}
+
+[data-theme="dark"] .text-primary-emphasis {
+  color: #6ea8fe !important;
+}
+
+[data-theme="dark"] .border-primary-subtle {
+  border-color: rgba(13, 110, 253, 0.2) !important;
+}
+
+[data-theme="dark"] .bg-success-subtle {
+  background-color: rgba(25, 135, 84, 0.1) !important;
+}
+
+[data-theme="dark"] .text-success-emphasis {
+  color: #75b798 !important;
+}
+
+[data-theme="dark"] .bg-warning-subtle {
+  background-color: rgba(255, 193, 7, 0.1) !important;
+}
+
+[data-theme="dark"] .text-warning-emphasis {
+  color: #ffda6a !important;
+}
+
+[data-theme="dark"] .border-light-subtle {
+  border-color: var(--card-border) !important;
+}
+
+/* List Groups & Selection */
+[data-theme="dark"] .list-group-item {
+  background-color: var(--card-bg);
+  color: var(--text-color);
+  border-color: var(--card-border);
+}
+
+[data-theme="dark"] .list-group-item-action {
+  color: var(--text-color);
+}
+
+[data-theme="dark"] .list-group-item-action:hover,
+[data-theme="dark"] .list-group-item-action:focus {
+  background-color: var(--table-hover);
+  color: #fff;
+}
+
+/* World Countries specific visibility */
+[data-theme="dark"] .fw-medium,
+[data-theme="dark"] .fw-bold {
+  color: var(--text-color) !important;
+}
+
+[data-theme="dark"] #country-container .fw-medium {
+  color: #ffffff !important;
+  /* Pure white for better readability in midnight theme */
+}
+
+/* Fix for specific dashboard badges/tabs */
+[data-theme="dark"] .badge.bg-light.text-dark {
+  background-color: #21262d !important;
+  color: #e6edf3 !important;
+  border-color: #30363d !important;
+}
+
+/* Button overrides */
+.btn-outline-light {
+  border-color: #dee2e6;
+  color: var(--text-color);
+}
+
+[data-theme="dark"] .btn-outline-light {
+  border-color: var(--card-border);
+  color: var(--text-color);
+}
+
+[data-theme="dark"] .btn-outline-light:hover {
+  background-color: var(--text-color);
+  color: var(--bg-color);
+}
+
+/* Avatar circles and icons */
+.avatar-circle,
+.avatar-circle-lg,
+.icon-circle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.avatar-circle {
+  width: 40px;
+  height: 40px;
+}
+
+.avatar-circle-lg {
+  width: 100px;
+  height: 100px;
+}
+
+.icon-circle {
+  width: 60px;
+  height: 60px;
+}
+
+[data-theme="dark"] .text-white-50 {
+  color: rgba(255, 255, 255, 0.5) !important;
+}
+
+/* Dropdown theme support */
+[data-theme="dark"] .dropdown-menu {
+  background-color: var(--card-bg) !important;
+  border-color: var(--card-border) !important;
+  color: var(--text-color) !important;
+}
+
+[data-theme="dark"] .dropdown-item {
+  color: var(--text-color) !important;
+}
+
+[data-theme="dark"] .dropdown-item:hover {
+  background-color: var(--table-hover) !important;
+}
+
+[data-theme="dark"] .form-control::placeholder {
+  color: var(--text-muted) !important;
+}

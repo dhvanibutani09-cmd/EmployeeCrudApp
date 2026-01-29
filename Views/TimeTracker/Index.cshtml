@@ -1,0 +1,231 @@
+@model IEnumerable<EmployeeCrudApp.Models.TimeEntry>
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
+@{
+    ViewData["Title"] = Localizer["Time Tracker History"];
+    var totalSeconds = Model.Sum(e => e.DurationInSeconds);
+    var totalDuration = TimeSpan.FromSeconds(totalSeconds).ToString(@"hh\:mm\:ss");
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-0"><i class="bi bi-clock-history me-2 text-primary"></i> @Localizer["Time Tracker History"]</h2>
+            <p class="text-muted small mb-0">@Localizer["Tracked your productivity sessions"]</p>
+        </div>
+        <a asp-controller="Dashboard" asp-action="Index" class="btn btn-outline-secondary rounded-pill shadow-sm">
+            <i class="bi bi-arrow-left me-1"></i> @Localizer["Back to Dashboard"]
+        </a>
+    </div>
+
+    <!-- Summary -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm rounded-4 bg-primary text-white">
+                <div class="card-body d-flex align-items-center justify-content-between p-4">
+                    <div>
+                        <h6 class="text-white-50 text-uppercase fw-bold smaller mb-1">@Localizer["Total Logged Time"]</h6>
+                        <div class="display-5 fw-bold font-monospace">@totalDuration</div>
+                    </div>
+                    <div class="text-end">
+                        <div class="h4 mb-0 fw-bold">@Model.Count()</div>
+                        <div class="small text-white-50 text-uppercase">@Localizer["sessions recorded"]</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th class="ps-4 py-3 border-0">@Localizer["Date"]</th>
+                        <th class="py-3 border-0">@Localizer["Task/Activity"]</th>
+                        <th class="py-3 border-0">@Localizer["Start Time"]</th>
+                        <th class="py-3 border-0">@Localizer["End Time"]</th>
+                        <th class="py-3 border-0">@Localizer["Duration"]</th>
+                        <th class="text-end pe-4 py-3 border-0">@Localizer["Actions"]</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!Model.Any())
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center py-5 text-muted">
+                                <i class="bi bi-journal-x display-4 d-block mb-3 opacity-25"></i>
+                                @Localizer["No time entries found for this period."]
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (var entry in Model)
+                        {
+                            <tr>
+                                <td class="ps-4">
+                                    <div class="fw-bold">@entry.Date.ToString("MMM dd")</div>
+                                    <div class="smaller text-muted">@entry.Date.ToString("yyyy")</div>
+                                </td>
+                                <td>
+                                    <span class="fw-semibold">@entry.TaskName</span>
+                                </td>
+                                <td><span class="text-muted"><i class="bi bi-play-circle me-1"></i> @entry.StartTime.ToString("hh:mm:ss tt")</span></td>
+                                <td><span class="text-muted"><i class="bi bi-stop-circle me-1"></i> @entry.EndTime.ToString("hh:mm:ss tt")</span></td>
+                                <td>
+                                    <span class="badge bg-primary-subtle text-primary rounded-pill px-3 py-2 font-monospace border border-primary-subtle">
+                                        <i class="bi bi-hourglass-split me-1"></i> @entry.FormattedDuration
+                                    </span>
+                                </td>
+                                <td class="text-end pe-4 text-nowrap">
+                                    <button class="btn btn-link p-0 text-decoration-none action-icon" 
+                                            onclick="editEntry(@entry.Id, '@entry.TaskName', @entry.DurationInSeconds)" 
+                                            data-bs-toggle="tooltip" 
+                                            data-bs-placement="top" 
+                                            title="@Localizer["Edit Activity"]">
+                                        <i class="bi bi-pencil-fill fs-5"></i>
+                                    </button>
+                                    <button class="btn btn-link p-0 text-decoration-none action-icon ms-2" 
+                                            onclick="deleteEntry(@entry.Id)" 
+                                            data-bs-toggle="tooltip" 
+                                            data-bs-placement="top" 
+                                            title="@Localizer["Delete Activity"]">
+                                        <i class="bi bi-trash3-fill fs-5"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+<!-- Edit Modal -->
+<div class="modal fade" id="editModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold"><i class="bi bi-pencil-square me-2 text-primary"></i>@Localizer["Edit Time Entry"]</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <input type="hidden" id="edit-id">
+                <div class="mb-3">
+                    <label class="form-label fw-bold small text-uppercase text-muted">@Localizer["Task/Activity Name"]</label>
+                    <input type="text" id="edit-task-name" class="form-control rounded-3 border-light-subtle shadow-none" placeholder="@Localizer["What were you working on?"]">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold small text-uppercase text-muted">@Localizer["Duration"]</label>
+                    <div class="row g-2">
+                        <div class="col">
+                            <label class="smaller text-muted">@Localizer["Hours"]</label>
+                            <input type="number" id="edit-h" class="form-control rounded-3 border-light-subtle shadow-none" min="0">
+                        </div>
+                        <div class="col">
+                            <label class="smaller text-muted">@Localizer["Minutes"]</label>
+                            <input type="number" id="edit-m" class="form-control rounded-3 border-light-subtle shadow-none" min="0" max="59">
+                        </div>
+                        <div class="col">
+                            <label class="smaller text-muted">@Localizer["Seconds"]</label>
+                            <input type="number" id="edit-s" class="form-control rounded-3 border-light-subtle shadow-none" min="0" max="59">
+                        </div>
+                    </div>
+                    <div class="form-text smaller mt-2 text-primary"><i class="bi bi-info-circle me-1"></i> @Localizer["Note: Modifying duration will update the end time."]</div>
+                </div>
+            </div>
+            <div class="modal-footer border-0 pt-0 pb-4 justify-content-center">
+                <button type="button" class="btn btn-light rounded-pill px-4 fw-bold" data-bs-dismiss="modal">@Localizer["Cancel"]</button>
+                <button type="button" class="btn btn-primary rounded-pill px-4 fw-bold shadow-sm" onclick="saveEdit()">@Localizer["Update Activity"]</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Initialize tooltips
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        const tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+
+        const editModal = new bootstrap.Modal(document.getElementById('editModal'));
+
+        function editEntry(id, taskName, duration) {
+            document.getElementById('edit-id').value = id;
+            document.getElementById('edit-task-name').value = taskName;
+            
+            const h = Math.floor(duration / 3600);
+            const m = Math.floor((duration % 3600) / 60);
+            const s = duration % 60;
+            
+            document.getElementById('edit-h').value = h;
+            document.getElementById('edit-m').value = m;
+            document.getElementById('edit-s').value = s;
+            
+            editModal.show();
+        }
+
+        function saveEdit() {
+            const id = document.getElementById('edit-id').value;
+            const taskName = document.getElementById('edit-task-name').value;
+            const h = parseInt(document.getElementById('edit-h').value) || 0;
+            const m = parseInt(document.getElementById('edit-m').value) || 0;
+            const s = parseInt(document.getElementById('edit-s').value) || 0;
+            
+            const totalSeconds = (h * 3600) + (m * 60) + s;
+
+            fetch('/TimeTracker/UpdateEntry', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    id: parseInt(id), 
+                    taskName: taskName, 
+                    durationInSeconds: totalSeconds 
+                })
+            }).then(res => {
+                if (res.ok) location.reload();
+            });
+        }
+
+        function deleteEntry(id) {
+            Swal.fire({
+                title: '@Localizer["Are you sure?"]',
+                text: "@Localizer["You won't be able to revert this!"]",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: '@Localizer["Yes, delete it!"]',
+                cancelButtonText: '@Localizer["Cancel"]',
+                customClass: {
+                    popup: 'rounded-4 border-0 shadow-lg',
+                    confirmButton: 'rounded-pill px-4 fw-bold',
+                    cancelButton: 'rounded-pill px-4 fw-bold'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch('/TimeTracker/DeleteEntry?id=' + id, { method: 'POST' })
+                        .then(res => {
+                            if (res.ok) {
+                                Swal.fire({
+                                    title: '@Localizer["Deleted!"]',
+                                    text: '@Localizer["Your entry has been deleted."]',
+                                    icon: 'success',
+                                    timer: 1500,
+                                    showConfirmButton: false,
+                                    customClass: { popup: 'rounded-4 border-0' }
+                                }).then(() => location.reload());
+                            }
+                        });
+                }
+            });
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+}

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - EmployeeCrudApp</title>
+    <script type="importmap"></script>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/EmployeeCrudApp.styles.css" asp-append-version="true" />
+    <script>
+        window.APP_CULTURE = '@System.Globalization.CultureInfo.CurrentUICulture.Name';
+    </script>
+</head>
+<body class="bg-light">
+    <!-- Language Selector -->
+    <div style="position: absolute; top: 15px; right: 15px; z-index: 1000; display: flex; align-items: center; gap: 10px;">
+        <button class="btn btn-sm btn-outline-secondary theme-toggle border-0" type="button" style="font-size: 1.2rem;">☀️</button>
+        <select id="language-selector" class="form-select form-select-sm" style="width: auto; cursor: pointer;">
+            <option value="en">🇺🇸 English</option>
+            <option value="es">🇪🇸 Spanish</option>
+            <option value="fr">🇫🇷 French</option>
+            <option value="de">🇩🇪 German</option>
+            <option value="hi">🇮🇳 Hindi</option>
+            <option value="gu">🇮🇳 Gujarati (ગુજરાતી)</option>
+            <option value="zh">🇨🇳 Chinese</option>
+            <option value="ja">🇯🇵 Japanese</option>
+            <option value="ar">🇸🇦 Arabic</option>
+            <option value="ru">🇷🇺 Russian</option>
+            <option value="pt">🇵🇹 Portuguese</option>
+        </select>
+    </div>
+
+    <!-- Translation Loader Overlay -->
+    <div id="translation-loader" class="translation-loader" style="display: none;">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+        <div class="mt-3 text-white fw-bold">Translating content...</div>
+    </div>
+
+    <div class="container d-flex justify-content-center align-items-center vh-100">
+        <main role="main" class="pb-3 d-flex justify-content-center w-100">
+            @RenderBody()
+        </main>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/translation.js" asp-append-version="true"></script>
+    <script src="~/js/theme.js" asp-append-version="true"></script>
+    
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

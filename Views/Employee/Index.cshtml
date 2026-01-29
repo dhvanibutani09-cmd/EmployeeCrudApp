@@ -1,0 +1,39 @@
+@model IEnumerable<EmployeeCrudApp.Models.Employee>
+
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+@{
+    ViewData["Title"] = Localizer["Employees"];
+}
+
+<h1>@Localizer["Employees"]</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">@Localizer["Create New"]</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>@Localizer["Id"]</th>
+            <th>@Localizer["Name"]</th>
+            <th>@Localizer["Age"]</th>
+            <th>@Localizer["Email"]</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>@Html.DisplayFor(modelItem => item.Id)</td>
+            <td>@Html.DisplayFor(modelItem => item.Name)</td>
+            <td>@Html.DisplayFor(modelItem => item.Age)</td>
+            <td>@Html.DisplayFor(modelItem => item.Email)</td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id">@Localizer["Edit"]</a> |
+                <a asp-action="Details" asp-route-id="@item.Id">@Localizer["View"]</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">@Localizer["Delete"]</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

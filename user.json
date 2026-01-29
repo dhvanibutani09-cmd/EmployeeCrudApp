@@ -1,0 +1,65 @@
+[
+  {
+    "Id": 3,
+    "Name": "abc",
+    "Email": "zonx1@airsworld.net",
+    "Password": "111",
+    "IsEmailVerified": true,
+    "Otp": null,
+    "OtpExpiry": null
+  },
+  {
+    "Id": 5,
+    "Name": "chami",
+    "Email": "charmimarakana@gmail.com",
+    "Password": "1919",
+    "IsEmailVerified": true,
+    "Otp": null,
+    "OtpExpiry": null
+  },
+  {
+    "Id": 6,
+    "Name": "ccefqw",
+    "Email": "heavenfashion312@gmail.com",
+    "Password": "312",
+    "IsEmailVerified": true,
+    "Otp": null,
+    "OtpExpiry": null
+  },
+  {
+    "Id": 7,
+    "Name": "Dhvani",
+    "Email": "dhvanibutani09@gmail.com",
+    "Password": "11111",
+    "IsEmailVerified": true,
+    "Otp": null,
+    "OtpExpiry": null
+  },
+  {
+    "Id": 9,
+    "Name": "dwefgd",
+    "Email": "fisoce5167@akixpres.com",
+    "Password": "1212",
+    "IsEmailVerified": true,
+    "Otp": null,
+    "OtpExpiry": null
+  },
+  {
+    "Id": 10,
+    "Name": "dhvani",
+    "Email": "projtest28@gmail.com",
+    "Password": "1111",
+    "IsEmailVerified": true,
+    "Otp": null,
+    "OtpExpiry": null
+  },
+  {
+    "Id": 11,
+    "Name": "qwe",
+    "Email": "cidaya7882@dretnar.com",
+    "Password": "1212",
+    "IsEmailVerified": true,
+    "Otp": null,
+    "OtpExpiry": null
+  }
+]
