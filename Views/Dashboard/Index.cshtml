@@ -297,9 +297,14 @@
                                 <p class="text-muted small mb-0">@Localizer["Build better habits"]</p>
                             </div>
                         </div>
-                        <button class="btn btn-success rounded-pill px-4 shadow-sm fw-bold text-white small" data-bs-toggle="modal" data-bs-target="#addHabitModal">
-                            <i class="bi bi-plus-lg me-1"></i> @Localizer["Add"]
-                        </button>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-light rounded-pill px-3 shadow-sm border small fw-bold text-muted" data-bs-toggle="modal" data-bs-target="#allHabitsModal" title="@Localizer["View All Saved Habits"]">
+                                <i class="bi bi-list-ul me-1"></i> @Localizer["Stored"]
+                            </button>
+                            <button class="btn btn-success rounded-pill px-4 shadow-sm fw-bold text-white small" data-bs-toggle="modal" data-bs-target="#addHabitModal">
+                                <i class="bi bi-plus-lg me-1"></i> @Localizer["Add"]
+                            </button>
+                        </div>
                     </div>
 
                     <div class="flex-grow-1">
@@ -345,6 +350,14 @@
                                                 }
                                                 <!-- Debug/Info about schedule -->
                                                 <div class="smaller text-muted opacity-75" style="font-size: 0.7rem;">
+                                                    @{
+                                                        var daysAgo = (DateTime.Today - habit.CreatedAt.Date).Days;
+                                                        var createdText = daysAgo == 0 ? Localizer["Added today"] : daysAgo == 1 ? Localizer["Added yesterday"] : Localizer["Added {0} days ago", daysAgo];
+                                                    }
+                                                    <span class="me-2" title="@Localizer["Creation Date"]: @habit.CreatedAt.ToString("d")">
+                                                        <i class="bi bi-clock-history me-1"></i>@createdText
+                                                    </span>
+                                                    <span class="mx-1 opacity-25">|</span>
                                                     <i class="bi bi-calendar-event me-1"></i>
                                                     @(habit.Frequency == "Daily" ? Localizer["Daily"] : string.Join(", ", habit.CustomDays.Select(d => d.ToString().Substring(0, 3))))
                                                 </div>
@@ -563,6 +576,86 @@
         </div>
     </div>
 </div>
+
+    <!-- All Habits Modal (Stored Habits) -->
+    <div class="modal fade" id="allHabitsModal" tabindex="-1" aria-labelledby="allHabitsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content border-0 rounded-4 shadow-lg">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold" id="allHabitsModalLabel">@Localizer["All Saved Habits"]</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th class="border-0 rounded-start ps-3">@Localizer["Habit Name"]</th>
+                                    <th class="border-0">@Localizer["Frequency"]</th>
+                                    <th class="border-0">@Localizer["Created"]</th>
+                                    <th class="border-0 rounded-end pe-3 text-end">@Localizer["Status (Today)"]</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.Habits.Any())
+                                {
+                                    @foreach (var habit in Model.Habits.OrderByDescending(h => h.CreatedAt))
+                                    {
+                                        <tr>
+                                            <td class="ps-3 border-0">
+                                                <div class="fw-bold text-dark">@habit.Name</div>
+                                                @if (!string.IsNullOrEmpty(habit.Description))
+                                                {
+                                                    <div class="smaller text-muted">@habit.Description</div>
+                                                }
+                                            </td>
+                                            <td class="border-0">
+                                                <span class="badge bg-light text-dark border">
+                                                    @(habit.Frequency == "Daily" ? Localizer["Daily"] : string.Join(", ", habit.CustomDays.Select(d => d.ToString().Substring(0, 3))))
+                                                </span>
+                                            </td>
+                                            <td class="border-0">
+                                                 @{
+                                                    var daysAgo = (DateTime.Today - habit.CreatedAt.Date).Days;
+                                                    var createdText = daysAgo == 0 ? Localizer["Today"] : daysAgo == 1 ? Localizer["Yesterday"] : Localizer["{0} days ago", daysAgo];
+                                                }
+                                                <span class="smaller text-muted">@createdText</span>
+                                            </td>
+                                            <td class="border-0 text-end pe-3">
+                                                @if (habit.IsCompletedToday)
+                                                {
+                                                    <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 py-2">
+                                                        <i class="bi bi-check-circle-fill me-1"></i> @Localizer["Completed"]
+                                                    </span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-secondary bg-opacity-10 text-secondary rounded-pill px-3 py-2">
+                                                        <i class="bi bi-clock me-1"></i> @Localizer["Pending"]
+                                                    </span>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="4" class="text-center py-5 border-0 text-muted">
+                                            @Localizer["No habits found."]
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">@Localizer["Close"]</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Add Habit Modal -->
     <div class="modal fade" id="addHabitModal" tabindex="-1" aria-labelledby="addHabitModalLabel" aria-hidden="true">
