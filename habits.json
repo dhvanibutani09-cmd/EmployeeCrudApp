@@ -75,5 +75,20 @@
     "CompletedDates": [],
     "IsCompletedToday": false,
     "CurrentStreak": 0
+  },
+  {
+    "Id": 8,
+    "UserId": "dhvanibutani09@gmail.com",
+    "Name": "readig",
+    "Description": "1 hr",
+    "Frequency": "Daily",
+    "CustomDays": [],
+    "StartDate": "2026-01-30T00:00:00",
+    "CreatedAt": "2026-01-30T17:52:26.2487503+05:30",
+    "CompletedDates": [
+      "2026-01-30T00:00:00+05:30"
+    ],
+    "IsCompletedToday": true,
+    "CurrentStreak": 1
   }
 ]

@@ -48,5 +48,25 @@
     "DurationInSeconds": 320,
     "Date": "2026-01-30T14:04:43+05:30",
     "FormattedDuration": "00:05:20"
+  },
+  {
+    "Id": 7,
+    "UserId": "dhvanibutani09@gmail.com",
+    "TaskName": "break",
+    "StartTime": "2026-01-30T14:59:58+05:30",
+    "EndTime": "2026-01-30T16:53:19+05:30",
+    "DurationInSeconds": 6801,
+    "Date": "2026-01-30T14:59:58+05:30",
+    "FormattedDuration": "01:53:21"
+  },
+  {
+    "Id": 8,
+    "UserId": "dhvanibutani09@gmail.com",
+    "TaskName": "presentation",
+    "StartTime": "2026-01-30T17:58:29+05:30",
+    "EndTime": "2026-01-30T18:47:15+05:30",
+    "DurationInSeconds": 2925,
+    "Date": "2026-01-30T17:58:29+05:30",
+    "FormattedDuration": "00:48:45"
   }
 ]
