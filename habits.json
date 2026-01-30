@@ -47,5 +47,31 @@
     "CompletedDates": [],
     "IsCompletedToday": false,
     "CurrentStreak": 0
+  },
+  {
+    "Id": 6,
+    "UserId": "dhvanibutani09@gmail.com",
+    "Name": "coding",
+    "Description": "1 hr",
+    "Frequency": "Daily",
+    "CustomDays": [],
+    "StartDate": "2026-01-30T00:00:00",
+    "CreatedAt": "2026-01-30T16:18:01.5987668+05:30",
+    "CompletedDates": [],
+    "IsCompletedToday": false,
+    "CurrentStreak": 0
+  },
+  {
+    "Id": 7,
+    "UserId": "dhvanibutani09@gmail.com",
+    "Name": "reading",
+    "Description": "1 hr",
+    "Frequency": "Daily",
+    "CustomDays": [],
+    "StartDate": "2026-01-31T00:00:00",
+    "CreatedAt": "2026-01-30T16:19:32.4284778+05:30",
+    "CompletedDates": [],
+    "IsCompletedToday": false,
+    "CurrentStreak": 0
   }
 ]

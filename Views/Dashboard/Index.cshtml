@@ -1620,7 +1620,12 @@
                 });
             }
 
-            if (!name.trim()) return;
+            console.log('Saving Habit:', { name, desc, frequency, customDays, startDate });
+
+            if (!name.trim()) {
+                alert('@Localizer["Please enter a habit name."]');
+                return;
+            }
 
             try {
                 const response = await fetch('/Dashboard/AddHabit', {
@@ -1631,9 +1636,12 @@
                 const result = await response.json();
                 if (result.success) {
                     location.reload();
+                } else {
+                    alert('Error: ' + result.message);
                 }
             } catch (error) {
                 console.error('Add habit error:', error);
+                alert('@Localizer["An error occurred while adding the habit."]');
             }
         }
 
