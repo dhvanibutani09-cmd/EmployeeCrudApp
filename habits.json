@@ -1,37 +1,5 @@
 [
   {
-    "Id": 1,
-    "UserId": "dhvanibutani09@gmail.com",
-    "Name": "reading",
-    "Description": "5 hr",
-    "Frequency": "Daily",
-    "CustomDays": [],
-    "StartDate": "2026-01-27T00:00:00+05:30",
-    "CreatedAt": "2026-01-27T12:15:25.5270344+05:30",
-    "CompletedDates": [
-      "2026-01-27T00:00:00+05:30",
-      "2026-01-30T00:00:00+05:30"
-    ],
-    "IsCompletedToday": true,
-    "CurrentStreak": 1
-  },
-  {
-    "Id": 2,
-    "UserId": "dhvanibutani09@gmail.com",
-    "Name": "coding",
-    "Description": "8hr",
-    "Frequency": "Daily",
-    "CustomDays": [],
-    "StartDate": "2026-01-27T00:00:00+05:30",
-    "CreatedAt": "2026-01-27T12:35:36.8741818+05:30",
-    "CompletedDates": [
-      "2026-01-27T00:00:00+05:30",
-      "2026-01-30T00:00:00+05:30"
-    ],
-    "IsCompletedToday": true,
-    "CurrentStreak": 1
-  },
-  {
     "Id": 3,
     "UserId": "dhvanibutani09@gmail.com",
     "Name": "dance",
