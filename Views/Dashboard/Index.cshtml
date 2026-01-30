@@ -1039,6 +1039,11 @@
                         const fromInfo = currencyInfoMap[fromValue];
                         const toInfo = currencyInfoMap[toValue];
 
+                        if (!fromInfo || !toInfo) {
+                            resDiv.innerHTML = '<div class="text-warning small text-center"><i class="bi bi-exclamation-circle me-1"></i> @Localizer["Currency info unavailable"]</div>';
+                            return;
+                        }
+
                         const symbol = (toInfo.symbol && toInfo.symbol !== 'undefined') ? toInfo.symbol : '';
                         const currencyName = toInfo.currencyName || '';
                         const countryName = toInfo.country || '';
@@ -1409,9 +1414,9 @@
                 if (!response.ok) throw new Error('API failed');
                 allCountries = await response.json();
                 
-                 // Helper to get name in current language
+                // Helper to get name in current language
                 allCountries.forEach(c => {
-                    c.displayName = getTranslatedCountryName(c);
+                    c.displayName = c.name.common;
                 });
 
                 // Sort alphabetically
@@ -1420,51 +1425,14 @@
                 renderCountryList(allCountries);
             } catch (error) {
                 console.error('Fetch all countries error:', error);
-                if (container) container.innerHTML = `<div class="text-center py-5 text-muted small">${getUiLabel('ErrorLoadDir')}</div>`;
+                console.error('Fetch all countries error:', error);
+                if (container) container.innerHTML = `<div class="text-center py-5 text-muted small">@Localizer["Unable to load directory."]</div>`;
             }
         }
         
         
-        const uiLabels = {
-            'en': { 'Capital': 'Capital', 'Population': 'Population', 'Currency': 'Currency', 'Timezone': 'Timezone', 'Language': 'Language', 'Loading': 'Loading...', 'Back': 'Back', 'NA': 'N/A', 'SearchPlaceholder': 'Search country...', 'NoResults': 'No results found.', 'ErrorLoadDir': 'Unable to load directory.', 'ErrorLoadDetails': 'Unable to load details.' },
-            'hi': { 'Capital': 'राजधानी', 'Population': 'जनसंख्या', 'Currency': 'मुद्रा', 'Timezone': 'समय क्षेत्र', 'Language': 'भाषा', 'Loading': 'लोड हो रहा है...', 'Back': 'वापस', 'NA': 'लागू नहीं', 'SearchPlaceholder': 'देश खोजें...', 'NoResults': 'कोई परिणाम नहीं मिला।', 'ErrorLoadDir': 'निर्देशिका लोड करने में असमर्थ।', 'ErrorLoadDetails': 'विवरण लोड करने में असमर्थ।' },
-            'gu': { 'Capital': 'પાટનગર', 'Population': 'વસ્તી', 'Currency': 'ચલણ', 'Timezone': 'સમય ક્ષેત્ર', 'Language': 'ભાષા', 'Loading': 'લોડ થઈ રહ્યું છે...', 'Back': 'પાછા', 'NA': 'લાગુ નથી', 'SearchPlaceholder': 'દેશ શોધો...', 'NoResults': 'કોઈ પરિણામો મળ્યા નથી.', 'ErrorLoadDir': 'ડિરેક્ટરી લોડ કરવામાં અસમર્થ.', 'ErrorLoadDetails': 'વિગતો લોડ કરવામાં અસમર્થ.' },
-            'bn': { 'Capital': 'রাজধানী', 'Population': 'জনসংখ্যা', 'Currency': 'মুদ্রা', 'Timezone': 'সময় অঞ্চল', 'Language': 'ভাষা', 'Loading': 'লোড হচ্ছে...', 'Back': 'ফিরে যান', 'NA': 'প্রযোজ্য নয়', 'SearchPlaceholder': 'দেশ খুঁজুন...', 'NoResults': 'কোন ফলাফল পাওয়া যায়নি।', 'ErrorLoadDir': 'ডিরেক্টরি লোড করতে অক্ষম।', 'ErrorLoadDetails': 'বিবরণ লোড করতে অক্ষম।' },
-            'te': { 'Capital': 'రాజధాని', 'Population': 'జనాభా', 'Currency': 'కరెన్సీ', 'Timezone': 'సమయ మండలి', 'Language': 'భాష', 'Loading': 'లోడ్ అవుతోంది...', 'Back': 'వెనుకకు', 'NA': 'వర్తించదు', 'SearchPlaceholder': 'దేశాన్ని వెతకండి...', 'NoResults': 'ఫలితాలు కనుగొనబడలేదు.', 'ErrorLoadDir': 'డైరెక్టరీని లోడ్ చేయలేకపోయింది.', 'ErrorLoadDetails': 'వివరాలను లోడ్ చేయలేకపోయింది.' },
-            'ta': { 'Capital': 'தலைநகரம்', 'Population': 'மக்கள் தொகை', 'Currency': 'நாணயம்', 'Timezone': 'நேர மண்டலம்', 'Language': 'மொழி', 'Loading': 'ஏற்றப்படுகிறது...', 'Back': 'பின்னால்', 'NA': 'பொருந்தாது', 'SearchPlaceholder': 'நாட்டைத் தேடுங்கள்...', 'NoResults': 'முடிவுகள் எதுவும் காணப்படவில்லை.', 'ErrorLoadDir': 'அடைவை ஏற்ற முடியவில்லை.', 'ErrorLoadDetails': 'விவரங்களை ஏற்ற முடியவில்லை.' },
-            'mr': { 'Capital': 'राजधानी', 'Population': 'लोकसंख्या', 'Currency': 'चलन', 'Timezone': 'वेळ क्षेत्र', 'Language': 'भाषा', 'Loading': 'लोड होत आहे...', 'Back': 'मागे', 'NA': 'लागू नाही', 'SearchPlaceholder': 'देश शोधा...', 'NoResults': 'काहीही सापडले नाही.', 'ErrorLoadDir': 'निर्देशिका लोड करण्यात अक्षम.', 'ErrorLoadDetails': 'तपशील लोड करण्यात अक्षम.' },
-            'kn': { 'Capital': 'ರಾಜಧಾನಿ', 'Population': 'ಜನಸಂಖ್ಯೆ', 'Currency': 'ಕರೆನ್ಸಿ', 'Timezone': 'ಸಮಯ ವಲಯ', 'Language': 'ಭಾಷೆ', 'Loading': 'ಲೋಡ್ ಆಗುತ್ತಿದೆ...', 'Back': 'ಹಿಂದೆ', 'NA': 'ಅನ್ವಯಿಸುವುದಿಲ್ಲ', 'SearchPlaceholder': 'ದೇಶವನ್ನು ಹುಡುಕಿ...', 'NoResults': 'ಯಾವುದೇ ಫಲಿತಾಂಶಗಳು ಕಂಡುಬಂದಿಲ್ಲ.', 'ErrorLoadDir': 'ಡೈರೆಕ್ಟರಿಯನ್ನು ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ.', 'ErrorLoadDetails': 'ವಿವರಗಳನ್ನು ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ.' },
-            'ml': { 'Capital': 'തലസ്ഥാനം', 'Population': 'ജനസംഖ്യ', 'Currency': 'കറൻസി', 'Timezone': 'സമയ മേഖല', 'Language': 'ഭാഷ', 'Loading': 'ലോഡുചെയ്യുന്നു...', 'Back': 'തിരികെ', 'NA': 'ബാധകമല്ല', 'SearchPlaceholder': 'രാജ്യം തിരയുക...', 'NoResults': 'ഫലങ്ങളൊന്നും കണ്ടെത്തിയില്ല.', 'ErrorLoadDir': 'ഡയറക്ടറി ലോഡുചെയ്യുന്നതിന് കഴിഞ്ഞില്ല.', 'ErrorLoadDetails': 'വിശദാംശങ്ങൾ ലോഡുചെയ്യുന്നതിന് കഴിഞ്ഞില്ല.' },
-            'pa': { 'Capital': 'ਰਾਜਧਾਨੀ', 'Population': 'ਆਬਾਦੀ', 'Currency': 'ਮੁਦਰਾ', 'Timezone': 'ਸਮਾਂ ਖੇਤਰ', 'Language': 'ਭਾਸ਼ਾ', 'Loading': 'ਲੋਡ ਹੋ ਰਿਹਾ ਹੈ...', 'Back': 'ਵਾਪਸ', 'NA': 'ਲਾਗੂ ਨਹੀਂ', 'SearchPlaceholder': 'ਦੇਸ਼ ਖੋਜੋ...', 'NoResults': 'ਕੋਈ ਨਤੀਜਾ ਨਹੀਂ ਮਿਲਿਆ।', 'ErrorLoadDir': 'ਡਾਇਰੈਕਟਰੀ ਲੋਡ ਕਰਨ ਵਿੱਚ ਅਸਮਰੱਥ।', 'ErrorLoadDetails': 'ਵੇਰਵੇ ਲੋਡ ਕਰਨ ਵਿੱਚ ਅਸਮਰੱਥ।' },
-            'ur': { 'Capital': 'دارالحکومت', 'Population': 'آبادی', 'Currency': 'کرنسی', 'Timezone': 'ٹائم زون', 'Language': 'زبان', 'Loading': 'لوڈ ہو رہا ہے...', 'Back': 'واپس', 'NA': 'لاگو نہیں', 'SearchPlaceholder': 'ملک تلاش کریں...', 'NoResults': 'کوئی نتائج نہیں ملے۔', 'ErrorLoadDir': 'ڈائرکٹری لوڈ کرنے سے قاصر۔', 'ErrorLoadDetails': 'تفصیلات لوڈ کرنے سے قاصر۔' }
-        };
+        // Removed local translation logic (uiLabels, getTranslatedCountryName) to rely on global TranslationManager.
 
-        function getUiLabel(key) {
-            const culture = window.APP_CULTURE || 'en-US';
-            const langCode = culture.split('-')[0];
-            const labels = uiLabels[langCode] || uiLabels['en'];
-            return labels[key] || key;
-        }
-
-        function getTranslatedCountryName(country) {
-            const culture = window.APP_CULTURE || 'en-US';
-            const langCode = culture.split('-')[0]; // e.g., 'hi' from 'hi-IN'
-            
-            // Map ISO 639-1 (2 char) to RestCountries translation keys (3 char mostly)
-            const langMap = {
-                'hi': 'hin', 'gu': 'guj', 'bn': 'ben', 'ta': 'tam', 
-                'te': 'tel', 'kn': 'kan', 'ml': 'mal', 'mr': 'mar', 
-                'pa': 'pan', 'ur': 'urd', 'fr': 'fra', 'es': 'spa',
-                'de': 'deu', 'it': 'ita', 'pt': 'por', 'ru': 'rus',
-                'ja': 'jpn', 'zh': 'zho', 'ar': 'ara'
-            };
-            
-            const trKey = langMap[langCode];
-            if (trKey && country.translations && country.translations[trKey]) {
-                return country.translations[trKey].common;
-            }
-            return country.name.common;
-        }
 
         function renderCountryList(list) {
             const container = document.getElementById('country-container');
@@ -1473,7 +1441,7 @@
             // Set icon to search by default
             const searchInput = document.getElementById('country-search-input');
             if (searchInput) {
-                searchInput.placeholder = getUiLabel('SearchPlaceholder');
+                searchInput.placeholder = "@Localizer["Search country..."]";
             }
 
             if (searchIcon) {
@@ -1482,7 +1450,7 @@
             }
 
             if (list.length === 0) {
-                container.innerHTML = `<div class="text-center py-5 text-muted small">${getUiLabel('NoResults')}</div>`;
+                container.innerHTML = `<div class="text-center py-5 text-muted small">@Localizer["No results found."]</div>`;
                 return;
             }
 
@@ -1531,7 +1499,7 @@
             container.innerHTML = `
                 <div class="text-center py-5">
                     <div class="spinner-border text-info spinner-border-sm" role="status" style="color: #6610f2 !important;">
-                        <span class="visually-hidden">${getUiLabel('Loading')}</span>
+                        <span class="visually-hidden">@Localizer["Loading..."]</span>
                     </div>
                 </div>
             `;
@@ -1542,20 +1510,20 @@
                 const data = await response.json();
                 const country = data[0];
 
-                const name = getTranslatedCountryName(country);
+                const name = country.name.common;
                 const flag = country.flags.svg;
-                const capital = country.capital ? country.capital[0] : getUiLabel('NA');
+                const capital = country.capital ? country.capital[0] : 'N/A';
                 const region = country.region;
                 const population = country.population.toLocaleString(window.APP_CULTURE);
-                const currencies = country.currencies ? Object.values(country.currencies).map(c => `${c.name} (${c.symbol})`).join(', ') : getUiLabel('NA');
-                const languages = country.languages ? Object.values(country.languages).join(', ') : getUiLabel('NA');
-                const timezones = country.timezones ? country.timezones[0] : getUiLabel('NA');
+                const currencies = country.currencies ? Object.values(country.currencies).map(c => `${c.name} (${c.symbol})`).join(', ') : 'N/A';
+                const languages = country.languages ? Object.values(country.languages).join(', ') : 'N/A';
+                const timezones = country.timezones ? country.timezones[0] : 'N/A';
 
                 container.innerHTML = `
                     <div class="country-details mt-2">
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <button class="btn btn-xs btn-outline-secondary rounded-pill py-0 px-2" onclick="showCountryList()" style="font-size: 0.7rem;">
-                                <i class="bi bi-arrow-left me-1"></i> ${getUiLabel('Back')}
+                                <i class="bi bi-arrow-left me-1"></i> @Localizer["Back"]
                             </button>
                         </div>
                         <div class="text-center mb-3">
@@ -1566,31 +1534,31 @@
                         <div class="row g-2">
                             <div class="col-6">
                                 <div class="p-2 rounded-3 bg-light border text-center h-100">
-                                    <span class="d-block smaller text-muted">${getUiLabel('Capital')}</span>
+                                    <span class="d-block smaller text-muted">@Localizer["Capital"]</span>
                                     <span class="fw-bold small">${capital}</span>
                                 </div>
                             </div>
                             <div class="col-6">
                                 <div class="p-2 rounded-3 bg-light border text-center h-100">
-                                    <span class="d-block smaller text-muted">${getUiLabel('Population')}</span>
+                                    <span class="d-block smaller text-muted">@Localizer["Population"]</span>
                                     <span class="fw-bold small">${population}</span>
                                 </div>
                             </div>
                             <div class="col-6">
                                 <div class="p-2 rounded-3 bg-light border text-center h-100">
-                                    <span class="d-block smaller text-muted">${getUiLabel('Currency')}</span>
+                                    <span class="d-block smaller text-muted">@Localizer["Currency"]</span>
                                     <span class="fw-bold small" style="font-size: 0.65rem;">${currencies}</span>
                                 </div>
                             </div>
                             <div class="col-6">
                                 <div class="p-2 rounded-3 bg-light border text-center h-100">
-                                    <span class="d-block smaller text-muted">${getUiLabel('Timezone')}</span>
+                                    <span class="d-block smaller text-muted">@Localizer["Timezone"]</span>
                                     <span class="fw-bold small">${timezones}</span>
                                 </div>
                             </div>
                             <div class="col-12 mt-1">
                                 <div class="p-2 rounded-3 bg-light border text-center">
-                                    <span class="d-block smaller text-muted">${getUiLabel('Language')}</span>
+                                    <span class="d-block smaller text-muted">@Localizer["Language"]</span>
                                     <span class="fw-bold small">${languages}</span>
                                 </div>
                             </div>
@@ -1604,7 +1572,7 @@
                 }
             } catch (error) {
                 console.error('Country details error:', error);
-                container.innerHTML = `<div class="text-center py-5 text-muted small">${getUiLabel('ErrorLoadDetails')}</div>`;
+                container.innerHTML = `<div class="text-center py-5 text-muted small">@Localizer["Unable to load details."]</div>`;
             }
         }
 
@@ -1733,7 +1701,7 @@
              
              // Use same translation helper
              const filtered = emergencyCountries.filter(c => {
-                 const name = getTranslatedCountryName(c);
+                 const name = c.name.common;
                  return name.toLowerCase().includes(query.toLowerCase());
              }).slice(0, 5); // Limit to 5
              
@@ -1745,7 +1713,7 @@
              
              let html = '';
              filtered.forEach(c => {
-                 const name = getTranslatedCountryName(c);
+                 const name = c.name.common;
                  html += `
                     <button type="button" class="list-group-item list-group-item-action border-0 px-3 py-2 d-flex align-items-center" onclick="selectEmergencyCountry('${c.cca3}', '${name.replace(/'/g, "\\'")}', '${c.flags.svg}')">
                         <img src="${c.flags.svg}" class="me-2 rounded-1 border" style="width: 20px; height: 15px; object-fit: cover;">

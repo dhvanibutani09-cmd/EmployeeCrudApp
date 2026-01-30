@@ -18,17 +18,22 @@ class TranslationManager {
 
         this.observer = null;
         this.debouncedTranslate = this.debounce(this.processQueue.bind(this), 300);
-        this.mutationQueue = new Set(); // Stores nodes to translate
+        this.mutationQueue = new Set(); // Stores text nodes
+        this.attributeQueue = new Set(); // Stores elements with attributes
 
-        document.addEventListener('DOMContentLoaded', () => {
+        const init = () => {
             this.setupDropdown();
-            // Start observing immediately for any dynamic content
             this.setupObserver();
-
             if (this.currentLang !== 'en') {
                 this.translatePage();
             }
-        });
+        };
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
     }
 
     setupDropdown() {
@@ -40,33 +45,44 @@ class TranslationManager {
     }
 
     setupObserver() {
-        // Watch for changes in the body
         this.observer = new MutationObserver((mutations) => {
             if (this.currentLang === 'en') return;
 
             let hasRelevantMutation = false;
 
             mutations.forEach(mutation => {
-                // If we are actively translating, ignore mutations to prevent loops
-                // However, distinguishing our changes from app changes is tricky.
-
                 if (mutation.type === 'childList') {
                     mutation.addedNodes.forEach(node => {
                         if (this.isValidNode(node)) {
+                            // 1. Text Nodes
                             this.collectTextNodes(node).forEach(bgNode => this.mutationQueue.add(bgNode));
+
+                            // 2. Attributes on added nodes
+                            const attrSelector = 'input[type="submit"], input[type="button"], input[type="reset"], [placeholder], [title]';
+                            if (node.matches && node.matches(attrSelector)) this.attributeQueue.add(node);
+                            if (node.querySelectorAll) {
+                                node.querySelectorAll(attrSelector).forEach(el => this.attributeQueue.add(el));
+                            }
                             hasRelevantMutation = true;
                         }
                     });
                 } else if (mutation.type === 'characterData') {
-                    // Text node changed content directly
                     const node = mutation.target;
-                    // If this change was NOT done by us (we can check a flag, or rudimentary check)
-                    if (!node._isApplyingTranslation && this.isValidTextNode(node)) {
-                        // It's an external update (e.g. Clock tick)
-                        // Important: Update original text
+                    // Ignore if we are applying translation
+                    if (!node._isApplyingTranslation && !node.parentElement?._isApplyingTranslation && this.isValidTextNode(node)) {
                         node._originalText = node.nodeValue;
                         this.mutationQueue.add(node);
                         hasRelevantMutation = true;
+                    }
+                } else if (mutation.type === 'attributes') {
+                    const node = mutation.target;
+                    // Ignore if we are applying translation
+                    if (!node._isApplyingTranslation) {
+                        const attr = mutation.attributeName;
+                        if (['placeholder', 'title', 'value'].includes(attr)) {
+                            this.attributeQueue.add(node);
+                            hasRelevantMutation = true;
+                        }
                     }
                 }
             });
@@ -79,7 +95,9 @@ class TranslationManager {
         this.observer.observe(document.body, {
             childList: true,
             subtree: true,
-            characterData: true
+            characterData: true,
+            attributes: true,
+            attributeFilter: ['placeholder', 'title', 'value']
         });
     }
 
@@ -87,12 +105,10 @@ class TranslationManager {
         if (!node) return false;
         if (node.nodeType === Node.ELEMENT_NODE) {
             if (node.classList.contains('no-translate')) return false;
-            // Ignore scripts, styles
             const tags = ['SCRIPT', 'STYLE', 'NOSCRIPT'];
             if (tags.includes(node.tagName)) return false;
             return true;
         }
-
         return false;
     }
 
@@ -133,13 +149,18 @@ class TranslationManager {
         this.currentLang = lang;
         localStorage.setItem('app_language', lang);
 
+        if (window.APP_CULTURE) {
+            window.APP_CULTURE = lang;
+        }
+
+        document.cookie = `.AspNetCore.Culture=c=${lang}|uic=${lang};path=/;max-age=31536000`;
+
         if (lang === 'en') {
             this.restoreEnglish();
             document.documentElement.lang = 'en';
             return;
         }
 
-        // Translate everything visible now
         await this.translatePage();
         document.documentElement.lang = lang;
     }
@@ -147,6 +168,7 @@ class TranslationManager {
     restoreEnglish() {
         if (this.observer) this.observer.disconnect();
 
+        // Restore Text Nodes
         const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null);
         let node;
         while (node = walker.nextNode()) {
@@ -155,16 +177,31 @@ class TranslationManager {
             }
         }
 
+        // Restore Attributes
+        const elementsWithAttrs = document.querySelectorAll('[data-org-placeholder], [data-org-title], [data-org-value]');
+        elementsWithAttrs.forEach(el => {
+            if (el.hasAttribute('data-org-placeholder')) el.setAttribute('placeholder', el.getAttribute('data-org-placeholder'));
+            if (el.hasAttribute('data-org-title')) el.setAttribute('title', el.getAttribute('data-org-title'));
+            if (el.hasAttribute('data-org-value')) el.value = el.getAttribute('data-org-value');
+        });
+
         if (this.observer) this.setupObserver();
     }
 
     async processQueue() {
-        if (this.mutationQueue.size === 0) return;
+        if (this.mutationQueue.size === 0 && this.attributeQueue.size === 0) return;
 
         const nodes = Array.from(this.mutationQueue);
-        this.mutationQueue.clear();
+        const attrElements = Array.from(this.attributeQueue);
 
-        await this.translateNodes(nodes);
+        this.mutationQueue.clear();
+        this.attributeQueue.clear();
+
+        // Process in parallel
+        await Promise.all([
+            this.translateNodes(nodes),
+            this.translateAttributes(attrElements)
+        ]);
     }
 
     debounce(func, wait) {
@@ -182,19 +219,30 @@ class TranslationManager {
     async translatePage() {
         // Scan entire body
         const nodes = this.collectTextNodes(document.body);
-        await this.translateNodes(nodes);
+
+        const attrSelector = 'input[type="submit"], input[type="button"], input[type="reset"], [placeholder], [title]';
+        const attrElements = document.querySelectorAll(attrSelector);
+
+        await Promise.all([
+            this.translateNodes(nodes),
+            this.translateAttributes(Array.from(attrElements))
+        ]);
     }
 
     async fetchWithRetry(url, options, retries = 3, backoff = 1000) {
         try {
             const response = await fetch(url, options);
-            if (!response.ok) {
-                if (response.status === 429 || response.status >= 500) {
-                    throw new Error(`Retriable error: ${response.status}`);
-                }
-                throw new Error(`Request failed: ${response.status}`);
+            // If success, return response
+            if (response.ok) return response;
+
+            // If client error (4xx) that is NOT 429 (Too Many Requests), return response to handle logic/logging
+            if (response.status >= 400 && response.status < 500 && response.status !== 429) {
+                return response;
             }
-            return response;
+
+            // For 429 or 5xx, throw to trigger retry
+            throw new Error(`Retriable error: ${response.status}`);
+
         } catch (error) {
             if (retries > 0) {
                 console.warn(`Translation fetch failed. Retrying in ${backoff}ms... (${retries} retries left)`, error);
@@ -206,12 +254,128 @@ class TranslationManager {
     }
 
     // Unified translation logic
+    async translateAttributes(elements) {
+        if (this.currentLang === 'en' || !elements || elements.length === 0) return;
+
+        // Collect attributes to translate from provided elements
+        const attributeTexts = [];
+        const elementsToProcess = [];
+
+        elements.forEach(el => {
+            // Filter only valid elements
+            if (!this.isValidNode(el)) return;
+
+            elementsToProcess.push(el);
+            const tagName = el.tagName;
+            const inputTypes = ['submit', 'button', 'reset'];
+
+            // Handle Input Values (Buttons)
+            if (tagName === 'INPUT' && inputTypes.includes(el.type)) {
+                if (el.value && el.value.trim()) {
+                    if (!el.getAttribute('data-org-value')) el.setAttribute('data-org-value', el.value);
+                    attributeTexts.push(el.getAttribute('data-org-value'));
+                }
+            }
+
+            // Handle Standard Attributes
+            ['placeholder', 'title'].forEach(attr => {
+                if (el.hasAttribute(attr) || el.hasAttribute(`data-org-${attr}`)) {
+                    const val = el.getAttribute(`data-org-${attr}`) || el.getAttribute(attr);
+                    if (val && val.trim()) {
+                        if (!el.getAttribute(`data-org-${attr}`)) el.setAttribute(`data-org-${attr}`, val);
+                        attributeTexts.push(val.trim());
+                    }
+                }
+            });
+        });
+
+        if (attributeTexts.length === 0) return;
+
+        // Ensure cache
+        if (!this.cache.has(this.currentLang)) {
+            this.cache.set(this.currentLang, new Map());
+        }
+        const langCache = this.cache.get(this.currentLang);
+
+        // Identify texts needing API
+        const textsToFetch = new Set();
+        attributeTexts.forEach(text => {
+            if (!langCache.has(text)) textsToFetch.add(text);
+        });
+
+        const fetchList = [...textsToFetch];
+        if (fetchList.length > 0) this.showLoading(true);
+
+        try {
+            // Fetch batch
+            if (fetchList.length > 0) {
+                const chunkSize = 50;
+                for (let i = 0; i < fetchList.length; i += chunkSize) {
+                    const chunk = fetchList.slice(i, i + chunkSize);
+                    if (chunk.length === 0) continue;
+
+                    // Explicitly send sourceLanguage: 'en'
+                    const payload = { texts: chunk, targetLanguage: this.currentLang, sourceLanguage: 'en' };
+                    try {
+                        const response = await this.fetchWithRetry(this.apiEndpoint, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(payload)
+                        });
+                        if (response.ok) {
+                            const result = await response.json();
+                            Object.entries(result).forEach(([k, v]) => langCache.set(k, v));
+                        } else {
+                            const msg = await response.text();
+                            console.error(`Translation server error (${response.status}): ${msg}`, payload);
+                        }
+                    } catch (err) {
+                        console.error("Batch fetch error", err);
+                    }
+                }
+            }
+
+            // Apply translations
+            elementsToProcess.forEach(el => {
+                // Prevent observer loop
+                el._isApplyingTranslation = true;
+
+                // Inputs
+                if (el.tagName === 'INPUT' && ['submit', 'button', 'reset'].includes(el.type)) {
+                    const original = el.getAttribute('data-org-value');
+                    if (original && langCache.has(original)) {
+                        const translated = langCache.get(original);
+                        if (el.value !== translated) el.value = translated;
+                    }
+                }
+
+                // Attributes
+                ['placeholder', 'title'].forEach(attr => {
+                    const original = el.getAttribute(`data-org-${attr}`);
+                    if (original && langCache.has(original)) {
+                        const translated = langCache.get(original);
+                        if (el.getAttribute(attr) !== translated) el.setAttribute(attr, translated);
+                    }
+                });
+
+                setTimeout(() => el._isApplyingTranslation = false, 0);
+            });
+
+        } catch (e) {
+            console.error("TranslateAttributes error", e);
+        } finally {
+            this.showLoading(false);
+        }
+    }
+
+    // Unified translation logic for TextNodes ONLY
     async translateNodes(nodes) {
+        if (this.currentLang === 'en') return;
+
         // Filter out nodes that don't need translation or invalid
         const validNodes = nodes.filter(n => {
-            // Ensure original text is captured
             if (!n._originalText) n._originalText = n.nodeValue;
-            return n._originalText.trim().length > 0;
+            return n._originalText.trim().length > 0 && !n.parentElement._isApplyingTranslation;
         });
 
         if (validNodes.length === 0) return;
@@ -233,8 +397,7 @@ class TranslationManager {
 
         const fetchList = [...textsToFetch];
 
-        // Only show loader if we are fetching a significant amount or it's not a background update
-        // Actually, for better UX on small updates (like clock), don't show full screen loader
+        // Only show loader if we are fetching a significant amount
         if (fetchList.length > 5) this.showLoading(true);
 
         try {
@@ -242,74 +405,72 @@ class TranslationManager {
             if (fetchList.length > 0) {
                 const chunkSize = 50;
                 for (let i = 0; i < fetchList.length; i += chunkSize) {
-                    const chunk = fetchList.slice(i, i + chunkSize);
+                    const chunk = fetchList.slice(i, i + chunkSize).filter(t => t && t.trim().length > 0);
+                    if (chunk.length === 0) continue;
+
+                    const payload = { texts: chunk, targetLanguage: this.currentLang, sourceLanguage: 'en' };
                     try {
                         const response = await this.fetchWithRetry(this.apiEndpoint, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ texts: chunk, targetLanguage: this.currentLang })
+                            body: JSON.stringify(payload)
                         });
                         if (response.ok) {
                             const result = await response.json();
                             Object.entries(result).forEach(([k, v]) => langCache.set(k, v));
+                        } else {
+                            const msg = await response.text();
+                            console.error(`Translation server error (${response.status}): ${msg}`, payload);
                         }
                     } catch (err) {
-                        console.error("Batch fetch error", err);
+                        console.error("Batch fetch error", err, payload);
                     }
                 }
             }
 
-            // Apply translations
+            // Apply translations to Text Nodes
             validNodes.forEach(node => {
                 const source = node._originalText.trim();
                 if (langCache.has(source)) {
                     const translated = langCache.get(source);
 
-                    // Mark node as being updated by us to prevent observer loop
+                    // Mark node as being updated to prevent observer loop
+                    // Note: TextNode itself cannot have properties easily observed, but parent can
+                    if (node.parentElement) node.parentElement._isApplyingTranslation = true;
                     node._isApplyingTranslation = true;
 
                     // Apply
-                    // Try to preserve whitespace structure: matches replaced in value
                     if (node.nodeValue.includes(source)) {
                         node.nodeValue = node.nodeValue.replace(source, translated);
                     } else {
                         node.nodeValue = translated;
                     }
 
-                    // Reset flag after microtask
-                    setTimeout(() => node._isApplyingTranslation = false, 0);
+                    setTimeout(() => {
+                        node._isApplyingTranslation = false;
+                        if (node.parentElement) node.parentElement._isApplyingTranslation = false;
+                    }, 0);
                 }
             });
 
-            // Handle attributes like placeholders and titles
-            const elementsWithAttrs = document.querySelectorAll('[placeholder], [title]');
-            elementsWithAttrs.forEach(el => {
-                ['placeholder', 'title'].forEach(attr => {
-                    const original = el.getAttribute(`data-org-${attr}`) || el.getAttribute(attr);
-                    if (original && original.trim()) {
-                        if (!el.getAttribute(`data-org-${attr}`)) el.setAttribute(`data-org-${attr}`, original);
-
-                        const text = original.trim();
-                        if (langCache.has(text)) {
-                            el.setAttribute(attr, langCache.get(text));
-                        }
-                    }
-                });
-            });
-
         } catch (e) {
-
             console.error("TranslateNodes error", e);
         } finally {
             this.showLoading(false);
         }
     }
 
-    // Kept for backward compatibility/manual overrides if needed, acts as wrapper for translateNodes
     async translateElement(element) {
         if (this.currentLang === 'en') return;
+        // Handle text nodes
         const nodes = this.collectTextNodes(element);
         await this.translateNodes(nodes);
+        // Handle attributes for this element and subtree
+        const attrSelector = 'input[type="submit"], input[type="button"], input[type="reset"], [placeholder], [title]';
+        const elements = [];
+        if (element.matches && element.matches(attrSelector)) elements.push(element);
+        element.querySelectorAll(attrSelector).forEach(el => elements.push(el));
+        await this.translateAttributes(elements);
     }
 
     showLoading(show) {

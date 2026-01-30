@@ -22,7 +22,11 @@ namespace EmployeeCrudApp.Controllers
         {
             if (request == null || request.Texts == null || !request.Texts.Any())
             {
-                return BadRequest("Invalid request");
+                return BadRequest("Invalid request: Texts is null or empty");
+            }
+            if (string.IsNullOrWhiteSpace(request.TargetLanguage))
+            {
+                return BadRequest("Invalid request: TargetLanguage is missing");
             }
 
             var results = await _translationService.TranslateBatchAsync(request.Texts, request.TargetLanguage, request.SourceLanguage);
@@ -40,7 +44,7 @@ namespace EmployeeCrudApp.Controllers
     public class TranslationRequest
     {
         public List<string> Texts { get; set; }
-        public string TargetLanguage { get; set; }
-        public string SourceLanguage { get; set; }
+        public string? TargetLanguage { get; set; }
+        public string? SourceLanguage { get; set; }
     }
 }

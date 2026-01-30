@@ -9,7 +9,8 @@
     "StartDate": "2026-01-27T00:00:00+05:30",
     "CreatedAt": "2026-01-27T12:15:25.5270344+05:30",
     "CompletedDates": [
-      "2026-01-27T00:00:00+05:30"
+      "2026-01-27T00:00:00+05:30",
+      "2026-01-30T00:00:00+05:30"
     ],
     "IsCompletedToday": true,
     "CurrentStreak": 1
@@ -24,7 +25,8 @@
     "StartDate": "2026-01-27T00:00:00+05:30",
     "CreatedAt": "2026-01-27T12:35:36.8741818+05:30",
     "CompletedDates": [
-      "2026-01-27T00:00:00+05:30"
+      "2026-01-27T00:00:00+05:30",
+      "2026-01-30T00:00:00+05:30"
     ],
     "IsCompletedToday": true,
     "CurrentStreak": 1
@@ -62,7 +64,20 @@
     "CompletedDates": [
       "2026-01-27T00:00:00+05:30"
     ],
-    "IsCompletedToday": true,
-    "CurrentStreak": 1
+    "IsCompletedToday": false,
+    "CurrentStreak": 0
+  },
+  {
+    "Id": 5,
+    "UserId": "dhvanibutani09@gmail.com",
+    "Name": "reading",
+    "Description": "1hr",
+    "Frequency": "Daily",
+    "CustomDays": [],
+    "StartDate": "2026-01-31T00:00:00",
+    "CreatedAt": "2026-01-30T13:27:49.6756614+05:30",
+    "CompletedDates": [],
+    "IsCompletedToday": false,
+    "CurrentStreak": 0
   }
 ]
