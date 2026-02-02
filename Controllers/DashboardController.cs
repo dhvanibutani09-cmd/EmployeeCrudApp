@@ -11,11 +11,13 @@ namespace EmployeeCrudApp.Controllers
     {
         private readonly INoteRepository _noteRepository;
         private readonly IHabitRepository _habitRepository;
+        private readonly IUserRepository _userRepository;
 
-        public DashboardController(INoteRepository noteRepository, IHabitRepository habitRepository)
+        public DashboardController(INoteRepository noteRepository, IHabitRepository habitRepository, IUserRepository userRepository)
         {
             _noteRepository = noteRepository;
             _habitRepository = habitRepository;
+            _userRepository = userRepository;
         }
 
         public IActionResult Index()
@@ -24,7 +26,8 @@ namespace EmployeeCrudApp.Controllers
             var viewModel = new DashboardViewModel
             {
                 Notes = _noteRepository.GetAll(userId).OrderByDescending(n => n.CreatedAt).ToList(),
-                Habits = _habitRepository.GetAll(userId).OrderByDescending(h => h.CreatedAt).ToList()
+                Habits = _habitRepository.GetAll(userId).OrderByDescending(h => h.CreatedAt).ToList(),
+                NewUsersToday = _userRepository.GetAll().Count(u => u.CreatedDate.Date == DateTime.Today)
             };
             return View(viewModel);
         }

@@ -22,6 +22,7 @@ namespace EmployeeCrudApp.Controllers
         public IActionResult Index()
         {
             var users = _userRepository.GetAll();
+            ViewBag.NewUsersToday = users.Count(u => u.CreatedDate.Date == DateTime.Today);
             return View(users);
         }
 

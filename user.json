@@ -1,30 +1,15 @@
 [
   {
-    "Id": 3,
-    "Name": "abc",
-    "Email": "zonx1@airsworld.net",
-    "Password": "111",
-    "IsEmailVerified": true,
-    "Otp": null,
-    "OtpExpiry": null
-  },
-  {
-    "Id": 5,
-    "Name": "chami",
-    "Email": "charmimarakana@gmail.com",
-    "Password": "1919",
-    "IsEmailVerified": true,
-    "Otp": null,
-    "OtpExpiry": null
-  },
-  {
     "Id": 6,
     "Name": "ccefqw",
     "Email": "heavenfashion312@gmail.com",
     "Password": "312",
     "IsEmailVerified": true,
     "Otp": null,
-    "OtpExpiry": null
+    "OtpExpiry": null,
+    "LoginCount": 0,
+    "CreatedDate": "2026-02-02T13:37:02.934094+05:30",
+    "LastLoginDate": null
   },
   {
     "Id": 7,
@@ -33,7 +18,10 @@
     "Password": "11111",
     "IsEmailVerified": true,
     "Otp": null,
-    "OtpExpiry": null
+    "OtpExpiry": null,
+    "LoginCount": 1,
+    "CreatedDate": "2026-02-02T13:37:02.934096+05:30",
+    "LastLoginDate": null
   },
   {
     "Id": 9,
@@ -42,7 +30,10 @@
     "Password": "1212",
     "IsEmailVerified": true,
     "Otp": null,
-    "OtpExpiry": null
+    "OtpExpiry": null,
+    "LoginCount": 0,
+    "CreatedDate": "2026-02-02T13:37:02.9340982+05:30",
+    "LastLoginDate": null
   },
   {
     "Id": 10,
@@ -51,7 +42,10 @@
     "Password": "1111",
     "IsEmailVerified": true,
     "Otp": null,
-    "OtpExpiry": null
+    "OtpExpiry": null,
+    "LoginCount": 0,
+    "CreatedDate": "2026-02-02T13:37:02.9341004+05:30",
+    "LastLoginDate": null
   },
   {
     "Id": 11,
@@ -60,6 +54,21 @@
     "Password": "1212",
     "IsEmailVerified": true,
     "Otp": null,
-    "OtpExpiry": null
+    "OtpExpiry": null,
+    "LoginCount": 0,
+    "CreatedDate": "2026-02-02T13:37:02.9341026+05:30",
+    "LastLoginDate": null
+  },
+  {
+    "Id": 12,
+    "Name": "charmi",
+    "Email": "charmimarakana@gmail.com",
+    "Password": "1919",
+    "IsEmailVerified": true,
+    "Otp": null,
+    "OtpExpiry": null,
+    "LoginCount": 0,
+    "CreatedDate": "2026-02-02T13:37:54.9221123+05:30",
+    "LastLoginDate": null
   }
 ]

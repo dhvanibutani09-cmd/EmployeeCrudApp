@@ -32,4 +32,9 @@ public class User
     [DataType(DataType.Password)]
     [System.Text.Json.Serialization.JsonIgnore]
     public string ConfirmPassword { get; set; } = string.Empty;
+
+    public int LoginCount { get; set; } = 0;
+
+    public DateTime CreatedDate { get; set; } = DateTime.Now;
+    public DateTime? LastLoginDate { get; set; }
 }

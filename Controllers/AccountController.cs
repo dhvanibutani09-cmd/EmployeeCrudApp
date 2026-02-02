@@ -57,6 +57,10 @@ namespace EmployeeCrudApp.Controllers
                         new ClaimsPrincipal(claimsIdentity),
                         authProperties);
 
+                    user.LoginCount++;
+                    user.LastLoginDate = DateTime.Now;
+                    _userRepository.Update(user);
+
                     return RedirectToAction("Index", "Dashboard");
                 }
                 
