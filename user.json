@@ -1,17 +1,5 @@
 [
   {
-    "Id": 6,
-    "Name": "ccefqw",
-    "Email": "heavenfashion312@gmail.com",
-    "Password": "312",
-    "IsEmailVerified": true,
-    "Otp": null,
-    "OtpExpiry": null,
-    "LoginCount": 0,
-    "CreatedDate": "2026-02-02T13:37:02.934094+05:30",
-    "LastLoginDate": null
-  },
-  {
     "Id": 9,
     "Name": "dwefgd",
     "Email": "fisoce5167@akixpres.com",
@@ -36,18 +24,6 @@
     "LastLoginDate": null
   },
   {
-    "Id": 11,
-    "Name": "qwe",
-    "Email": "cidaya7882@dretnar.com",
-    "Password": "1212",
-    "IsEmailVerified": true,
-    "Otp": null,
-    "OtpExpiry": null,
-    "LoginCount": 0,
-    "CreatedDate": "2026-02-02T13:37:02.9341026+05:30",
-    "LastLoginDate": null
-  },
-  {
     "Id": 12,
     "Name": "charmi",
     "Email": "charmimarakana@gmail.com",
@@ -55,9 +31,9 @@
     "IsEmailVerified": true,
     "Otp": null,
     "OtpExpiry": null,
-    "LoginCount": 1,
+    "LoginCount": 2,
     "CreatedDate": "2026-02-02T13:37:54.9221123+05:30",
-    "LastLoginDate": "2026-02-02T14:55:57.3519147+05:30"
+    "LastLoginDate": "2026-02-02T15:25:50.1905546+05:30"
   },
   {
     "Id": 13,

@@ -77,5 +77,41 @@
     ],
     "IsCompletedToday": true,
     "CurrentStreak": 1
+  },
+  {
+    "Id": 9,
+    "UserId": "charmimarakana@gmail.com",
+    "Name": "coding",
+    "Description": "8hr",
+    "Frequency": "Custom",
+    "CustomDays": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "StartDate": "2026-02-02T00:00:00",
+    "CreatedAt": "2026-02-02T15:27:58.7417872+05:30",
+    "CompletedDates": [],
+    "IsCompletedToday": false,
+    "CurrentStreak": 0
+  },
+  {
+    "Id": 10,
+    "UserId": "charmimarakana@gmail.com",
+    "Name": "dance",
+    "Description": "2hr",
+    "Frequency": "Custom",
+    "CustomDays": [
+      2,
+      4,
+      6
+    ],
+    "StartDate": "2026-02-02T00:00:00+05:30",
+    "CreatedAt": "2026-02-02T15:31:36.0144725+05:30",
+    "CompletedDates": [],
+    "IsCompletedToday": false,
+    "CurrentStreak": 0
   }
 ]
