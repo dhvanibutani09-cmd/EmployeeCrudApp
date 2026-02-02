@@ -26,8 +26,7 @@ namespace EmployeeCrudApp.Controllers
             var viewModel = new DashboardViewModel
             {
                 Notes = _noteRepository.GetAll(userId).OrderByDescending(n => n.CreatedAt).ToList(),
-                Habits = _habitRepository.GetAll(userId).OrderByDescending(h => h.CreatedAt).ToList(),
-                NewUsersToday = _userRepository.GetAll().Count(u => u.CreatedDate.Date == DateTime.Today)
+                Habits = _habitRepository.GetAll(userId).OrderByDescending(h => h.CreatedAt).ToList()
             };
             return View(viewModel);
         }

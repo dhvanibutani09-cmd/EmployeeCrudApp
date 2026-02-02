@@ -19,10 +19,16 @@ namespace EmployeeCrudApp.Controllers
             _localizer = localizer;
         }
 
-        public IActionResult Index()
+        public IActionResult Index(string filter = null)
         {
             var users = _userRepository.GetAll();
-            ViewBag.NewUsersToday = users.Count(u => u.CreatedDate.Date == DateTime.Today);
+
+            if (filter == "today")
+            {
+                users = users.Where(u => u.LastLoginDate.HasValue && u.LastLoginDate.Value.Date == DateTime.Today).ToList();
+                ViewBag.CurrentFilter = "today";
+            }
+
             return View(users);
         }
 

@@ -164,6 +164,8 @@ namespace EmployeeCrudApp.Controllers
                     user.IsEmailVerified = true;
                     user.Otp = null;
                     user.OtpExpiry = null;
+                    user.LoginCount++;
+                    user.LastLoginDate = DateTime.Now;
                     _userRepository.Update(user);
 
                     var claims = new List<Claim>

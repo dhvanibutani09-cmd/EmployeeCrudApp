@@ -10,16 +10,24 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
             <h1 class="mb-0 fw-bold">@Localizer["User Management"]</h1>
             <p class="text-muted small mb-0">@Localizer["Manage system access and account statuses"]</p>
-            <div class="mt-2">
-                <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-3 py-2 rounded-pill">
-                    <i class="bi bi-person-plus-fill me-2"></i>@Localizer["New Users Today"]: <strong>@ViewBag.NewUsersToday</strong>
-                </span>
-            </div>
+
         </div>
         <div class="d-flex gap-2">
             <a asp-action="Create" class="btn btn-primary rounded-pill px-4 shadow-sm fw-bold">
                 <i class="bi bi-person-plus-fill me-2"></i>@Localizer["Add User"]
             </a>
+            @if (ViewBag.CurrentFilter == "today")
+            {
+                <a asp-action="Index" asp-route-filter="" class="btn btn-secondary rounded-pill px-4 shadow-sm fw-bold">
+                    <i class="bi bi-arrow-counterclockwise me-2"></i>@Localizer["Show All"]
+                </a>
+            }
+            else
+            {
+                <a asp-action="Index" asp-route-filter="today" class="btn btn-info rounded-pill px-4 shadow-sm fw-bold text-white">
+                    <i class="bi bi-clock-history me-2"></i>@Localizer["Users Today"]
+                </a>
+            }
             <a asp-controller="Dashboard" asp-action="Index" class="btn btn-primary rounded-pill px-4 shadow-sm fw-bold">
                 <i class="bi bi-speedometer2 me-2"></i>@Localizer["Dashboard"]
             </a>
@@ -101,7 +109,14 @@
                         <tr>
                             <td colspan="4" class="text-center py-5 text-muted fst-italic">
                                 <i class="bi bi-people fs-1 d-block mb-2"></i>
-                                <span class="d-block text-muted">@Localizer["No users found in the system."]</span>
+                                @if (ViewBag.CurrentFilter == "today")
+                                {
+                                    <span class="d-block text-muted">@Localizer["No users logged in today."]</span>
+                                }
+                                else
+                                {
+                                    <span class="d-block text-muted">@Localizer["No users found in the system."]</span>
+                                }
                             </td>
                         </tr>
                     }

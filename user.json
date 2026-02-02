@@ -12,18 +12,6 @@
     "LastLoginDate": null
   },
   {
-    "Id": 7,
-    "Name": "Dhvani",
-    "Email": "dhvanibutani09@gmail.com",
-    "Password": "11111",
-    "IsEmailVerified": true,
-    "Otp": null,
-    "OtpExpiry": null,
-    "LoginCount": 1,
-    "CreatedDate": "2026-02-02T13:37:02.934096+05:30",
-    "LastLoginDate": null
-  },
-  {
     "Id": 9,
     "Name": "dwefgd",
     "Email": "fisoce5167@akixpres.com",
@@ -67,8 +55,20 @@
     "IsEmailVerified": true,
     "Otp": null,
     "OtpExpiry": null,
-    "LoginCount": 0,
+    "LoginCount": 1,
     "CreatedDate": "2026-02-02T13:37:54.9221123+05:30",
-    "LastLoginDate": null
+    "LastLoginDate": "2026-02-02T14:55:57.3519147+05:30"
+  },
+  {
+    "Id": 13,
+    "Name": "Dhvani",
+    "Email": "dhvanibutani09@gmail.com",
+    "Password": "11111",
+    "IsEmailVerified": true,
+    "Otp": null,
+    "OtpExpiry": null,
+    "LoginCount": 2,
+    "CreatedDate": "2026-02-02T14:31:42.7910203+05:30",
+    "LastLoginDate": "2026-02-02T14:56:19.5026721+05:30"
   }
 ]
