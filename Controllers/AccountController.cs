@@ -14,13 +14,15 @@ namespace EmployeeCrudApp.Controllers
         private readonly IUserRepository _userRepository;
         private readonly IEmailService _emailService;
         private readonly Microsoft.Extensions.Localization.IStringLocalizer<AccountController> _localizer;
+        private readonly IConfiguration _configuration;
 
-        public AccountController(IEmployeeRepository employeeRepository, IUserRepository userRepository, IEmailService emailService, Microsoft.Extensions.Localization.IStringLocalizer<AccountController> localizer)
+        public AccountController(IEmployeeRepository employeeRepository, IUserRepository userRepository, IEmailService emailService, Microsoft.Extensions.Localization.IStringLocalizer<AccountController> localizer, IConfiguration configuration)
         {
             _employeeRepository = employeeRepository;
             _userRepository = userRepository;
             _emailService = emailService;
             _localizer = localizer;
+            _configuration = configuration;
         }
 
         [HttpGet]
@@ -48,6 +50,12 @@ namespace EmployeeCrudApp.Controllers
                         new Claim("Email", user.Email),
                         new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
                     };
+
+                    var adminEmails = _configuration.GetSection("AdminSettings:AdminEmails").Get<List<string>>();
+                    if (adminEmails != null && adminEmails.Contains(user.Email))
+                    {
+                        claims.Add(new Claim(ClaimTypes.Role, "Admin"));
+                    }
 
                     var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
                     var authProperties = new AuthenticationProperties();
@@ -194,6 +202,12 @@ namespace EmployeeCrudApp.Controllers
                         new Claim("Email", user.Email),
                         new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
                     };
+
+                    var adminEmails = _configuration.GetSection("AdminSettings:AdminEmails").Get<List<string>>();
+                    if (adminEmails != null && adminEmails.Contains(user.Email))
+                    {
+                        claims.Add(new Claim(ClaimTypes.Role, "Admin"));
+                    }
 
                     var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
                     var authProperties = new AuthenticationProperties();

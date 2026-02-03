@@ -10,9 +10,12 @@
         <h1 class="mb-0">@Localizer["Welcome"], @(User.FindFirst(System.Security.Claims.ClaimTypes.GivenName)?.Value ?? User.Identity?.Name)!</h1>
         <div class="d-flex gap-2 align-items-center">
 
-            <a asp-controller="User" asp-action="Index" class="btn btn-outline-primary rounded-pill px-4">
-                <i class="bi bi-people-fill me-2"></i> @Localizer["Manage Users"]
-            </a>
+            @if (User.IsInRole("Admin"))
+            {
+                <a asp-controller="User" asp-action="Index" class="btn btn-outline-primary rounded-pill px-4">
+                    <i class="bi bi-people-fill me-2"></i> @Localizer["Manage Users"]
+                </a>
+            }
         </div>
     </div>
     

@@ -37,9 +37,12 @@
                         <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-controller="Dashboard" asp-action="Index">@Localizer["Dashboard"]</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="User" asp-action="Index">@Localizer["User Management"]</a>
-                        </li>
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="User" asp-action="Index">@Localizer["User Management"]</a>
+                            </li>
+                        }
                     </ul>
                     <ul class="navbar-nav align-items-center">
                         <li class="nav-item me-3">

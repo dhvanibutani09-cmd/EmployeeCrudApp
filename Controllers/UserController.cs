@@ -5,7 +5,7 @@ using EmployeeCrudApp.Models;
 
 namespace EmployeeCrudApp.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     public class UserController : Controller
     {
         private readonly IUserRepository _userRepository;
