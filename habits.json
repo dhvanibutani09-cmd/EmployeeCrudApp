@@ -58,10 +58,11 @@
     "StartDate": "2026-01-30T00:00:00",
     "CreatedAt": "2026-01-30T16:18:01.5987668+05:30",
     "CompletedDates": [
-      "2026-01-30T00:00:00+05:30"
+      "2026-01-30T00:00:00+05:30",
+      "2026-02-03T00:00:00+05:30"
     ],
-    "IsCompletedToday": false,
-    "CurrentStreak": 0
+    "IsCompletedToday": true,
+    "CurrentStreak": 1
   },
   {
     "Id": 7,
@@ -75,7 +76,7 @@
     "CompletedDates": [
       "2026-02-02T00:00:00+05:30"
     ],
-    "IsCompletedToday": true,
+    "IsCompletedToday": false,
     "CurrentStreak": 1
   },
   {

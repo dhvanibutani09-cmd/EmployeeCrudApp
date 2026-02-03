@@ -57,6 +57,15 @@ namespace EmployeeCrudApp.Controllers
                         new ClaimsPrincipal(claimsIdentity),
                         authProperties);
 
+                    if (user.LastLoginDate.HasValue && user.LastLoginDate.Value.Date == DateTime.Today)
+                    {
+                        user.TodayLoginCount++;
+                    }
+                    else
+                    {
+                        user.TodayLoginCount = 1;
+                    }
+
                     user.LoginCount++;
                     user.LastLoginDate = DateTime.Now;
                     _userRepository.Update(user);
@@ -164,6 +173,16 @@ namespace EmployeeCrudApp.Controllers
                     user.IsEmailVerified = true;
                     user.Otp = null;
                     user.OtpExpiry = null;
+                    
+                    if (user.LastLoginDate.HasValue && user.LastLoginDate.Value.Date == DateTime.Today)
+                    {
+                        user.TodayLoginCount++;
+                    }
+                    else
+                    {
+                        user.TodayLoginCount = 1;
+                    }
+
                     user.LoginCount++;
                     user.LastLoginDate = DateTime.Now;
                     _userRepository.Update(user);

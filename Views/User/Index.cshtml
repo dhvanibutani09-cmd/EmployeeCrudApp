@@ -41,7 +41,16 @@
                     <tr>
                         <th class="ps-4">@Localizer["User Details"]</th>
                         <th>@Localizer["Email Address"]</th>
-                        <th class="text-center">@Localizer["Total Logins"]</th>
+                        <th class="text-center">
+                            @if (ViewBag.CurrentFilter == "today")
+                            {
+                                @Localizer["Today Logins"]
+                            }
+                            else
+                            {
+                                @Localizer["Total Logins"]
+                            }
+                        </th>
                         <th>@Localizer["Last Login"]</th>
                         <th>@Localizer["Account Status"]</th>
                         <th class="pe-4 text-end">@Localizer["Actions"]</th>
@@ -62,7 +71,14 @@
                             <td>@user.Email</td>
                             <td class="text-center">
                                 <span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-25 px-3 py-2 rounded-pill">
-                                    @user.LoginCount
+                                    @if (ViewBag.CurrentFilter == "today")
+                                    {
+                                        @user.TodayLoginCount
+                                    }
+                                    else
+                                    {
+                                        @user.LoginCount
+                                    }
                                 </span>
                             </td>
                             <td>

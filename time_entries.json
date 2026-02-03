@@ -68,5 +68,35 @@
     "DurationInSeconds": 2925,
     "Date": "2026-01-30T17:58:29+05:30",
     "FormattedDuration": "00:48:45"
+  },
+  {
+    "Id": 9,
+    "UserId": "dhvanibutani09@gmail.com",
+    "TaskName": "work",
+    "StartTime": "2026-02-02T15:32:22+05:30",
+    "EndTime": "2026-02-02T18:46:13+05:30",
+    "DurationInSeconds": 11630,
+    "Date": "2026-02-02T15:32:22+05:30",
+    "FormattedDuration": "03:13:50"
+  },
+  {
+    "Id": 10,
+    "UserId": "dhvanibutani09@gmail.com",
+    "TaskName": "coding",
+    "StartTime": "2026-02-03T11:57:10+05:30",
+    "EndTime": "2026-02-03T13:10:49+05:30",
+    "DurationInSeconds": 4419,
+    "Date": "2026-02-03T11:57:10+05:30",
+    "FormattedDuration": "01:13:39"
+  },
+  {
+    "Id": 11,
+    "UserId": "dhvanibutani09@gmail.com",
+    "TaskName": "break",
+    "StartTime": "2026-02-03T13:11:07+05:30",
+    "EndTime": "2026-02-03T13:17:55+05:30",
+    "DurationInSeconds": 407,
+    "Date": "2026-02-03T13:11:07+05:30",
+    "FormattedDuration": "00:06:47"
   }
 ]

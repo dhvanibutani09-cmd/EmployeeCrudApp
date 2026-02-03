@@ -34,6 +34,7 @@ public class User
     public string ConfirmPassword { get; set; } = string.Empty;
 
     public int LoginCount { get; set; } = 0;
+    public int TodayLoginCount { get; set; } = 0;
 
     public DateTime CreatedDate { get; set; } = DateTime.Now;
     public DateTime? LastLoginDate { get; set; }
