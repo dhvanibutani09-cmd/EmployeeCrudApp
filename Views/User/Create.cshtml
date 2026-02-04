@@ -3,7 +3,10 @@
 @using Microsoft.AspNetCore.Mvc.Localization
 @inject IViewLocalizer Localizer
 @{
-    ViewData["Title"] = Localizer["Add New User"];
+    var role = ViewBag.Role as string ?? "User";
+    var title = role == "Admin" ? "Add New Admin" : "Add New User";
+    var btnText = role == "Admin" ? "Create Admin" : "Create User";
+    ViewData["Title"] = Localizer[title];
 }
 
 <div class="row justify-content-center mt-5">
@@ -11,9 +14,16 @@
         <div class="card glass-card border-0 shadow-lg rounded-4 p-4">
             <div class="text-center mb-4">
                 <div class="icon-circle bg-primary bg-opacity-25 text-primary mx-auto mb-3">
-                    <i class="bi bi-person-plus-fill fs-3"></i>
+                    @if (role == "Admin")
+                    {
+                        <i class="bi bi-shield-lock-fill fs-3"></i>
+                    }
+                    else
+                    {
+                        <i class="bi bi-person-plus-fill fs-3"></i>
+                    }
                 </div>
-                <h2 class="fw-bold">@Localizer["Add New User"]</h2>
+                <h2 class="fw-bold">@Localizer[title]</h2>
                 <p class="text-muted small">@Localizer["Create a new account for system access"]</p>
             </div>
 
@@ -52,15 +62,24 @@
                     <label asp-for="ConfirmPassword" class="form-label small text-muted text-uppercase fw-bold ls-1">@Localizer["Confirm Password"]</label>
                     <div class="input-group">
                         <span class="input-group-text bg-transparent border-end-0 text-muted"><i class="bi bi-lock-fill"></i></span>
-                        <input asp-for="ConfirmPassword" type="password" class="form-control bg-transparent text-dark border-start-0 ps-2 text-start fw-bold" placeholder="@Localizer["Confirm your password"]" />
+                        <input asp-for="ConfirmPassword" type="password" class="form-control bg-transparent border-start-0 ps-2 text-start fw-bold" placeholder="@Localizer["Confirm your password"]" />
                     </div>
                     <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
                 </div>
 
 
+                <input type="hidden" name="role" value="@ViewBag.Role" />
+
                 <div class="d-grid gap-2">
-                    <button type="submit" class="btn btn-primary rounded-pill py-2 shadow-sm fw-bold">@Localizer["Create User"]</button>
-                    <a asp-action="Index" class="btn btn-outline-secondary rounded-pill py-2">@Localizer["Cancel"]</a>
+                    <button type="submit" class="btn btn-primary rounded-pill py-2 shadow-sm fw-bold">@Localizer[btnText]</button>
+                    @if (ViewBag.Role == "Admin")
+                    {
+                        <a asp-action="AdminList" class="btn btn-outline-secondary rounded-pill py-2">@Localizer["Cancel"]</a>
+                    }
+                    else
+                    {
+                        <a asp-action="UserList" class="btn btn-outline-secondary rounded-pill py-2">@Localizer["Cancel"]</a>
+                    }
                 </div>
             </form>
         </div>

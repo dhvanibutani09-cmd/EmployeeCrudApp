@@ -28,8 +28,16 @@
                         </div>
                         
                         <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary">@Localizer["Verify User"]</button>
-                            <a asp-action="Index" class="btn btn-secondary">@Localizer["Cancel"]</a>
+                             @if (ViewBag.Role == "Admin")
+                            {
+                                <button type="submit" class="btn btn-primary">@Localizer["Verify Admin"]</button>
+                                <a asp-action="AdminList" class="btn btn-secondary">@Localizer["Cancel"]</a>
+                            }
+                            else
+                            {
+                                <button type="submit" class="btn btn-primary">@Localizer["Verify User"]</button>
+                                <a asp-action="UserList" class="btn btn-secondary">@Localizer["Cancel"]</a>
+                            }
                         </div>
                     </form>
                 </div>

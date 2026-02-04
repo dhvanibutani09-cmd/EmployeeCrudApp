@@ -54,8 +54,10 @@ namespace EmployeeCrudApp.Controllers
                     var adminEmails = _configuration.GetSection("AdminSettings:AdminEmails").Get<List<string>>();
                     if (adminEmails != null && adminEmails.Contains(user.Email))
                     {
-                        claims.Add(new Claim(ClaimTypes.Role, "Admin"));
+                        user.Role = "Admin";
                     }
+
+                    claims.Add(new Claim(ClaimTypes.Role, user.Role));
 
                     var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
                     var authProperties = new AuthenticationProperties();
@@ -76,6 +78,7 @@ namespace EmployeeCrudApp.Controllers
 
                     user.LoginCount++;
                     user.LastLoginDate = DateTime.Now;
+                    user.LoginHistory.Add(user.LastLoginDate.Value);
                     _userRepository.Update(user);
 
                     return RedirectToAction("Index", "Dashboard");
@@ -193,6 +196,7 @@ namespace EmployeeCrudApp.Controllers
 
                     user.LoginCount++;
                     user.LastLoginDate = DateTime.Now;
+                    user.LoginHistory.Add(user.LastLoginDate.Value);
                     _userRepository.Update(user);
 
                     var claims = new List<Claim>
@@ -206,8 +210,10 @@ namespace EmployeeCrudApp.Controllers
                     var adminEmails = _configuration.GetSection("AdminSettings:AdminEmails").Get<List<string>>();
                     if (adminEmails != null && adminEmails.Contains(user.Email))
                     {
-                        claims.Add(new Claim(ClaimTypes.Role, "Admin"));
+                        user.Role = "Admin";
                     }
+
+                    claims.Add(new Claim(ClaimTypes.Role, user.Role));
 
                     var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
                     var authProperties = new AuthenticationProperties();

@@ -10,7 +10,9 @@
     "LoginCount": 0,
     "TodayLoginCount": 0,
     "CreatedDate": "2026-02-02T13:37:02.9340982+05:30",
-    "LastLoginDate": null
+    "LastLoginDate": null,
+    "Role": "User",
+    "LoginHistory": []
   },
   {
     "Id": 10,
@@ -23,32 +25,65 @@
     "LoginCount": 1,
     "TodayLoginCount": 1,
     "CreatedDate": "2026-02-02T13:37:02.9341004+05:30",
-    "LastLoginDate": "2026-02-03T12:42:19.6793773+05:30"
+    "LastLoginDate": "2026-02-03T12:42:19.6793773+05:30",
+    "Role": "User",
+    "LoginHistory": []
   },
   {
-    "Id": 13,
-    "Name": "Dhvani",
+    "Id": 15,
+    "Name": "dhvani",
+    "Email": "majon28434@dnsclick.com",
+    "Password": "111",
+    "IsEmailVerified": true,
+    "Otp": null,
+    "OtpExpiry": null,
+    "LoginCount": 1,
+    "TodayLoginCount": 1,
+    "CreatedDate": "2026-02-03T18:42:04.5520343+05:30",
+    "LastLoginDate": "2026-02-03T18:42:37.3868822+05:30",
+    "Role": "User",
+    "LoginHistory": []
+  },
+  {
+    "Id": 17,
+    "Name": "Dhvanii",
     "Email": "dhvanibutani09@gmail.com",
     "Password": "11111",
     "IsEmailVerified": true,
     "Otp": null,
     "OtpExpiry": null,
-    "LoginCount": 13,
-    "TodayLoginCount": 9,
-    "CreatedDate": "2026-02-02T14:31:42.7910203+05:30",
-    "LastLoginDate": "2026-02-03T16:26:14.8698802+05:30"
+    "LoginCount": 8,
+    "TodayLoginCount": 8,
+    "CreatedDate": "2026-02-04T12:02:48.9010266+05:30",
+    "LastLoginDate": "2026-02-04T15:24:18.5133322+05:30",
+    "Role": "Admin",
+    "LoginHistory": [
+      "2026-02-04T12:49:48.8637651+05:30",
+      "2026-02-04T12:54:56.1256335+05:30",
+      "2026-02-04T12:57:01.2503902+05:30",
+      "2026-02-04T14:29:32.9436299+05:30",
+      "2026-02-04T14:58:54.408565+05:30",
+      "2026-02-04T15:00:45.111944+05:30",
+      "2026-02-04T15:24:18.5133322+05:30"
+    ]
   },
   {
-    "Id": 14,
+    "Id": 19,
     "Name": "charmi",
     "Email": "charmimarakana@gmail.com",
     "Password": "1919",
     "IsEmailVerified": true,
     "Otp": null,
     "OtpExpiry": null,
-    "LoginCount": 1,
-    "TodayLoginCount": 1,
-    "CreatedDate": "2026-02-03T16:09:00.9556217+05:30",
-    "LastLoginDate": "2026-02-03T16:09:31.7297741+05:30"
+    "LoginCount": 3,
+    "TodayLoginCount": 3,
+    "CreatedDate": "2026-02-04T14:57:55.2069307+05:30",
+    "LastLoginDate": "2026-02-04T15:17:49.3288865+05:30",
+    "Role": "User",
+    "LoginHistory": [
+      "2026-02-04T14:58:35.259594+05:30",
+      "2026-02-04T15:00:21.7734761+05:30",
+      "2026-02-04T15:17:49.3288865+05:30"
+    ]
   }
 ]

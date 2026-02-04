@@ -59,9 +59,18 @@
                     <div class="small text-muted">@Localizer["Unchecking this will require the user to verify again."]</div>
                 </div>
 
+                <input type="hidden" asp-for="Role" />
+
                 <div class="d-grid gap-2">
                     <button type="submit" class="btn btn-info rounded-pill py-2 shadow-sm fw-bold text-white">@Localizer["Save Changes"]</button>
-                    <a asp-action="Index" class="btn btn-outline-secondary rounded-pill py-2">@Localizer["Cancel"]</a>
+                    @if (Model.Role == "Admin")
+                    {
+                        <a asp-action="AdminList" class="btn btn-outline-secondary rounded-pill py-2">@Localizer["Cancel"]</a>
+                    }
+                    else
+                    {
+                       <a asp-action="UserList" class="btn btn-outline-secondary rounded-pill py-2">@Localizer["Cancel"]</a>
+                    }
                 </div>
             </form>
         </div>

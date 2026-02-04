@@ -38,4 +38,8 @@ public class User
 
     public DateTime CreatedDate { get; set; } = DateTime.Now;
     public DateTime? LastLoginDate { get; set; }
+
+    public string Role { get; set; } = "User";
+
+    public List<DateTime> LoginHistory { get; set; } = new List<DateTime>();
 }
