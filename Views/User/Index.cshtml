@@ -8,15 +8,15 @@
 
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
             <h1 class="mb-0 fw-bold">@Localizer["User Management"]</h1>
             <p class="text-muted small mb-0">@Localizer["Manage system access and account statuses"]</p>
-
         </div>
         <div class="d-flex gap-2">
             <a asp-action="Create" class="btn btn-primary rounded-pill px-4 shadow-sm fw-bold">
                 <i class="bi bi-person-plus-fill me-2"></i>@Localizer["Add User"]
             </a>
-            @if (ViewBag.CurrentFilter == "today")
+            @if (ViewBag.FilterType == "today")
             {
                 <a asp-action="Index" asp-route-filter="" class="btn btn-secondary rounded-pill px-4 shadow-sm fw-bold">
                     <i class="bi bi-arrow-counterclockwise me-2"></i>@Localizer["Show All"]
@@ -39,19 +39,27 @@
             <table class="table table-hover mb-0">
                 <thead>
                     <tr>
-                        <th class="ps-4">@Localizer["User Details"]</th>
-                        <th>@Localizer["Email Address"]</th>
-                        <th class="text-center">
-                            @if (ViewBag.CurrentFilter == "today")
-                            {
-                                @Localizer["Today Logins"]
-                            }
-                            else
-                            {
-                                @Localizer["Total Logins"]
-                            }
+                        <th class="ps-4">
+                            <a asp-action="Index" asp-route-sortOrder="@ViewBag.NameSortParm" asp-route-currentFilter="@ViewBag.CurrentFilter" asp-route-filter="@ViewBag.FilterType" class="text-decoration-none text-muted d-block w-100">
+                                @Localizer["User Details"] <i class="bi bi-arrow-down-up small ms-1 opacity-50"></i>
+                            </a>
                         </th>
-                        <th>@Localizer["Last Login"]</th>
+                        <th>
+                            <a asp-action="Index" asp-route-sortOrder="@ViewBag.EmailSortParm" asp-route-currentFilter="@ViewBag.CurrentFilter" asp-route-filter="@ViewBag.FilterType" class="text-decoration-none text-muted d-block w-100">
+                                @Localizer["Email Address"] <i class="bi bi-arrow-down-up small ms-1 opacity-50"></i>
+                            </a>
+                        </th>
+                        <th class="text-center">
+                            <a asp-action="Index" asp-route-sortOrder="@ViewBag.LoginSortParm" asp-route-currentFilter="@ViewBag.CurrentFilter" asp-route-filter="@ViewBag.FilterType" class="text-decoration-none text-muted d-block w-100">
+                                @Localizer["Logins"] <i class="bi bi-arrow-down-up small ms-1 opacity-50"></i>
+                            </a>
+                        </th>
+                        <th>
+                            <a asp-action="Index" asp-route-sortOrder="@ViewBag.DateSortParm" asp-route-currentFilter="@ViewBag.CurrentFilter" asp-route-filter="@ViewBag.FilterType" class="text-decoration-none text-muted d-block w-100">
+                                @Localizer["Last Login Date"] <i class="bi bi-arrow-down-up small ms-1 opacity-50"></i>
+                            </a>
+                        </th>
+                        <th>@Localizer["Time"]</th>
                         <th>@Localizer["Account Status"]</th>
                         <th class="pe-4 text-end">@Localizer["Actions"]</th>
                     </tr>
@@ -62,33 +70,50 @@
                         <tr>
                             <td class="ps-4 py-3">
                                 <div class="d-flex align-items-center">
-                                    <div class="avatar-circle me-3 bg-primary bg-opacity-25 text-primary fw-bold">
+                                    <div class="avatar-circle me-3 @(user.Role == "Admin" ? "bg-danger" : (user.Role == "Private" ? "bg-secondary" : "bg-primary")) bg-opacity-25 @(user.Role == "Admin" ? "text-danger" : (user.Role == "Private" ? "text-secondary" : "text-primary")) fw-bold">
                                         @user.Name.Substring(0, Math.Min(1, user.Name.Length)).ToUpper()
                                     </div>
-                                    <div class="fw-bold">@user.Name</div>
+                                    <div class="fw-bold">
+                                        @user.Name
+                                        @if (user.Role == "Admin")
+                                        {
+                                            <span class="badge bg-danger ms-2" style="font-size: 0.6rem;">@Localizer["ADMIN"]</span>
+                                        }
+                                        else if (user.Role == "Private")
+                                        {
+                                            <span class="badge bg-secondary ms-2" style="font-size: 0.6rem;">@Localizer["PRIVATE"]</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-primary ms-2" style="font-size: 0.6rem;">@Localizer["USER"]</span>
+                                        }
+                                    </div>
                                 </div>
                             </td>
                             <td>@user.Email</td>
                             <td class="text-center">
                                 <span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-25 px-3 py-2 rounded-pill">
-                                    @if (ViewBag.CurrentFilter == "today")
-                                    {
-                                        @user.TodayLoginCount
-                                    }
-                                    else
-                                    {
-                                        @user.LoginCount
-                                    }
+                                    @user.LoginCount
                                 </span>
                             </td>
                             <td>
                                 @if (user.LastLoginDate.HasValue)
                                 {
-                                    <span class="text-muted small"><i class="bi bi-clock me-1"></i>@user.LastLoginDate.Value.ToString("MMM dd, yyyy HH:mm")</span>
+                                    <span class="text-muted small"><i class="bi bi-calendar3 me-1"></i>@user.LastLoginDate.Value.ToString("MMM dd, yyyy")</span>
                                 }
                                 else
                                 {
                                     <span class="text-muted small fst-italic">@Localizer["Never"]</span>
+                                }
+                            </td>
+                            <td>
+                                @if (user.LastLoginDate.HasValue)
+                                {
+                                    <span class="text-muted small"><i class="bi bi-clock me-1"></i>@user.LastLoginDate.Value.ToString("hh:mm tt")</span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted small">--</span>
                                 }
                             </td>
                             <td>
@@ -110,6 +135,9 @@
                                     <a asp-action="Details" asp-route-id="@user.Id" class="action-icon" title="@Localizer["Details"]">
                                         <i class="bi bi-eye-fill"></i>
                                     </a>
+                                    <button onclick="openLoginHistory(@user.Id, '@user.Name')" class="btn btn-link action-icon p-0 border-0" title="@Localizer["Login History"]">
+                                        <i class="bi bi-clock-history"></i>
+                                    </button>
                                     <a asp-action="Edit" asp-route-id="@user.Id" class="action-icon" title="@Localizer["Edit"]">
                                         <i class="bi bi-pencil-fill"></i>
                                     </a>
@@ -123,9 +151,9 @@
                     @if (!Model.Any())
                     {
                         <tr>
-                            <td colspan="4" class="text-center py-5 text-muted fst-italic">
+                            <td colspan="7" class="text-center py-5 text-muted fst-italic">
                                 <i class="bi bi-people fs-1 d-block mb-2"></i>
-                                @if (ViewBag.CurrentFilter == "today")
+                                @if (ViewBag.FilterType == "today")
                                 {
                                     <span class="d-block text-muted">@Localizer["No users logged in today."]</span>
                                 }
@@ -141,4 +169,77 @@
         </div>
     </div>
 </div>
+
+<!-- Login History Modal -->
+<div class="modal fade" id="loginHistoryModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title fw-bold">
+                    <i class="bi bi-clock-history me-2"></i>@Localizer["Login History"] - <span id="historyUserName"></span>
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-0">
+                <div class="d-flex justify-content-end p-2 bg-light border-bottom">
+                    <div class="btn-group btn-group-sm" role="group">
+                        <button type="button" class="btn btn-outline-primary active" onclick="loadLoginHistory(currentUserId, 'all')" id="filterAll">@Localizer["All"]</button>
+                        <button type="button" class="btn btn-outline-primary" onclick="loadLoginHistory(currentUserId, '7days')" id="filter7">@Localizer["Last 7 Days"]</button>
+                        <button type="button" class="btn btn-outline-primary" onclick="loadLoginHistory(currentUserId, '30days')" id="filter30">@Localizer["Last 30 Days"]</button>
+                    </div>
+                </div>
+                <div id="loginHistoryContent" class="p-0" style="max-height: 400px; overflow-y: auto;">
+                    <div class="text-center py-5">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var currentUserId = 0;
+    var loginHistoryModal;
+
+    document.addEventListener("DOMContentLoaded", function() {
+        loginHistoryModal = new bootstrap.Modal(document.getElementById('loginHistoryModal'));
+    });
+
+    function openLoginHistory(userId, userName) {
+        currentUserId = userId;
+        document.getElementById('historyUserName').innerText = userName;
+        loginHistoryModal.show();
+        loadLoginHistory(userId, 'all');
+    }
+
+    function loadLoginHistory(userId, filter) {
+        // Update active button state
+        document.querySelectorAll('#loginHistoryModal .btn-group button').forEach(btn => btn.classList.remove('active'));
+        if(filter === 'all') document.getElementById('filterAll').classList.add('active');
+        if(filter === '7days') document.getElementById('filter7').classList.add('active');
+        if(filter === '30days') document.getElementById('filter30').classList.add('active');
+
+        // Show loading
+        document.getElementById('loginHistoryContent').innerHTML = `
+            <div class="text-center py-5">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>`;
+
+        // Fetch data
+        fetch(`@Url.Action("GetLoginHistory", "User")?id=${userId}&filter=${filter}`)
+            .then(response => response.text())
+            .then(html => {
+                document.getElementById('loginHistoryContent').innerHTML = html;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('loginHistoryContent').innerHTML = `<p class="text-center text-danger py-3">Error loading history</p>`;
+            });
+    }
+</script>
 

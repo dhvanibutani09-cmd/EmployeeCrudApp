@@ -8,4 +8,5 @@ public class DashboardViewModel
     public List<Note> Notes { get; set; } = new List<Note>();
     public List<Habit> Habits { get; set; } = new List<Habit>();
     public int NewUsersToday { get; set; }
+    public List<string> PermittedWidgets { get; set; } = new List<string>();
 }

@@ -12,22 +12,8 @@
     "CreatedDate": "2026-02-02T13:37:02.9340982+05:30",
     "LastLoginDate": null,
     "Role": "User",
-    "LoginHistory": []
-  },
-  {
-    "Id": 10,
-    "Name": "dhvani",
-    "Email": "projtest28@gmail.com",
-    "Password": "1111",
-    "IsEmailVerified": true,
-    "Otp": null,
-    "OtpExpiry": null,
-    "LoginCount": 1,
-    "TodayLoginCount": 1,
-    "CreatedDate": "2026-02-02T13:37:02.9341004+05:30",
-    "LastLoginDate": "2026-02-03T12:42:19.6793773+05:30",
-    "Role": "User",
-    "LoginHistory": []
+    "LoginHistory": [],
+    "PermittedWidgets": []
   },
   {
     "Id": 15,
@@ -42,7 +28,8 @@
     "CreatedDate": "2026-02-03T18:42:04.5520343+05:30",
     "LastLoginDate": "2026-02-03T18:42:37.3868822+05:30",
     "Role": "User",
-    "LoginHistory": []
+    "LoginHistory": [],
+    "PermittedWidgets": []
   },
   {
     "Id": 17,
@@ -52,10 +39,10 @@
     "IsEmailVerified": true,
     "Otp": null,
     "OtpExpiry": null,
-    "LoginCount": 8,
-    "TodayLoginCount": 8,
+    "LoginCount": 20,
+    "TodayLoginCount": 7,
     "CreatedDate": "2026-02-04T12:02:48.9010266+05:30",
-    "LastLoginDate": "2026-02-04T15:24:18.5133322+05:30",
+    "LastLoginDate": "2026-02-10T16:36:20.0399604+05:30",
     "Role": "Admin",
     "LoginHistory": [
       "2026-02-04T12:49:48.8637651+05:30",
@@ -64,8 +51,21 @@
       "2026-02-04T14:29:32.9436299+05:30",
       "2026-02-04T14:58:54.408565+05:30",
       "2026-02-04T15:00:45.111944+05:30",
-      "2026-02-04T15:24:18.5133322+05:30"
-    ]
+      "2026-02-04T15:24:18.5133322+05:30",
+      "2026-02-04T16:22:33.3141852+05:30",
+      "2026-02-05T12:04:23.396945+05:30",
+      "2026-02-05T14:25:20.3064581+05:30",
+      "2026-02-05T14:34:06.1729639+05:30",
+      "2026-02-05T16:28:46.6356373+05:30",
+      "2026-02-10T11:21:32.4714106+05:30",
+      "2026-02-10T11:33:26.7621497+05:30",
+      "2026-02-10T11:53:40.2543632+05:30",
+      "2026-02-10T14:11:25.6763473+05:30",
+      "2026-02-10T15:11:32.6763431+05:30",
+      "2026-02-10T15:15:51.3826915+05:30",
+      "2026-02-10T16:36:20.0399604+05:30"
+    ],
+    "PermittedWidgets": []
   },
   {
     "Id": 19,
@@ -75,15 +75,41 @@
     "IsEmailVerified": true,
     "Otp": null,
     "OtpExpiry": null,
-    "LoginCount": 3,
-    "TodayLoginCount": 3,
+    "LoginCount": 6,
+    "TodayLoginCount": 1,
     "CreatedDate": "2026-02-04T14:57:55.2069307+05:30",
-    "LastLoginDate": "2026-02-04T15:17:49.3288865+05:30",
+    "LastLoginDate": "2026-02-10T15:10:55.215188+05:30",
     "Role": "User",
     "LoginHistory": [
       "2026-02-04T14:58:35.259594+05:30",
       "2026-02-04T15:00:21.7734761+05:30",
-      "2026-02-04T15:17:49.3288865+05:30"
+      "2026-02-04T15:17:49.3288865+05:30",
+      "2026-02-04T16:25:51.9846675+05:30",
+      "2026-02-05T14:26:38.4763719+05:30",
+      "2026-02-10T15:10:55.215188+05:30"
+    ],
+    "PermittedWidgets": []
+  },
+  {
+    "Id": 20,
+    "Name": "abc",
+    "Email": "projtest28@gmail.com",
+    "Password": "1111",
+    "IsEmailVerified": true,
+    "Otp": null,
+    "OtpExpiry": null,
+    "LoginCount": 1,
+    "TodayLoginCount": 1,
+    "CreatedDate": "2026-02-10T15:13:30.8939967+05:30",
+    "LastLoginDate": "2026-02-10T15:14:21.9988833+05:30",
+    "Role": "Private",
+    "LoginHistory": [
+      "2026-02-10T15:14:21.9988833+05:30"
+    ],
+    "PermittedWidgets": [
+      "Personal Notes",
+      "Habit Tracker",
+      "Language Translator"
     ]
   }
 ]

@@ -42,4 +42,5 @@ public class User
     public string Role { get; set; } = "User";
 
     public List<DateTime> LoginHistory { get; set; } = new List<DateTime>();
+    public List<string> PermittedWidgets { get; set; } = new List<string>();
 }

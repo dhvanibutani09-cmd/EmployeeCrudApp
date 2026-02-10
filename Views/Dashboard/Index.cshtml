@@ -20,8 +20,10 @@
     </div>
     
     <div class="row g-4">
-        <!-- Weather Card -->
-        <div class="col-md-4">
+        @if (User.IsInRole("Admin") || Model.PermittedWidgets.Contains("Weather Details"))
+        {
+            <!-- Weather Card -->
+            <div class="col-md-4">
 
 
             <div class="card h-100 shadow border-0 rounded-4 glass-card">
@@ -56,98 +58,108 @@
                     </div>
                 </div>
             </div>
-        </div>
-
-        <!-- Currency Conversion Card -->
-        <div class="col-md-4">
-
-
-            <div class="card h-100 shadow border-0 rounded-4 glass-card">
-                <div class="card-body p-4 d-flex flex-column">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <div class="d-flex align-items-center">
-                            <div class="icon-circle bg-success text-white me-3" style="width: 50px; height: 50px; font-size: 1.2rem;">
-                                <i class="bi bi-currency-exchange"></i>
-                            </div>
-                            <div>
-                                <h6 class="card-title fw-bold mb-0">@Localizer["Currency Conversion"]</h6>
-                                <p class="text-muted small mb-0">@Localizer["Global exchange rates"]</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="flex-grow-1">
-                        <div class="input-group input-group-sm mb-3 shadow-sm rounded-pill overflow-hidden">
-                            <span class="input-group-text border-0 bg-light px-3 small">@Localizer["Amount"]</span>
-                            <input type="number" id="amount" class="form-control border-0 text-center fw-bold" value="1">
-                        </div>
-                        <div class="row g-2 mb-3">
-                            <div class="col">
-                                <select id="from-currency" class="form-select form-select-sm border-0 bg-light rounded-pill shadow-sm px-3">
-                                    <option value="USD" selected>USD</option>
-                                </select>
-                            </div>
-                            <div class="col">
-                                <select id="to-currency" class="form-select form-select-sm border-0 bg-light rounded-pill shadow-sm px-3">
-                                    <option value="INR" selected>INR</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div id="currency-result" class="text-center py-3 bg-success bg-opacity-10 rounded-4 border border-success border-opacity-10 mb-3" style="min-height: 80px;"></div>
-                    </div>
-
-                    <button onclick="convertCurrency()" class="btn btn-success w-100 rounded-pill shadow-sm fw-bold py-2 mt-auto">
-                        <i class="bi bi-arrow-repeat me-2"></i>@Localizer["Convert"]
-                    </button>
-                </div>
             </div>
-        </div>
+        }
 
-        <!-- Time Conversion Card -->
-        <div class="col-md-4">
-
-
-            <div class="card h-100 shadow border-0 rounded-4 glass-card overflow-visible">
-                <div class="card-body p-4 d-flex flex-column">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <div class="d-flex align-items-center">
-                            <div class="icon-circle bg-info text-white me-3" style="width: 50px; height: 50px; font-size: 1.2rem;">
-                                <i class="bi bi-clock-fill"></i>
-                            </div>
-                            <div>
-                                <h6 class="card-title fw-bold mb-0">@Localizer["Time Conversion"]</h6>
-                                <p class="text-muted small mb-0">@Localizer["World clock"]</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="flex-grow-1">
-                        <div class="text-center mb-4 p-3 bg-light rounded-4 border">
-                            <label class="form-label smaller text-muted text-uppercase fw-bold mb-2 ls-1">@Localizer["Current Local Time"]</label>
-                            <div id="local-time" class="fw-bold fs-2 text-info"></div>
-                        </div>
-
-                        <div class="position-relative mb-4">
-                            <div class="input-group input-group-sm shadow-sm rounded-pill overflow-hidden border">
-                                <span class="input-group-text border-0 bg-white ps-3"><i class="bi bi-search text-muted"></i></span>
-                                <input type="text" id="timezone-search" class="form-control border-0 px-2" placeholder="@Localizer["Search country, city..."]" oninput="handleGlobalSearch()">
-                            </div>
-                            <div id="search-results" class="list-group list-group-flush shadow-sm rounded-4 overflow-hidden d-none" style="position: absolute; width:100%; z-index: 1000; max-height: 200px; overflow-y: auto; background: var(--card-bg, white); margin-top: 5px; border: 1px solid var(--card-border, #eee);">
+        @if (User.IsInRole("Admin") || Model.PermittedWidgets.Contains("Currency Conversion"))
+        {
+            <!-- Currency Conversion Card -->
+            <div class="col-md-4">
+    
+    
+                <div class="card h-100 shadow border-0 rounded-4 glass-card">
+                    <div class="card-body p-4 d-flex flex-column">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <div class="d-flex align-items-center">
+                                <div class="icon-circle bg-success text-white me-3" style="width: 50px; height: 50px; font-size: 1.2rem;">
+                                    <i class="bi bi-currency-exchange"></i>
+                                </div>
+                                <div>
+                                    <h6 class="card-title fw-bold mb-0">@Localizer["Currency Conversion"]</h6>
+                                    <p class="text-muted small mb-0">@Localizer["Global exchange rates"]</p>
+                                </div>
                             </div>
                         </div>
-
-                        <div id="target-time-card" class="p-3 bg-info bg-opacity-10 border border-info border-opacity-10 rounded-4 text-center">
-                            <div id="target-location-display" class="smaller fw-bold text-uppercase mb-1 ls-1">UTC (GMT)</div>
-                            <div id="target-time" class="fw-bold fs-3 text-info">-- : -- : --</div>
-                            <div id="target-date" class="smaller fw-medium mt-1"></div>
-                            <div id="relative-day" class="badge rounded-pill mt-2"></div>
+    
+                        <div class="flex-grow-1">
+                            <div class="input-group input-group-sm mb-3 shadow-sm rounded-pill overflow-hidden">
+                                <span class="input-group-text border-0 bg-light px-3 small">@Localizer["Amount"]</span>
+                                <input type="number" id="amount" class="form-control border-0 text-center fw-bold" value="1">
+                            </div>
+                            <div class="row g-2 mb-3">
+                                <div class="col">
+                                    <select id="from-currency" class="form-select form-select-sm border-0 bg-light rounded-pill shadow-sm px-3">
+                                        <option value="USD" selected>USD</option>
+                                    </select>
+                                </div>
+                                <div class="col">
+                                    <select id="to-currency" class="form-select form-select-sm border-0 bg-light rounded-pill shadow-sm px-3">
+                                        <option value="INR" selected>INR</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div id="currency-result" class="text-center py-3 bg-success bg-opacity-10 rounded-4 border border-success border-opacity-10 mb-3" style="min-height: 80px;"></div>
                         </div>
+    
+                        <button onclick="convertCurrency()" class="btn btn-success w-100 rounded-pill shadow-sm fw-bold py-2 mt-auto">
+                            <i class="bi bi-arrow-repeat me-2"></i>@Localizer["Convert"]
+                        </button>
                     </div>
                 </div>
             </div>
-        </div>
-        <!-- News Card -->
-        <div class="col-md-4">
+        }
+
+        @if (User.IsInRole("Admin") || Model.PermittedWidgets.Contains("Time Conversion"))
+        {
+            <!-- Time Conversion Card -->
+            <div class="col-md-4">
+    
+    
+                <div class="card h-100 shadow border-0 rounded-4 glass-card overflow-visible">
+                    <div class="card-body p-4 d-flex flex-column">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <div class="d-flex align-items-center">
+                                <div class="icon-circle bg-info text-white me-3" style="width: 50px; height: 50px; font-size: 1.2rem;">
+                                    <i class="bi bi-clock-fill"></i>
+                                </div>
+                                <div>
+                                    <h6 class="card-title fw-bold mb-0">@Localizer["Time Conversion"]</h6>
+                                    <p class="text-muted small mb-0">@Localizer["World clock"]</p>
+                                </div>
+                            </div>
+                        </div>
+    
+                        <div class="flex-grow-1">
+                            <div class="text-center mb-4 p-3 bg-light rounded-4 border">
+                                <label class="form-label smaller text-muted text-uppercase fw-bold mb-2 ls-1">@Localizer["Current Local Time"]</label>
+                                <div id="local-time" class="fw-bold fs-2 text-info"></div>
+                            </div>
+    
+                            <div class="position-relative mb-4">
+                                <div class="input-group input-group-sm shadow-sm rounded-pill overflow-hidden border">
+                                    <span class="input-group-text border-0 bg-white ps-3"><i class="bi bi-search text-muted"></i></span>
+                                    <input type="text" id="timezone-search" class="form-control border-0 px-2" placeholder="@Localizer["Search country, city..."]" oninput="handleGlobalSearch()">
+                                </div>
+                                <div id="search-results" class="list-group list-group-flush shadow-sm rounded-4 overflow-hidden d-none" style="position: absolute; width:100%; z-index: 1000; max-height: 200px; overflow-y: auto; background: var(--card-bg, white); margin-top: 5px; border: 1px solid var(--card-border, #eee);">
+                                </div>
+                            </div>
+    
+                            <div id="target-time-card" class="p-3 bg-info bg-opacity-10 border border-info border-opacity-10 rounded-4 text-center">
+                                <div id="target-location-display" class="smaller fw-bold text-uppercase mb-1 ls-1">UTC (GMT)</div>
+                                <div id="target-time" class="fw-bold fs-3 text-info">-- : -- : --</div>
+                                <div id="target-date" class="smaller fw-medium mt-1"></div>
+                                <div id="relative-day" class="badge rounded-pill mt-2"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+        @if (User.IsInRole("Admin") || Model.PermittedWidgets.Contains("Headlines / News"))
+        {
+            <!-- News Card -->
+            <div class="col-md-4">
 
 
             <div class="card h-100 shadow border-0 rounded-4 glass-card">
@@ -194,9 +206,12 @@
                 </div>
             </div>
         </div>
+        }
 
-        <!-- Country Search Card -->
-        <div class="col-md-4">
+        @if (User.IsInRole("Admin") || Model.PermittedWidgets.Contains("World Countries"))
+        {
+            <!-- Country Search Card -->
+            <div class="col-md-4">
 
 
             <div class="card h-100 shadow border-0 rounded-4 glass-card">
@@ -228,13 +243,16 @@
                                 <span class="visually-hidden">Loading...</span>
                             </div>
                         </div>
-                    </div>
                 </div>
             </div>
         </div>
+    </div>
+}
 
-        <!-- Notes Card (New Widget) -->
-        <div class="col-md-4">
+        @if (User.IsInRole("Admin") || Model.PermittedWidgets.Contains("Personal Notes"))
+        {
+            <!-- Notes Card (New Widget) -->
+            <div class="col-md-4">
 
 
             <div class="card h-100 shadow border-0 rounded-4 glass-card">
@@ -267,7 +285,7 @@
                                                 <i class="bi bi-clock me-1"></i> @note.CreatedAt.ToString("MMM dd, HH:mm")
                                             </span>
                                             <div class="btn-group">
-                                                <button class="btn btn-link btn-sm text-dark p-0 me-2" onclick="openEditModal(@note.Id, `@note.Text.Replace("`", "\\`")`)"><i class="bi bi-pencil"></i></button>
+                                                <button class="btn btn-link btn-sm text-dark p-0 me-2" onclick="openEditModal(@note.Id, `@(note.Text.Replace("`", "\\`"))`)"><i class="bi bi-pencil"></i></button>
                                                 <button class="btn btn-link btn-sm text-danger p-0" onclick="deleteNote(@note.Id)"><i class="bi bi-trash"></i></button>
                                             </div>
                                         </div>
@@ -286,8 +304,12 @@
                 </div>
             </div>
         </div>
-        <!-- Habit Tracker Card -->
-        <div class="col-md-4">
+        }
+
+        @if (User.IsInRole("Admin") || Model.PermittedWidgets.Contains("Habit Tracker"))
+        {
+            <!-- Habit Tracker Card -->
+            <div class="col-md-4">
 
 
 
@@ -409,9 +431,12 @@
                 </div>
             </div>
         </div>
+        }
 
-        <!-- Emergency Numbers Card -->
-        <div class="col-md-4">
+        @if (User.IsInRole("Admin") || Model.PermittedWidgets.Contains("Emergency Numbers"))
+        {
+            <!-- Emergency Numbers Card -->
+            <div class="col-md-4">
 
 
 
@@ -494,9 +519,12 @@
                 </div>
             </div>
         </div>
+    }
         
-        <!-- Language Translator Module -->
-        <div class="col-md-4">
+        @if (User.IsInRole("Admin") || Model.PermittedWidgets.Contains("Language Translator"))
+        {
+            <!-- Language Translator Module -->
+            <div class="col-md-4">
             <div class="card h-100 shadow border-0 rounded-4 glass-card">
                 <div class="card-body p-4 d-flex flex-column">
                     <div class="d-flex justify-content-between align-items-center mb-4">
@@ -555,7 +583,62 @@
                 </div>
             </div>
         </div>
+        }
+        
+        @if (User.IsInRole("Admin") || Model.PermittedWidgets.Contains("PDF Converter"))
+        {
+            <!-- PDF Converter Card -->
+            <div class="col-md-4">
+                <div class="card h-100 shadow border-0 rounded-4 glass-card">
+                    <div class="card-body p-4 d-flex flex-column">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <div class="d-flex align-items-center">
+                                <div class="icon-circle bg-primary text-white me-3" style="width: 50px; height: 50px; font-size: 1.2rem; background: linear-gradient(135deg, #FF512F 0%, #DD2476 100%) !important;">
+                                    <i class="bi bi-file-earmark-pdf-fill"></i>
+                                </div>
+                                <div>
+                                    <h6 class="card-title fw-bold mb-0">@Localizer["PDF Converter"]</h6>
+                                    <p class="text-muted small mb-0">@Localizer["Convert images to PDF"]</p>
+                                </div>
+                            </div>
+                        </div>
 
+                        <div class="flex-grow-1 d-flex flex-column">
+                            <div class="row g-2 mb-3">
+                                <div class="col-12">
+                                    <label for="image-format-select" class="form-label smaller text-muted fw-bold text-uppercase ls-1">@Localizer["Step 1: Select Format"]</label>
+                                    <select id="image-format-select" class="form-select form-select-sm rounded-pill bg-light border-0 px-3 py-2" onchange="updateUploadAccept(this.value)">
+                                        <option value="image/jpeg">JPG / JPEG</option>
+                                        <option value="image/png">PNG</option>
+                                    </select>
+                                </div>
+                                <div class="col-12">
+                                    <label for="image-upload" class="form-label smaller text-muted fw-bold text-uppercase ls-1">@Localizer["Step 2: Upload Image"]</label>
+                                    <input class="form-control form-control-sm rounded-pill bg-light border-0 px-3 py-2" type="file" id="image-upload" accept="image/jpeg" onchange="previewImage(this)">
+                                </div>
+                            </div>
+
+                            <div id="image-format-error" class="alert alert-danger py-2 px-3 rounded-pill smaller d-none mb-3">
+                                <i class="bi bi-exclamation-circle me-1"></i> @Localizer["File type mismatch. Please select the correct format."]
+                            </div>
+
+                            <div id="image-preview-container" class="mb-3 d-none text-center p-2 rounded-4 bg-light border border-dashed flex-grow-1" style="min-height: 150px; display: flex; align-items: center; justify-content: center;">
+                                <img id="image-preview" src="#" alt="Preview" class="img-fluid rounded-3 shadow-sm" style="max-height: 200px;">
+                            </div>
+
+                            <div class="d-grid gap-2 mt-auto">
+                                <button type="button" id="convert-to-pdf-btn" onclick="convertToPdf()" class="btn btn-primary rounded-pill py-2 shadow-sm fw-bold border-0" style="background: linear-gradient(135deg, #FF512F 0%, #DD2476 100%) !important;" disabled>
+                                    @Localizer["Convert to PDF"]
+                                </button>
+                                <a id="pdf-download-link" class="btn btn-success rounded-pill py-2 shadow-sm fw-bold border-0 d-none" style="background: #198754 !important;">
+                                    <i class="bi bi-download me-2"></i>@Localizer["Download PDF"]
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
     </div>
 
 
@@ -740,7 +823,7 @@
         </div>
     </div>
     
-
+</div>
 
 <style>
     /* glass-card moved to site.css for theme support */
@@ -824,6 +907,7 @@
 
 
 @section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="~/js/emergency_data.js"></script>
     <script>
         // --- Weather Logic ---
@@ -2001,5 +2085,106 @@
                 }
             });
         });
+
+        // --- PDF Converter Logic ---
+        function updateUploadAccept(format) {
+            const input = document.getElementById('image-upload');
+            input.accept = format;
+            input.value = ''; // Reset input
+            
+            // Clean up state
+            document.getElementById('image-preview-container').classList.add('d-none');
+            document.getElementById('image-preview-container').style.display = 'none';
+            document.getElementById('convert-to-pdf-btn').disabled = true;
+            document.getElementById('image-format-error').classList.add('d-none');
+            const downloadLink = document.getElementById('pdf-download-link');
+            if (downloadLink) downloadLink.classList.add('d-none');
+        }
+
+        function previewImage(input) {
+            const previewContainer = document.getElementById('image-preview-container');
+            const preview = document.getElementById('image-preview');
+            const convertBtn = document.getElementById('convert-to-pdf-btn');
+            const downloadLink = document.getElementById('pdf-download-link');
+            const errorDiv = document.getElementById('image-format-error');
+            const selectedFormat = document.getElementById('image-format-select').value;
+
+            errorDiv.classList.add('d-none');
+            if (downloadLink) downloadLink.classList.add('d-none');
+
+            if (input.files && input.files[0]) {
+                const file = input.files[0];
+                
+                // Extra validation in case explorer showed all files
+                if (file.type !== selectedFormat) {
+                    errorDiv.classList.remove('d-none');
+                    input.value = '';
+                    previewContainer.classList.add('d-none');
+                    previewContainer.style.display = 'none';
+                    convertBtn.disabled = true;
+                    return;
+                }
+
+                const reader = new FileReader();
+
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    previewContainer.classList.remove('d-none');
+                    previewContainer.style.display = 'flex';
+                    convertBtn.disabled = false;
+                }
+
+                reader.readAsDataURL(file);
+            } else {
+                previewContainer.classList.add('d-none');
+                previewContainer.style.display = 'none';
+                convertBtn.disabled = true;
+            }
+        }
+
+        async function convertToPdf() {
+            const { jsPDF } = window.jspdf;
+            const preview = document.getElementById('image-preview');
+            const convertBtn = document.getElementById('convert-to-pdf-btn');
+            const downloadLink = document.getElementById('pdf-download-link');
+
+            if (!preview.src || preview.src === '#' || preview.src.includes(window.location.href)) return;
+
+            const originalBtnContent = convertBtn.innerHTML;
+            convertBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> @Localizer["Converting..."]';
+            convertBtn.disabled = true;
+
+            try {
+                const img = new Image();
+                img.src = preview.src;
+                
+                await new Promise((resolve, reject) => {
+                    img.onload = resolve;
+                    img.onerror = reject;
+                });
+
+                const doc = new jsPDF({
+                    orientation: img.width > img.height ? 'l' : 'p',
+                    unit: 'px',
+                    format: [img.width, img.height]
+                });
+
+                doc.addImage(preview.src, 'JPEG', 0, 0, img.width, img.height);
+                
+                const pdfBlob = doc.output('blob');
+                const url = URL.createObjectURL(pdfBlob);
+                
+                downloadLink.href = url;
+                downloadLink.download = 'converted_image.pdf';
+                downloadLink.classList.remove('d-none');
+                
+            } catch (error) {
+                console.error("PDF Conversion error:", error);
+                alert("@Localizer["Failed to convert image to PDF."]");
+            } finally {
+                convertBtn.innerHTML = originalBtnContent;
+                convertBtn.disabled = false;
+            }
+        }
     </script>
 }

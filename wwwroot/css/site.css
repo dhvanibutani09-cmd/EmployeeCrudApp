@@ -84,6 +84,12 @@ body {
   color: var(--input-color);
   border-color: #0d6efd;
   box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+  outline: none;
+}
+
+[data-theme="dark"] select option {
+  background-color: var(--card-bg);
+  color: var(--text-color);
 }
 
 .input-group-text {

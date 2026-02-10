@@ -59,6 +59,30 @@
                     <div class="small text-muted">@Localizer["Unchecking this will require the user to verify again."]</div>
                 </div>
 
+                <div class="mb-4">
+                    <label class="form-label small text-muted text-uppercase fw-bold ls-1">@Localizer["Permitted Dashboard Widgets"]</label>
+                    <div class="row g-2 p-3 bg-light rounded-4 border">
+                        @{
+                            var widgets = new[] { 
+                                "Weather Details", "Currency Conversion", "Time Conversion", 
+                                "Headlines / News", "World Countries", "Personal Notes", 
+                                "Habit Tracker", "Emergency Numbers", "Language Translator",
+                                "PDF Converter"
+                            };
+                        }
+                        @foreach (var widget in widgets)
+                        {
+                            <div class="col-md-6">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="PermittedWidgets" value="@widget" id="chk-@widget.Replace(" ", "-").Replace("/", "-")" @(Model.PermittedWidgets.Contains(widget) ? "checked" : "")>
+                                    <label class="form-check-label small fw-bold" for="chk-@widget.Replace(" ", "-").Replace("/", "-")">@Localizer[widget]</label>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                    <div class="small text-muted mt-2">@Localizer["Note: Admins have access to all widgets by default."]</div>
+                </div>
+
                 <input type="hidden" asp-for="Role" />
 
                 <div class="d-grid gap-2">

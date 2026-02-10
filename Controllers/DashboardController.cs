@@ -22,11 +22,14 @@ namespace EmployeeCrudApp.Controllers
 
         public IActionResult Index()
         {
-            var userId = User.Identity?.Name ?? string.Empty;
+            var email = User.FindFirst("Email")?.Value ?? User.Identity?.Name ?? string.Empty;
+            var user = _userRepository.GetByEmail(email);
+            
             var viewModel = new DashboardViewModel
             {
-                Notes = _noteRepository.GetAll(userId).OrderByDescending(n => n.CreatedAt).ToList(),
-                Habits = _habitRepository.GetAll(userId).OrderByDescending(h => h.CreatedAt).ToList()
+                Notes = _noteRepository.GetAll(email).OrderByDescending(n => n.CreatedAt).ToList(),
+                Habits = _habitRepository.GetAll(email).OrderByDescending(h => h.CreatedAt).ToList(),
+                PermittedWidgets = user?.PermittedWidgets ?? new List<string>()
             };
             return View(viewModel);
         }

@@ -39,14 +39,10 @@
                         </li>
                         @if (User.IsInRole("Admin"))
                         {
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="User" asp-action="Index">
                                     @Localizer["User Management"]
                                 </a>
-                                <ul class="dropdown-menu" aria-labelledby="userDropdown">
-                                    <li><a class="dropdown-item" asp-controller="User" asp-action="UserList">@Localizer["Users"]</a></li>
-                                    <li><a class="dropdown-item" asp-controller="User" asp-action="AdminList">@Localizer["Admins"]</a></li>
-                                </ul>
                             </li>
                         }
                     </ul>

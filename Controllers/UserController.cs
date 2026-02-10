@@ -19,29 +19,17 @@ namespace EmployeeCrudApp.Controllers
             _localizer = localizer;
         }
 
-        public IActionResult UserList(string filter = null)
-        {
-            var users = _userRepository.GetAll().Where(u => u.Role == "User");
-
-            if (filter == "today")
-            {
-                users = users.Where(u => u.LastLoginDate.HasValue && u.LastLoginDate.Value.Date == DateTime.Today);
-                ViewBag.CurrentFilter = "today";
-            }
-
-            return View(users.ToList());
-        }
-
-        public IActionResult AdminList(string sortOrder, string currentFilter, string searchString)
+        public IActionResult Index(string sortOrder, string currentFilter, string searchString, string filter = null)
         {
             ViewBag.NameSortParm = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
             ViewBag.EmailSortParm = sortOrder == "Email" ? "email_desc" : "Email";
             ViewBag.LoginSortParm = sortOrder == "Login" ? "login_desc" : "Login";
             ViewBag.DateSortParm = sortOrder == "Date" ? "date_desc" : "Date";
+            ViewBag.RoleSortParm = sortOrder == "Role" ? "role_desc" : "Role";
 
             if (searchString != null)
             {
-                // pageNumber = 1; // Pagination not implemented yet
+                // pageNumber = 1;
             }
             else
             {
@@ -49,50 +37,79 @@ namespace EmployeeCrudApp.Controllers
             }
 
             ViewBag.CurrentFilter = searchString;
+            ViewBag.FilterType = filter;
 
-            var admins = _userRepository.GetAll().Where(u => u.Role == "Admin");
+            var users = _userRepository.GetAll();
+
+            if (!User.IsInRole("Admin"))
+            {
+                users = users.Where(u => u.Role != "Private");
+            }
+
+            if (filter == "today")
+            {
+                users = users.Where(u => u.LastLoginDate.HasValue && u.LastLoginDate.Value.Date == DateTime.Today);
+            }
 
             if (!String.IsNullOrEmpty(searchString))
             {
-                admins = admins.Where(s => s.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase) 
+                users = users.Where(s => s.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase)
                                        || s.Email.Contains(searchString, StringComparison.OrdinalIgnoreCase));
             }
 
             switch (sortOrder)
             {
                 case "name_desc":
-                    admins = admins.OrderByDescending(s => s.Name);
+                    users = users.OrderByDescending(s => s.Name);
                     break;
                 case "Email":
-                    admins = admins.OrderBy(s => s.Email);
+                    users = users.OrderBy(s => s.Email);
                     break;
                 case "email_desc":
-                    admins = admins.OrderByDescending(s => s.Email);
+                    users = users.OrderByDescending(s => s.Email);
                     break;
                 case "Login":
-                    admins = admins.OrderBy(s => s.LoginHistory.Count(d => d.Date == DateTime.Today));
+                    users = users.OrderBy(s => s.LoginCount);
                     break;
                 case "login_desc":
-                    admins = admins.OrderByDescending(s => s.LoginHistory.Count(d => d.Date == DateTime.Today));
+                    users = users.OrderByDescending(s => s.LoginCount);
                     break;
                 case "Date":
-                    admins = admins.OrderBy(s => s.LastLoginDate);
+                    users = users.OrderBy(s => s.LastLoginDate);
                     break;
                 case "date_desc":
-                    admins = admins.OrderByDescending(s => s.LastLoginDate);
+                    users = users.OrderByDescending(s => s.LastLoginDate);
+                    break;
+                case "Role":
+                    users = users.OrderBy(s => s.Role);
+                    break;
+                case "role_desc":
+                    users = users.OrderByDescending(s => s.Role);
                     break;
                 default:
-                    admins = admins.OrderBy(s => s.Name);
+                    users = users.OrderBy(s => s.Name);
                     break;
             }
 
-            return View(admins.ToList());
+            return View(users.ToList());
+        }
+
+        // Keep UserList for backward compatibility or redirect it
+        public IActionResult UserList()
+        {
+            return RedirectToAction(nameof(Index));
+        }
+
+        // Keep AdminList for backward compatibility or redirect it
+        public IActionResult AdminList()
+        {
+            return RedirectToAction(nameof(Index));
         }
 
         // Add User (Normal User)
         public IActionResult Create()
         {
-            ViewBag.Role = "User";
+            ViewBag.Role = string.Empty;
             return View();
         }
 
@@ -123,7 +140,7 @@ namespace EmployeeCrudApp.Controllers
                 user.IsEmailVerified = false;
                 user.Otp = otp;
                 user.OtpExpiry = DateTime.Now.AddMinutes(5);
-                user.Role = role; // Set role
+                user.PermittedWidgets = user.PermittedWidgets ?? new List<string>();
 
                 var userJson = System.Text.Json.JsonSerializer.Serialize(user);
                 TempData["PendingUser"] = userJson;
@@ -175,11 +192,7 @@ namespace EmployeeCrudApp.Controllers
                         
                         _userRepository.Add(user);
                         
-                        if (user.Role == "Admin")
-                        {
-                            return RedirectToAction(nameof(AdminList));
-                        }
-                        return RedirectToAction(nameof(UserList));
+                        return RedirectToAction(nameof(Index));
                     }
                 }
                 TempData.Keep("PendingUser"); // Keep data for retry
@@ -202,11 +215,7 @@ namespace EmployeeCrudApp.Controllers
             if (ModelState.IsValid)
             {
                 _userRepository.Update(user);
-                 if (user.Role == "Admin")
-                {
-                    return RedirectToAction(nameof(AdminList));
-                }
-                return RedirectToAction(nameof(UserList));
+                return RedirectToAction(nameof(Index));
             }
             return View(user);
         }
@@ -226,11 +235,7 @@ namespace EmployeeCrudApp.Controllers
 
             _userRepository.Delete(id);
             
-            if (role == "Admin")
-            {
-                return RedirectToAction(nameof(AdminList));
-            }
-            return RedirectToAction(nameof(UserList));
+            return RedirectToAction(nameof(Index));
         }
 
         public IActionResult Details(int id)
