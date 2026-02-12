@@ -246,191 +246,226 @@
                 </div>
             </div>
         </div>
-    </div>
-}
+        </div>
+    }
 
         @if (User.IsInRole("Admin") || Model.PermittedWidgets.Contains("Personal Notes"))
         {
             <!-- Notes Card (New Widget) -->
             <div class="col-md-4">
-
-
-            <div class="card h-100 shadow border-0 rounded-4 glass-card">
-                <div class="card-body p-4 d-flex flex-column">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <div class="d-flex align-items-center">
-                            <div class="icon-circle bg-warning text-white me-3" style="width: 50px; height: 50px; font-size: 1.2rem;">
-                                <i class="bi bi-sticky-fill"></i>
+                <div class="card h-100 shadow border-0 rounded-4 glass-card position-relative overflow-hidden">
+                    @if (!Model.IsPinVerified)
+                    {
+                        <div class="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column align-items-center justify-content-center bg-white bg-opacity-75" style="z-index: 10; backdrop-filter: blur(5px);">
+                            <div class="icon-circle bg-secondary text-white mb-3 shadow-sm" style="width: 60px; height: 60px; font-size: 1.5rem;">
+                                <i class="bi bi-shield-lock-fill"></i>
                             </div>
-                            <div>
-                                <h6 class="card-title fw-bold mb-0">@Localizer["Personal Notes"]</h6>
-                                <p class="text-muted small mb-0">@Localizer["Capture your thoughts"]</p>
-                            </div>
-                        </div>
-                        <button class="btn btn-warning rounded-pill px-4 shadow-sm fw-bold text-white" data-bs-toggle="modal" data-bs-target="#addNoteModal">
-                            <i class="bi bi-plus-lg me-2"></i> @Localizer["Add Note"]
-                        </button>
-                    </div>
-
-                    <div id="notes-container" class="row g-3">
-                        @if (Model.Notes.Any())
-                        {
-                            @foreach (var note in Model.Notes)
+                            <h5 class="fw-bold text-dark mb-1">@Localizer["Locked"]</h5>
+                            @if (Model.HasSecurityPin)
                             {
-                                <div class="col-12">
-                                    <div class="note-item h-100 p-3 rounded-4 bg-warning bg-opacity-10 border border-warning border-opacity-25 shadow-sm d-flex flex-column">
-                                        <div class="p-2 flex-grow-1 text-dark small" style="white-space: pre-wrap; font-family: 'Inter', sans-serif;">@note.Text</div>
-                                        <div class="mt-3 pt-3 border-top border-warning border-opacity-10 d-flex justify-content-between align-items-center">
-                                            <span class="smaller text-muted">
-                                                <i class="bi bi-clock me-1"></i> @note.CreatedAt.ToString("MMM dd, HH:mm")
-                                            </span>
-                                            <div class="btn-group">
-                                                <button class="btn btn-link btn-sm text-dark p-0 me-2" onclick="openEditModal(@note.Id, `@(note.Text.Replace("`", "\\`"))`)"><i class="bi bi-pencil"></i></button>
-                                                <button class="btn btn-link btn-sm text-danger p-0" onclick="deleteNote(@note.Id)"><i class="bi bi-trash"></i></button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                                <p class="text-muted small mb-3">@Localizer["Enter PIN to view"]</p>
+                                <button class="btn btn-primary rounded-pill px-4 shadow-sm fw-bold" onclick="showPinModal()">
+                                    <i class="bi bi-key-fill me-2"></i> @Localizer["Unlock"]
+                                </button>
                             }
-                        }
-                        else
-                        {
-                            <div class="col-12 text-center py-5">
-                                <div class="text-muted mb-2 opacity-25"><i class="bi bi-journal-text" style="font-size: 3rem;"></i></div>
-                                <p class="text-muted">@Localizer["No notes yet. Click 'Add Note' to start writing."]</p>
-                            </div>
-                        }
-                    </div>
-                </div>
-            </div>
-        </div>
-        }
-
-        @if (User.IsInRole("Admin") || Model.PermittedWidgets.Contains("Habit Tracker"))
-        {
-            <!-- Habit Tracker Card -->
-            <div class="col-md-4">
-
-
-
-            <div class="card h-100 shadow border-0 rounded-4 glass-card">
-                <div class="card-body p-4 d-flex flex-column">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <div class="d-flex align-items-center">
-                            <div class="icon-circle bg-success text-white me-3" style="width: 50px; height: 50px; font-size: 1.2rem;">
-                                <i class="bi bi-check-circle-fill"></i>
-                            </div>
-                            <div>
-                                <h6 class="card-title fw-bold mb-0">@Localizer["Habit Tracker"]</h6>
-                                <p class="text-muted small mb-0">@Localizer["Build better habits"]</p>
-                            </div>
-                        </div>
-                        <div class="d-flex gap-2">
-                            <button class="btn btn-outline-dark rounded-pill px-3 shadow-sm border small fw-bold" data-bs-toggle="modal" data-bs-target="#allHabitsModal" title="@Localizer["View All Saved Habits"]">
-                                <i class="bi bi-list-ul me-1"></i> @Localizer["Stored"]
-                            </button>
-                            <button class="btn btn-success rounded-pill px-4 shadow-sm fw-bold text-white small" data-bs-toggle="modal" data-bs-target="#addHabitModal">
-                                <i class="bi bi-plus-lg me-1"></i> @Localizer["Add"]
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="flex-grow-1">
-                        <!-- Daily Progress Bar -->
-                        @{
-                            var totalHabits = Model.Habits.Count;
-                            var completedToday = Model.Habits.Count(h => h.IsCompletedToday);
-                            var progress = totalHabits > 0 ? (int)((double)completedToday / totalHabits * 100) : 0;
-                        }
-                        <div class="mb-4">
-                            <div class="d-flex justify-content-between small mb-1">
-                                <span class="fw-bold text-muted">@Localizer["All Progress"]</span>
-                                <span class="fw-bold text-success">@progress%</span>
-                            </div>
-                            <div class="progress rounded-pill" style="height: 10px;">
-                                <div class="progress-bar bg-success" role="progressbar" style="width: @progress%" aria-valuenow="@progress" aria-valuemin="0" aria-valuemax="100"></div>
-                            </div>
-                        </div>
-
-                        <!-- Habits List -->
-                        <div id="habits-container" class="d-flex flex-column gap-2" style="max-height: 250px; overflow-y: auto;">
-                            @if (Model.Habits.Any())
+                            else
                             {
-                                @foreach (var habit in Model.Habits)
-                                {
-                                    bool isScheduledToday = true;
-                                    string statusBadge = "";
-                                    
-                                    // 1. Check Start Date
-                                    if (DateTime.Today < habit.StartDate.Date) 
-                                    {
-                                        isScheduledToday = false;
-                                        statusBadge = Localizer["Starts"] + " " + habit.StartDate.ToString("MMM dd");
-                                    }
-                                    // 2. Check Frequency
-                                    else if (habit.Frequency == "Custom" && !habit.CustomDays.Contains(DateTime.Today.DayOfWeek)) 
-                                    {
-                                        isScheduledToday = false;
-                                        statusBadge = string.Join(", ", habit.CustomDays.Select(d => d.ToString().Substring(0, 3)));
-                                    }
+                                 <p class="text-muted small mb-3 px-4 text-center">@Localizer["Security PIN not configured"]</p>
+                            }
+                        </div>
+                    }
+                    <div class="card-body p-4 d-flex flex-column" style="@(!Model.IsPinVerified ? "filter: blur(5px); pointer-events: none;" : "")">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <div class="d-flex align-items-center">
+                                <div class="icon-circle bg-warning text-white me-3" style="width: 50px; height: 50px; font-size: 1.2rem;">
+                                    <i class="bi bi-sticky-fill"></i>
+                                </div>
+                                <div>
+                                    <h6 class="card-title fw-bold mb-0">@Localizer["Personal Notes"]</h6>
+                                    <p class="text-muted small mb-0">@Localizer["Capture your thoughts"]</p>
+                                </div>
+                            </div>
+                            <button class="btn btn-warning rounded-pill px-4 shadow-sm fw-bold text-white" data-bs-toggle="modal" data-bs-target="#addNoteModal">
+                                <i class="bi bi-plus-lg me-2"></i> @Localizer["Add Note"]
+                            </button>
+                        </div>
 
-                                    <div class="habit-item p-3 rounded-4 border d-flex align-items-center justify-content-between @(isScheduledToday ? (habit.IsCompletedToday ? "border-success bg-success bg-opacity-10" : "bg-light") : "bg-light opacity-50")">
-                                        <div class="d-flex align-items-center gap-3">
-                                            <div class="form-check m-0">
-                                                <input class="form-check-input" type="checkbox" onchange="toggleHabit(@habit.Id)" @(habit.IsCompletedToday ? "checked" : "") @(!isScheduledToday ? "disabled" : "") style="cursor: pointer; width: 1.2em; height: 1.2em;">
-                                            </div>
-                                            <div>
-                                                <div class="fw-bold text-dark mb-0 form-check-label @(habit.IsCompletedToday ? "text-decoration-line-through text-muted" : "")">
-                                                    @habit.Name
-                                                    @if (!isScheduledToday)
-                                                    {
-                                                        <span class="badge bg-secondary ms-2 small" style="font-size: 0.65rem;">@statusBadge</span>
-                                                    }
-                                                </div>
-                                                @if (!string.IsNullOrEmpty(habit.Description))
-                                                {
-                                                    <div class="smaller text-muted">@habit.Description</div>
-                                                }
-                                                <!-- Debug/Info about schedule -->
-                                                <div class="smaller text-muted opacity-75" style="font-size: 0.7rem;">
-                                                    @{
-                                                        var daysAgo = (DateTime.Today - habit.CreatedAt.Date).Days;
-                                                        var createdText = daysAgo == 0 ? Localizer["Added today"] : daysAgo == 1 ? Localizer["Added yesterday"] : Localizer["Added {0} days ago", daysAgo];
-                                                    }
-                                                    <span class="me-2" title="@Localizer["Creation Date"]: @habit.CreatedAt.ToString("d")">
-                                                        <i class="bi bi-clock-history me-1"></i>@createdText
-                                                    </span>
-                                                    <span class="mx-1 opacity-25">|</span>
-                                                    <i class="bi bi-calendar-event me-1"></i>
-                                                    @(habit.Frequency == "Daily" ? Localizer["Daily"] : string.Join(", ", habit.CustomDays.Select(d => d.ToString().Substring(0, 3))))
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="d-flex align-items-center gap-2">
-                                            @if (habit.CurrentStreak > 0)
-                                            {
-                                                <span class="badge rounded-pill bg-warning text-dark border border-warning shadow-sm" title="@Localizer["Current Streak"]">
-                                                    <i class="bi bi-fire me-1 text-danger"></i>@habit.CurrentStreak
+                        <div id="notes-container" class="row g-3">
+                            @if (Model.Notes.Any())
+                            {
+                                @foreach (var note in Model.Notes)
+                                {
+                                    <div class="col-12">
+                                        <div class="note-item h-100 p-3 rounded-4 bg-warning bg-opacity-10 border border-warning border-opacity-25 shadow-sm d-flex flex-column">
+                                            <div class="p-2 flex-grow-1 text-dark small" style="white-space: pre-wrap; font-family: 'Inter', sans-serif;">@note.Text</div>
+                                            <div class="mt-3 pt-3 border-top border-warning border-opacity-10 d-flex justify-content-between align-items-center">
+                                                <span class="smaller text-muted">
+                                                    <i class="bi bi-clock me-1"></i> @note.CreatedAt.ToString("MMM dd, HH:mm")
                                                 </span>
-                                            }
-                                            <button class="btn btn-link btn-sm text-danger p-0 ms-1 opacity-50 hover-opacity-100" onclick="deleteHabit(@habit.Id)" title="@Localizer["Delete Habit"]">
-                                                <i class="bi bi-x-circle-fill"></i>
-                                            </button>
+                                                <div class="btn-group">
+                                                    <button class="btn btn-link btn-sm text-dark p-0 me-2" onclick="openEditModal(@note.Id, `@(note.Text.Replace("`", "\\`"))`)"><i class="bi bi-pencil"></i></button>
+                                                    <button class="btn btn-link btn-sm text-danger p-0" onclick="deleteNote(@note.Id)"><i class="bi bi-trash"></i></button>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 }
                             }
                             else
                             {
-                                <div class="text-center py-4">
-                                    <p class="text-muted small mb-0">@Localizer["No habits yet. Start tracking today!"]</p>
+                                <div class="col-12 text-center py-5">
+                                    <div class="text-muted mb-2 opacity-25"><i class="bi bi-journal-text" style="font-size: 3rem;"></i></div>
+                                    <p class="text-muted">@Localizer["No notes yet. Click 'Add Note' to start writing."]</p>
                                 </div>
                             }
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        }
+
+        @if (User.IsInRole("Admin") || Model.PermittedWidgets.Contains("Habit Tracker"))
+        {
+            <!-- Habit Tracker Card -->
+            <div class="col-md-4">
+                <div class="card h-100 shadow border-0 rounded-4 glass-card position-relative overflow-hidden">
+                    @if (!Model.IsPinVerified)
+                    {
+                        <div class="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column align-items-center justify-content-center bg-white bg-opacity-75" style="z-index: 10; backdrop-filter: blur(5px);">
+                            <div class="icon-circle bg-secondary text-white mb-3 shadow-sm" style="width: 60px; height: 60px; font-size: 1.5rem;">
+                                <i class="bi bi-shield-lock-fill"></i>
+                            </div>
+                            <h5 class="fw-bold text-dark mb-1">@Localizer["Locked"]</h5>
+                            @if (Model.HasSecurityPin)
+                            {
+                                <p class="text-muted small mb-3">@Localizer["Enter PIN to view"]</p>
+                                <button class="btn btn-primary rounded-pill px-4 shadow-sm fw-bold" onclick="showPinModal()">
+                                    <i class="bi bi-key-fill me-2"></i> @Localizer["Unlock"]
+                                </button>
+                            }
+                            else
+                            {
+                                 <p class="text-muted small mb-3 px-4 text-center">@Localizer["Security PIN not configured"]</p>
+                            }
+                        </div>
+                    }
+                    <div class="card-body p-4 d-flex flex-column" style="@(!Model.IsPinVerified ? "filter: blur(5px); pointer-events: none;" : "")">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <div class="d-flex align-items-center">
+                                <div class="icon-circle bg-success text-white me-3" style="width: 50px; height: 50px; font-size: 1.2rem;">
+                                    <i class="bi bi-check-circle-fill"></i>
+                                </div>
+                                <div>
+                                    <h6 class="card-title fw-bold mb-0">@Localizer["Habit Tracker"]</h6>
+                                    <p class="text-muted small mb-0">@Localizer["Build better habits"]</p>
+                                </div>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-outline-dark rounded-pill px-3 shadow-sm border small fw-bold" data-bs-toggle="modal" data-bs-target="#allHabitsModal" title="@Localizer["View All Saved Habits"]">
+                                    <i class="bi bi-list-ul me-1"></i> @Localizer["Stored"]
+                                </button>
+                                <button class="btn btn-success rounded-pill px-4 shadow-sm fw-bold text-white small" data-bs-toggle="modal" data-bs-target="#addHabitModal">
+                                    <i class="bi bi-plus-lg me-1"></i> @Localizer["Add"]
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="flex-grow-1">
+                            <!-- Daily Progress Bar -->
+                            @{
+                                var totalHabits = Model.Habits.Count;
+                                var completedToday = Model.Habits.Count(h => h.IsCompletedToday);
+                                var progress = totalHabits > 0 ? (int)((double)completedToday / totalHabits * 100) : 0;
+                            }
+                            <div class="mb-4">
+                                <div class="d-flex justify-content-between small mb-1">
+                                    <span class="fw-bold text-muted">@Localizer["All Progress"]</span>
+                                    <span class="fw-bold text-success">@progress%</span>
+                                </div>
+                                <div class="progress rounded-pill" style="height: 10px;">
+                                    <div class="progress-bar bg-success" role="progressbar" style="width: @progress%" aria-valuenow="@progress" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </div>
+
+                            <!-- Habits List -->
+                            <div id="habits-container" class="d-flex flex-column gap-2" style="max-height: 250px; overflow-y: auto;">
+                                @if (Model.Habits.Any())
+                                {
+                                    @foreach (var habit in Model.Habits)
+                                    {
+                                        bool isScheduledToday = true;
+                                        string statusBadge = "";
+                                        
+                                        // 1. Check Start Date
+                                        if (DateTime.Today < habit.StartDate.Date) 
+                                        {
+                                            isScheduledToday = false;
+                                            statusBadge = Localizer["Starts"] + " " + habit.StartDate.ToString("MMM dd");
+                                        }
+                                        // 2. Check Frequency
+                                        else if (habit.Frequency == "Custom" && !habit.CustomDays.Contains(DateTime.Today.DayOfWeek)) 
+                                        {
+                                            isScheduledToday = false;
+                                            statusBadge = string.Join(", ", habit.CustomDays.Select(d => d.ToString().Substring(0, 3)));
+                                        }
+
+                                        <div class="habit-item p-3 rounded-4 border d-flex align-items-center justify-content-between @(isScheduledToday ? (habit.IsCompletedToday ? "border-success bg-success bg-opacity-10" : "bg-light") : "bg-light opacity-50")">
+                                            <div class="d-flex align-items-center gap-3">
+                                                <div class="form-check m-0">
+                                                    <input class="form-check-input" type="checkbox" onchange="toggleHabit(@habit.Id)" @(habit.IsCompletedToday ? "checked" : "") @(!isScheduledToday ? "disabled" : "") style="cursor: pointer; width: 1.2em; height: 1.2em;">
+                                                </div>
+                                                <div>
+                                                    <div class="fw-bold text-dark mb-0 form-check-label @(habit.IsCompletedToday ? "text-decoration-line-through text-muted" : "")">
+                                                        @habit.Name
+                                                        @if (!isScheduledToday)
+                                                        {
+                                                            <span class="badge bg-secondary ms-2 small" style="font-size: 0.65rem;">@statusBadge</span>
+                                                        }
+                                                    </div>
+                                                    @if (!string.IsNullOrEmpty(habit.Description))
+                                                    {
+                                                        <div class="smaller text-muted">@habit.Description</div>
+                                                    }
+                                                    <!-- Debug/Info about schedule -->
+                                                    <div class="smaller text-muted opacity-75" style="font-size: 0.7rem;">
+                                                        @{
+                                                            var daysAgo = (DateTime.Today - habit.CreatedAt.Date).Days;
+                                                            var createdText = daysAgo == 0 ? Localizer["Added today"] : daysAgo == 1 ? Localizer["Added yesterday"] : Localizer["Added {0} days ago", daysAgo];
+                                                        }
+                                                        <span class="me-2" title="@Localizer["Creation Date"]: @habit.CreatedAt.ToString("d")">
+                                                            <i class="bi bi-clock-history me-1"></i>@createdText
+                                                        </span>
+                                                        <span class="mx-1 opacity-25">|</span>
+                                                        <i class="bi bi-calendar-event me-1"></i>
+                                                        @(habit.Frequency == "Daily" ? Localizer["Daily"] : string.Join(", ", habit.CustomDays.Select(d => d.ToString().Substring(0, 3))))
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="d-flex align-items-center gap-2">
+                                                @if (habit.CurrentStreak > 0)
+                                                {
+                                                    <span class="badge rounded-pill bg-warning text-dark border border-warning shadow-sm" title="@Localizer["Current Streak"]">
+                                                        <i class="bi bi-fire me-1 text-danger"></i>@habit.CurrentStreak
+                                                    </span>
+                                                }
+                                                <button class="btn btn-link btn-sm text-danger p-0 ms-1 opacity-50 hover-opacity-100" onclick="deleteHabit(@habit.Id)" title="@Localizer["Delete Habit"]">
+                                                    <i class="bi bi-x-circle-fill"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    }
+                                }
+                                else
+                                {
+                                    <div class="text-center py-4">
+                                        <p class="text-muted small mb-0">@Localizer["No habits yet. Start tracking today!"]</p>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         }
 
         @if (User.IsInRole("Admin") || Model.PermittedWidgets.Contains("Emergency Numbers"))
@@ -525,72 +560,92 @@
         {
             <!-- Language Translator Module -->
             <div class="col-md-4">
-            <div class="card h-100 shadow border-0 rounded-4 glass-card">
-                <div class="card-body p-4 d-flex flex-column">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <div class="d-flex align-items-center">
-                            <div class="icon-circle text-white me-3" style="width: 50px; height: 50px; font-size: 1.2rem; background: linear-gradient(135deg, #4b6cb7 0%, #182848 100%) !important;">
-                                <i class="bi bi-translate"></i>
-                            </div>
-                            <div>
-                                <h6 class="card-title fw-bold mb-0">@Localizer["Language Translator"]</h6>
-                                <p class="text-muted small mb-0">@Localizer["Select languages, then translate"]</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="flex-grow-1">
-                        <!-- Step 1 & 2: Language Selection -->
-                        <div class="row g-2 mb-3">
-                            <div class="col-6">
-                                <label class="smaller text-muted fw-bold text-uppercase ls-1 mb-1 ms-1">@Localizer["Input"]</label>
-                                <select id="translator-source-lang" class="form-select form-select-sm rounded-pill border-0 shadow-sm bg-light px-3" onchange="updateTranslatorState()" style="font-size: 0.8rem;">
-                                    <option value="" disabled selected>@Localizer["From..."]</option>
-                                    <!-- Populated by JS -->
-                                </select>
-                            </div>
-                            <div class="col-6">
-                                <label class="smaller text-muted fw-bold text-uppercase ls-1 mb-1 ms-1">@Localizer["Output"]</label>
-                                <select id="translator-target-lang" class="form-select form-select-sm rounded-pill border-0 shadow-sm bg-light px-3" onchange="updateTranslatorState()" style="font-size: 0.8rem;">
-                                    <option value="" disabled selected>@Localizer["To..."]</option>
-                                    <!-- Populated by JS -->
-                                </select>
+                <div class="card h-100 shadow border-0 rounded-4 glass-card position-relative overflow-hidden">
+                     <div class="card-body p-4 d-flex flex-column">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <div class="d-flex align-items-center">
+                                <div class="icon-circle text-white me-3" style="width: 50px; height: 50px; font-size: 1.2rem; background: linear-gradient(135deg, #4b6cb7 0%, #182848 100%) !important;">
+                                    <i class="bi bi-translate"></i>
+                                </div>
+                                <div>
+                                    <h6 class="card-title fw-bold mb-0">@Localizer["Language Translator"]</h6>
+                                    <p class="text-muted small mb-0">@Localizer["Select languages, then translate"]</p>
+                                </div>
                             </div>
                         </div>
 
-                        <!-- Step 3: Text Input -->
-                        <div class="mb-3">
-                            <textarea id="translator-input" class="form-control rounded-4 bg-light border-0 shadow-sm p-3 small" rows="3" placeholder="@Localizer["Select input language first..."]" disabled></textarea>
-                        </div>
-                        
-                        <div class="text-center mb-3">
-                            <button type="button" onclick="performManualTranslation()" id="translator-btn" class="btn btn-dark rounded-pill px-5 shadow-sm fw-bold btn-sm" style="background: linear-gradient(135deg, #4b6cb7 0%, #182848 100%) !important; border: none;" disabled>
-                                @Localizer["Translate Now"]
-                            </button>
-                        </div>
-
-                        <div id="translator-result-container" class="d-none">
-                            <div class="p-3 rounded-4 bg-primary bg-opacity-10 border border-primary border-opacity-10 position-relative">
-                                <label class="smaller fw-bold text-primary text-uppercase mb-2 d-block ls-1">@Localizer["Translation"]</label>
-                                <div id="translator-output" class="fw-medium" style="white-space: pre-wrap;"></div>
+                        <div class="flex-grow-1">
+                            <!-- Step 1 & 2: Language Selection -->
+                            <div class="row g-2 mb-3">
+                                <div class="col-6">
+                                    <label class="smaller text-muted fw-bold text-uppercase ls-1 mb-1 ms-1">@Localizer["Input"]</label>
+                                    <select id="translator-source-lang" class="form-select form-select-sm rounded-pill border-0 shadow-sm bg-light px-3" onchange="updateTranslatorState()" style="font-size: 0.8rem;">
+                                        <option value="" disabled selected>@Localizer["From..."]</option>
+                                        <!-- Populated by JS -->
+                                    </select>
+                                </div>
+                                <div class="col-6">
+                                    <label class="smaller text-muted fw-bold text-uppercase ls-1 mb-1 ms-1">@Localizer["Output"]</label>
+                                    <select id="translator-target-lang" class="form-select form-select-sm rounded-pill border-0 shadow-sm bg-light px-3" onchange="updateTranslatorState()" style="font-size: 0.8rem;">
+                                        <option value="" disabled selected>@Localizer["To..."]</option>
+                                        <!-- Populated by JS -->
+                                    </select>
+                                </div>
                             </div>
-                        </div>
-                        
-                        <div id="translator-error" class="alert alert-danger py-2 px-3 rounded-pill smaller d-none mt-2">
-                             <i class="bi bi-exclamation-circle me-1"></i> <span id="translator-error-msg"></span>
+
+                            <!-- Step 3: Text Input -->
+                            <div class="mb-3">
+                                <textarea id="translator-input" class="form-control rounded-4 bg-light border-0 shadow-sm p-3 small" rows="3" placeholder="@Localizer["Select input language first..."]" disabled></textarea>
+                            </div>
+                            
+                            <div class="text-center mb-3">
+                                <button type="button" onclick="performManualTranslation()" id="translator-btn" class="btn btn-dark rounded-pill px-5 shadow-sm fw-bold btn-sm" style="background: linear-gradient(135deg, #4b6cb7 0%, #182848 100%) !important; border: none;" disabled>
+                                    @Localizer["Translate Now"]
+                                </button>
+                            </div>
+
+                            <div id="translator-result-container" class="d-none">
+                                <div class="p-3 rounded-4 bg-primary bg-opacity-10 border border-primary border-opacity-10 position-relative">
+                                    <label class="smaller fw-bold text-primary text-uppercase mb-2 d-block ls-1">@Localizer["Translation"]</label>
+                                    <div id="translator-output" class="fw-medium" style="white-space: pre-wrap;"></div>
+                                </div>
+                            </div>
+                            
+                            <div id="translator-error" class="alert alert-danger py-2 px-3 rounded-pill smaller d-none mt-2">
+                                 <i class="bi bi-exclamation-circle me-1"></i> <span id="translator-error-msg"></span>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
         }
         
         @if (User.IsInRole("Admin") || Model.PermittedWidgets.Contains("PDF Converter"))
         {
             <!-- PDF Converter Card -->
             <div class="col-md-4">
-                <div class="card h-100 shadow border-0 rounded-4 glass-card">
-                    <div class="card-body p-4 d-flex flex-column">
+                <div class="card h-100 shadow border-0 rounded-4 glass-card position-relative overflow-hidden">
+                    @if (!Model.IsPinVerified)
+                    {
+                        <div class="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column align-items-center justify-content-center bg-white bg-opacity-75" style="z-index: 10; backdrop-filter: blur(5px);">
+                            <div class="icon-circle bg-secondary text-white mb-3 shadow-sm" style="width: 60px; height: 60px; font-size: 1.5rem;">
+                                <i class="bi bi-shield-lock-fill"></i>
+                            </div>
+                            <h5 class="fw-bold text-dark mb-1">@Localizer["Locked"]</h5>
+                            @if (Model.HasSecurityPin)
+                            {
+                                <p class="text-muted small mb-3">@Localizer["Enter PIN to view"]</p>
+                                <button class="btn btn-primary rounded-pill px-4 shadow-sm fw-bold" onclick="showPinModal()">
+                                    <i class="bi bi-key-fill me-2"></i> @Localizer["Unlock"]
+                                </button>
+                            }
+                            else
+                            {
+                                 <p class="text-muted small mb-3 px-4 text-center">@Localizer["Security PIN not configured"]</p>
+                            }
+                        </div>
+                    }
+                    <div class="card-body p-4 d-flex flex-column" style="@(!Model.IsPinVerified ? "filter: blur(5px); pointer-events: none;" : "")">
                         <div class="d-flex justify-content-between align-items-center mb-4">
                             <div class="d-flex align-items-center">
                                 <div class="icon-circle bg-primary text-white me-3" style="width: 50px; height: 50px; font-size: 1.2rem; background: linear-gradient(135deg, #FF512F 0%, #DD2476 100%) !important;">
@@ -608,8 +663,7 @@
                                 <div class="col-12">
                                     <label for="image-format-select" class="form-label smaller text-muted fw-bold text-uppercase ls-1">@Localizer["Step 1: Select Format"]</label>
                                     <select id="image-format-select" class="form-select form-select-sm rounded-pill bg-light border-0 px-3 py-2" onchange="updateUploadAccept(this.value)">
-                                        <option value="image/jpeg">JPG / JPEG</option>
-                                        <option value="image/png">PNG</option>
+                                        <option value="image/jpeg,image/png" selected>@Localizer["All Images"] (JPG & PNG)</option>
                                     </select>
                                 </div>
                                 <div class="col-12">
@@ -666,6 +720,7 @@
                 </div>
             </div>
         }
+        </div>
     </div>
 
 
@@ -849,8 +904,6 @@
             </div>
         </div>
     </div>
-    
-</div>
 
 <style>
     /* glass-card moved to site.css for theme support */
@@ -934,9 +987,59 @@
 
 
 @section Scripts {
+    <!-- Security PIN Modal -->
+    <div class="modal fade" id="pinModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content border-0 rounded-4 shadow-lg">
+                <div class="modal-body p-4 text-center">
+                    <div class="icon-circle bg-primary bg-opacity-10 text-primary mx-auto mb-3" style="width: 60px; height: 60px; font-size: 1.5rem;">
+                        <i class="bi bi-shield-lock"></i>
+                    </div>
+                    <h5 class="fw-bold mb-1">@Localizer["Security Check"]</h5>
+                    <p class="text-muted small mb-3">@Localizer["Please enter your PIN"]</p>
+                    
+                    <div class="mb-3">
+                        <input type="password" id="security-pin-input" class="form-control form-control-lg text-center fw-bold letter-spacing-2 rounded-pill bg-light border-0" maxlength="6" placeholder="••••" onkeydown="if(event.key==='Enter') submitPin()">
+                    </div>
+                    
+                    <button type="button" class="btn btn-primary w-100 rounded-pill fw-bold shadow-sm" onclick="submitPin()">@Localizer["Verify"]</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="~/js/emergency_data.js"></script>
     <script>
+        // --- Security PIN Logic ---
+        function showPinModal() {
+            const modal = new bootstrap.Modal(document.getElementById('pinModal'));
+            modal.show();
+            setTimeout(() => document.getElementById('security-pin-input').focus(), 500);
+        }
+
+        async function submitPin() {
+            const pin = document.getElementById('security-pin-input').value;
+            if (!pin) return;
+
+            try {
+                const response = await fetch('/Dashboard/VerifyPin', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: `pin=${encodeURIComponent(pin)}`
+                });
+                const result = await response.json();
+                if (result.success) {
+                    location.reload();
+                } else {
+                    alert(result.message || '@Localizer["Incorrect PIN"]');
+                    document.getElementById('security-pin-input').value = '';
+                }
+            } catch (error) {
+                console.error('PIN verification error:', error);
+            }
+        }
+
         // --- Weather Logic ---
         async function detectLocationAndFetchWeather() {
             const content = document.getElementById('weather-content');
@@ -1562,6 +1665,9 @@
                     if (window.TranslationManager) {
                         window.TranslationManager.translateElement(container);
                     }
+                } else {
+                     const msg = data.message || '@Localizer["Unable to load news."]';
+                     container.innerHTML = `<div class="text-center py-5"><p class="small text-muted mb-0"><i class="bi bi-exclamation-circle me-1"></i>${msg}</p></div>`;
                 }
             } catch (error) {
                 console.error('News error:', error);
@@ -2139,15 +2245,15 @@
 
             if (input.files && input.files.length > 0) {
                 let validFiles = true;
-                let fileNamesHtml = '';
+                const filePromises = [];
                 
+                // Validate first
                 for (let i = 0; i < input.files.length; i++) {
                     const file = input.files[i];
-                    if (file.type !== selectedFormat) {
+                    if (!selectedFormat.includes(file.type)) {
                         validFiles = false;
                         break;
                     }
-                    fileNamesHtml += `<div class="text-truncate" title="${file.name}">${i+1}. ${file.name}</div>`;
                 }
                 
                 if (!validFiles) {
@@ -2158,7 +2264,33 @@
                     return;
                 }
 
-                filesList.innerHTML = fileNamesHtml;
+                // Generate Previews
+                filesList.className = 'd-flex flex-wrap gap-2 justify-content-center'; // Grid layout
+                
+                for (let i = 0; i < input.files.length; i++) {
+                    const file = input.files[i];
+                    const reader = new FileReader();
+                    
+                    const promise = new Promise((resolve) => {
+                        reader.onload = (e) => {
+                            const div = document.createElement('div');
+                            div.className = 'position-relative shadow-sm rounded-3 overflow-hidden border';
+                            div.style.width = '80px';
+                            div.style.height = '80px';
+                            div.title = file.name;
+                            
+                            div.innerHTML = `
+                                <img src="${e.target.result}" class="w-100 h-100 object-fit-cover">
+                                <div class="position-absolute bottom-0 start-0 w-100 bg-dark bg-opacity-50 text-white text-center small py-0" style="font-size: 0.6rem;">${i+1}</div>
+                            `;
+                            filesList.appendChild(div);
+                            resolve();
+                        };
+                        reader.readAsDataURL(file);
+                    });
+                    filePromises.push(promise);
+                }
+
                 filesCountBadge.textContent = `${input.files.length} ${input.files.length === 1 ? '@Localizer["image selected"]' : '@Localizer["images selected"]'}`;
                 filesContainer.classList.remove('d-none');
                 convertBtn.disabled = false;
@@ -2227,6 +2359,8 @@
 
                 for (let i = 0; i < input.files.length; i++) {
                     const file = input.files[i];
+                    const fileType = file.type === 'image/png' ? 'PNG' : 'JPEG';
+
                     const dataUrl = await new Promise((resolve) => {
                         const reader = new FileReader();
                         reader.onload = (e) => resolve(e.target.result);
@@ -2241,6 +2375,7 @@
                     });
 
                     // Force Portrait A4 for a consistent document width
+                    // A4 size: 210mm x 297mm
                     if (i === 0) {
                         doc = new jsPDF('p', 'mm', 'a4');
                     } else {
@@ -2254,7 +2389,7 @@
                     const maxWidth = pageWidth - (margin * 2);
                     const maxHeight = pageHeight - (margin * 2);
                     
-                    // Standardize scale to fit the fixed width, but check height too
+                    // Standardize scale to fit the fixed width/height container
                     let ratio = Math.min(maxWidth / img.width, maxHeight / img.height);
                     
                     const finalWidth = img.width * ratio;
@@ -2264,7 +2399,7 @@
                     const x = (pageWidth - finalWidth) / 2;
                     const y = (pageHeight - finalHeight) / 2;
 
-                    doc.addImage(dataUrl, 'JPEG', x, y, finalWidth, finalHeight);
+                    doc.addImage(dataUrl, fileType, x, y, finalWidth, finalHeight);
                 }
                 
                 if (doc) {
@@ -2281,5 +2416,6 @@
                 convertBtn.disabled = false;
             }
         }
+
     </script>
 }

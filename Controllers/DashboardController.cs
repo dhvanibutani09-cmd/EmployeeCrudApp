@@ -29,9 +29,26 @@ namespace EmployeeCrudApp.Controllers
             {
                 Notes = _noteRepository.GetAll(email).OrderByDescending(n => n.CreatedAt).ToList(),
                 Habits = _habitRepository.GetAll(email).OrderByDescending(h => h.CreatedAt).ToList(),
-                PermittedWidgets = user?.PermittedWidgets ?? new List<string>()
+                PermittedWidgets = user?.PermittedWidgets ?? new List<string>(),
+                HasSecurityPin = !string.IsNullOrEmpty(user?.SecurityPin),
+                IsPinVerified = HttpContext.Session.GetString("PinVerified") == "true"
             };
             return View(viewModel);
+        }
+
+        [HttpPost]
+        public IActionResult VerifyPin(string pin)
+        {
+            var email = User.FindFirst("Email")?.Value ?? User.Identity?.Name ?? string.Empty;
+            var user = _userRepository.GetByEmail(email);
+
+            if (user != null && user.SecurityPin == pin)
+            {
+                HttpContext.Session.SetString("PinVerified", "true");
+                return Json(new { success = true });
+            }
+
+            return Json(new { success = false, message = "Invalid PIN" });
         }
 
         [HttpPost]
@@ -139,6 +156,8 @@ namespace EmployeeCrudApp.Controllers
              }
              return Json(new { success = false, message = "Habit not found." });
         }
+
+
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

@@ -13,7 +13,8 @@
     "LastLoginDate": null,
     "Role": "User",
     "LoginHistory": [],
-    "PermittedWidgets": []
+    "PermittedWidgets": [],
+    "SecurityPin": null
   },
   {
     "Id": 15,
@@ -29,95 +30,82 @@
     "LastLoginDate": "2026-02-03T18:42:37.3868822+05:30",
     "Role": "User",
     "LoginHistory": [],
-    "PermittedWidgets": []
+    "PermittedWidgets": [],
+    "SecurityPin": null
   },
   {
-    "Id": 17,
-    "Name": "Dhvanii",
-    "Email": "dhvanibutani09@gmail.com",
-    "Password": "11111",
+    "Id": 20,
+    "Name": "avsar",
+    "Email": "projtest28@gmail.com",
+    "Password": "1111",
     "IsEmailVerified": true,
     "Otp": null,
     "OtpExpiry": null,
-    "LoginCount": 28,
-    "TodayLoginCount": 5,
-    "CreatedDate": "2026-02-04T12:02:48.9010266+05:30",
-    "LastLoginDate": "2026-02-11T14:21:07.6306009+05:30",
-    "Role": "Admin",
+    "LoginCount": 2,
+    "TodayLoginCount": 2,
+    "CreatedDate": "2026-02-12T16:05:46.2975356+05:30",
+    "LastLoginDate": "2026-02-12T16:13:25.2569366+05:30",
+    "Role": "User",
     "LoginHistory": [
-      "2026-02-04T12:49:48.8637651+05:30",
-      "2026-02-04T12:54:56.1256335+05:30",
-      "2026-02-04T12:57:01.2503902+05:30",
-      "2026-02-04T14:29:32.9436299+05:30",
-      "2026-02-04T14:58:54.408565+05:30",
-      "2026-02-04T15:00:45.111944+05:30",
-      "2026-02-04T15:24:18.5133322+05:30",
-      "2026-02-04T16:22:33.3141852+05:30",
-      "2026-02-05T12:04:23.396945+05:30",
-      "2026-02-05T14:25:20.3064581+05:30",
-      "2026-02-05T14:34:06.1729639+05:30",
-      "2026-02-05T16:28:46.6356373+05:30",
-      "2026-02-10T11:21:32.4714106+05:30",
-      "2026-02-10T11:33:26.7621497+05:30",
-      "2026-02-10T11:53:40.2543632+05:30",
-      "2026-02-10T14:11:25.6763473+05:30",
-      "2026-02-10T15:11:32.6763431+05:30",
-      "2026-02-10T15:15:51.3826915+05:30",
-      "2026-02-10T16:36:20.0399604+05:30",
-      "2026-02-10T18:18:16.9873533+05:30",
-      "2026-02-10T18:33:45.0436075+05:30",
-      "2026-02-10T18:41:08.8280534+05:30",
-      "2026-02-11T11:05:29.0433919+05:30",
-      "2026-02-11T12:27:29.3722574+05:30",
-      "2026-02-11T12:57:23.2329343+05:30",
-      "2026-02-11T14:14:48.55577+05:30",
-      "2026-02-11T14:21:07.6306009+05:30"
+      "2026-02-12T16:07:54.760412+05:30",
+      "2026-02-12T16:13:25.2569366+05:30"
     ],
-    "PermittedWidgets": []
+    "PermittedWidgets": [
+      "Weather Details",
+      "Currency Conversion",
+      "Time Conversion",
+      "World Countries",
+      "Personal Notes",
+      "Habit Tracker",
+      "PDF Converter"
+    ],
+    "SecurityPin": "1111"
   },
   {
-    "Id": 19,
+    "Id": 21,
     "Name": "charmi",
     "Email": "charmimarakana@gmail.com",
     "Password": "1919",
     "IsEmailVerified": true,
     "Otp": null,
     "OtpExpiry": null,
-    "LoginCount": 6,
+    "LoginCount": 1,
     "TodayLoginCount": 1,
-    "CreatedDate": "2026-02-04T14:57:55.2069307+05:30",
-    "LastLoginDate": "2026-02-10T15:10:55.215188+05:30",
+    "CreatedDate": "2026-02-12T16:43:08.6297431+05:30",
+    "LastLoginDate": "2026-02-12T16:44:05.4956107+05:30",
     "Role": "User",
     "LoginHistory": [
-      "2026-02-04T14:58:35.259594+05:30",
-      "2026-02-04T15:00:21.7734761+05:30",
-      "2026-02-04T15:17:49.3288865+05:30",
-      "2026-02-04T16:25:51.9846675+05:30",
-      "2026-02-05T14:26:38.4763719+05:30",
-      "2026-02-10T15:10:55.215188+05:30"
+      "2026-02-12T16:44:05.4956107+05:30"
     ],
-    "PermittedWidgets": []
+    "PermittedWidgets": [
+      "Weather Details",
+      "Time Conversion",
+      "PDF Converter"
+    ],
+    "SecurityPin": "1919"
   },
   {
-    "Id": 20,
-    "Name": "abc",
-    "Email": "projtest28@gmail.com",
-    "Password": "1111",
+    "Id": 22,
+    "Name": "Dhvani ",
+    "Email": "dhvanibutani09@gmail.com",
+    "Password": "11111",
     "IsEmailVerified": true,
     "Otp": null,
     "OtpExpiry": null,
-    "LoginCount": 1,
-    "TodayLoginCount": 1,
-    "CreatedDate": "2026-02-10T15:13:30.8939967+05:30",
-    "LastLoginDate": "2026-02-10T15:14:21.9988833+05:30",
-    "Role": "Private",
+    "LoginCount": 2,
+    "TodayLoginCount": 2,
+    "CreatedDate": "2026-02-12T16:55:53.4201956+05:30",
+    "LastLoginDate": "2026-02-12T17:56:54.8315195+05:30",
+    "Role": "Admin",
     "LoginHistory": [
-      "2026-02-10T15:14:21.9988833+05:30"
+      "2026-02-12T16:56:14.9963346+05:30",
+      "2026-02-12T17:56:54.8315195+05:30"
     ],
     "PermittedWidgets": [
-      "Personal Notes",
-      "Habit Tracker",
-      "Language Translator"
-    ]
+      "Headlines / News",
+      "Emergency Numbers",
+      "PDF Converter"
+    ],
+    "SecurityPin": "11111"
   }
 ]

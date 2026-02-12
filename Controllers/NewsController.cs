@@ -109,6 +109,10 @@ namespace EmployeeCrudApp.Controllers
                 var errorContent = await response.Content.ReadAsStringAsync();
                 return Json(new { status = "error", message = $"API Error: {response.StatusCode}", details = errorContent });
             }
+            catch (HttpRequestException httpEx)
+            {
+                return Json(new { status = "error", message = "News service is unreachable.", details = httpEx.Message });
+            }
             catch (System.Exception ex)
             {
                 return Json(new { status = "error", message = ex.Message });
@@ -142,6 +146,10 @@ namespace EmployeeCrudApp.Controllers
                     return Content(content, "application/json");
                 }
                 return Json(new { status = "error", message = $"API Error: {response.StatusCode}" });
+            }
+            catch (HttpRequestException httpEx)
+            {
+                return Json(new { status = "error", message = "News service is unreachable.", details = httpEx.Message });
             }
             catch (System.Exception ex)
             {
@@ -218,6 +226,11 @@ namespace EmployeeCrudApp.Controllers
                 return response.IsSuccessStatusCode 
                     ? Content(await response.Content.ReadAsStringAsync(), "application/json") 
                     : Json(new { status = "error", message = "No news found even with fallback." });
+            }
+            catch (HttpRequestException httpEx)
+            {
+                // Handle network/DNS errors gracefully
+                return Json(new { status = "error", message = "News service is currently unreachable (Network Error).", details = httpEx.Message });
             }
             catch (System.Exception ex)
             {

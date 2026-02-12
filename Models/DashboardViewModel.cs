@@ -9,4 +9,7 @@ public class DashboardViewModel
     public List<Habit> Habits { get; set; } = new List<Habit>();
     public int NewUsersToday { get; set; }
     public List<string> PermittedWidgets { get; set; } = new List<string>();
+    public bool HasSecurityPin { get; set; }
+    public bool IsPinVerified { get; set; }
+
 }

@@ -210,13 +210,46 @@ namespace EmployeeCrudApp.Controllers
         }
 
         [HttpPost]
-        public IActionResult Edit(User user)
+        public IActionResult Edit(int id, User user)
         {
+            var existingUser = _userRepository.GetById(id);
+            if (existingUser == null)
+            {
+                return NotFound();
+            }
+
+            // Remove Password validation if it's empty (meaning no change)
+            if (string.IsNullOrWhiteSpace(user.Password))
+            {
+                ModelState.Remove("Password");
+                ModelState.Remove("ConfirmPassword");
+            }
+
             if (ModelState.IsValid)
             {
-                _userRepository.Update(user);
+                // Update editable fields
+                existingUser.Name = user.Name;
+                existingUser.Email = user.Email;
+                existingUser.SecurityPin = user.SecurityPin;
+                existingUser.IsEmailVerified = user.IsEmailVerified;
+                existingUser.PermittedWidgets = user.PermittedWidgets ?? new List<string>();
+                // Only update role if current user is admin (security check handled by [Authorize(Roles="Admin")] but good practice)
+                existingUser.Role = user.Role; 
+
+                // Update password only if provided
+                if (!string.IsNullOrWhiteSpace(user.Password))
+                {
+                    existingUser.Password = user.Password;
+                    existingUser.ConfirmPassword = user.ConfirmPassword; // Keep model consistent though not saved to DB usually
+                }
+
+                _userRepository.Update(existingUser);
                 return RedirectToAction(nameof(Index));
             }
+
+            // If we are here, something failed, redisplay form.
+            // Be sure to pass back the original properties that might not be in the form if needed, 
+            // but here 'user' object from basic binding should be enough for the view to re-render errors.
             return View(user);
         }
 

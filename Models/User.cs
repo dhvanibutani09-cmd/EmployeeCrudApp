@@ -43,4 +43,11 @@ public class User
 
     public List<DateTime> LoginHistory { get; set; } = new List<DateTime>();
     public List<string> PermittedWidgets { get; set; } = new List<string>();
+
+    [Display(Name = "Security PIN")]
+    [StringLength(6, MinimumLength = 4, ErrorMessage = "PIN must be between 4 and 6 digits")]
+    [RegularExpression(@"^\d+$", ErrorMessage = "PIN must be numeric")]
+    public string? SecurityPin { get; set; }
+
+
 }

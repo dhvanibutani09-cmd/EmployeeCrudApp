@@ -67,6 +67,16 @@
                     <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
                 </div>
 
+                <div class="mb-4">
+                    <label asp-for="SecurityPin" class="form-label small text-muted text-uppercase fw-bold ls-1">@Localizer["Security PIN (Optional)"]</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-transparent border-end-0 text-muted"><i class="bi bi-shield-lock"></i></span>
+                        <input asp-for="SecurityPin" type="password" class="form-control bg-transparent border-start-0 ps-2 text-start fw-bold" placeholder="@Localizer["4-6 Digit PIN"]" maxlength="6" />
+                    </div>
+                    <span asp-validation-for="SecurityPin" class="text-danger small"></span>
+                    <div class="small text-muted mt-1">@Localizer["Used to lock specific dashboard widgets."]</div>
+                </div>
+
 
                 <div class="mb-4">
                     <label class="form-label small text-muted text-uppercase fw-bold ls-1">@Localizer["User Role"]</label>
