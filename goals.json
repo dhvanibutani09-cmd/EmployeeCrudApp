@@ -1,0 +1,47 @@
+[
+  {
+    "Id": 2,
+    "UserId": "dhvanibutani09@gmail.com",
+    "Title": "faitloss",
+    "Description": "daily GYM",
+    "TargetDate": "2026-02-13T00:00:00",
+    "TargetValue": 12,
+    "CurrentValue": 12,
+    "Category": "Health",
+    "Priority": "High",
+    "CreatedDate": "2026-02-13T15:38:34.3667591+05:30",
+    "Status": "Completed",
+    "ProgressPercentage": 100,
+    "ProgressBarColor": "bg-success"
+  },
+  {
+    "Id": 3,
+    "UserId": "dhvanibutani09@gmail.com",
+    "Title": "enjoy",
+    "Description": "",
+    "TargetDate": "2026-02-14T00:00:00",
+    "TargetValue": 2,
+    "CurrentValue": 0,
+    "Category": "Personal",
+    "Priority": "High",
+    "CreatedDate": "2026-02-13T16:14:45.0139005+05:30",
+    "Status": "Active",
+    "ProgressPercentage": 0,
+    "ProgressBarColor": "bg-danger"
+  },
+  {
+    "Id": 4,
+    "UserId": "dhvanibutani09@gmail.com",
+    "Title": "reading",
+    "Description": "",
+    "TargetDate": "2026-02-13T00:00:00",
+    "TargetValue": 5,
+    "CurrentValue": 0,
+    "Category": "Study",
+    "Priority": "Low",
+    "CreatedDate": "2026-02-13T16:22:20.5560573+05:30",
+    "Status": "Active",
+    "ProgressPercentage": 0,
+    "ProgressBarColor": "bg-danger"
+  }
+]

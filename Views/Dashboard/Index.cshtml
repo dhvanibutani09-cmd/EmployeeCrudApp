@@ -177,30 +177,28 @@
                     </div>
 
                     <div class="mb-3">
-                        <div class="d-flex gap-2">
-                            <select id="news-country-select" class="form-select form-select-sm rounded-pill border-0 shadow-sm bg-light px-3" style="font-size: 0.8rem; width: auto;" onchange="fetchNews(document.getElementById('news-search-input').value, this.value)">
-                                <option value="us">@Localizer["USA"]</option>
-                                <option value="in" selected>@Localizer["India"]</option>
-                                <option value="gb">@Localizer["UK"]</option>
-                                <option value="ca">@Localizer["Canada"]</option>
-                                <option value="au">@Localizer["Australia"]</option>
-                                <option value="ae">@Localizer["UAE"]</option>
-                            </select>
-                            <div class="input-group input-group-sm shadow-sm rounded-pill overflow-hidden flex-grow-1">
-                                <input type="text" id="news-search-input" class="form-control border-0 px-3" placeholder="@Localizer["Search news..."]" style="font-size: 0.8rem;" onkeydown="if(event.key==='Enter'){event.preventDefault(); searchNews();}">
-                                <button type="button" onclick="searchNews()" class="btn btn-danger border-0 px-3">
-                                    <i class="bi bi-search"></i>
-                                </button>
-                            </div>
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <span class="badge bg-soft-danger text-danger rounded-pill px-3 py-1 small fw-bold">
+                                <i class="bi bi-globe2 me-1"></i> @Localizer["Global Feed"]
+                            </span>
+                            <button class="btn btn-link btn-sm text-muted p-0" onclick="fetchNews('')" title="@Localizer["Reset Feed"]">
+                                <i class="bi bi-arrow-clockwise"></i>
+                            </button>
+                        </div>
+                        <div class="input-group input-group-sm shadow-sm rounded-pill overflow-hidden border">
+                            <input type="text" id="news-global-search" class="form-control border-0 px-3" placeholder="@Localizer["Search global news..."]" style="font-size: 0.8rem;" onkeydown="if(event.key==='Enter'){event.preventDefault(); fetchNews(this.value);}">
+                            <button type="button" onclick="fetchNews(document.getElementById('news-global-search').value)" class="btn btn-danger border-0 px-3">
+                                <i class="bi bi-search"></i>
+                            </button>
                         </div>
                     </div>
                     
-                    <div id="news-container" class="flex-grow-1 d-flex align-items-center justify-content-center">
-                        <div class="text-center py-4">
+                    <div id="news-container" class="flex-grow-1 overflow-auto pe-1" style="max-height: 400px;">
+                        <div class="text-center py-5">
                             <div class="spinner-border text-danger spinner-border-sm" role="status">
                                 <span class="visually-hidden">Loading...</span>
                             </div>
-                            <p class="mt-2 text-muted small">@Localizer["Fetching news..."]</p>
+                            <p class="mt-2 text-muted small">@Localizer["Fetching global news..."]</p>
                         </div>
                     </div>
                 </div>
@@ -254,7 +252,7 @@
             <!-- Notes Card (New Widget) -->
             <div class="col-md-4">
                 <div class="card h-100 shadow border-0 rounded-4 glass-card position-relative overflow-hidden">
-                    @if (!Model.IsPinVerified)
+                    @if (!Model.IsNotesVerified)
                     {
                         <div class="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column align-items-center justify-content-center bg-white bg-opacity-75" style="z-index: 10; backdrop-filter: blur(5px);">
                             <div class="icon-circle bg-secondary text-white mb-3 shadow-sm" style="width: 60px; height: 60px; font-size: 1.5rem;">
@@ -264,7 +262,7 @@
                             @if (Model.HasSecurityPin)
                             {
                                 <p class="text-muted small mb-3">@Localizer["Enter PIN to view"]</p>
-                                <button class="btn btn-primary rounded-pill px-4 shadow-sm fw-bold" onclick="showPinModal()">
+                                <button class="btn btn-primary rounded-pill px-4 shadow-sm fw-bold" onclick="showPinModal('Notes')">
                                     <i class="bi bi-key-fill me-2"></i> @Localizer["Unlock"]
                                 </button>
                             }
@@ -274,7 +272,7 @@
                             }
                         </div>
                     }
-                    <div class="card-body p-4 d-flex flex-column" style="@(!Model.IsPinVerified ? "filter: blur(5px); pointer-events: none;" : "")">
+                    <div class="card-body p-4 d-flex flex-column" style="@(!Model.IsNotesVerified ? "filter: blur(5px); pointer-events: none;" : "")">
                         <div class="d-flex justify-content-between align-items-center mb-4">
                             <div class="d-flex align-items-center">
                                 <div class="icon-circle bg-warning text-white me-3" style="width: 50px; height: 50px; font-size: 1.2rem;">
@@ -329,7 +327,7 @@
             <!-- Habit Tracker Card -->
             <div class="col-md-4">
                 <div class="card h-100 shadow border-0 rounded-4 glass-card position-relative overflow-hidden">
-                    @if (!Model.IsPinVerified)
+                    @if (!Model.IsHabitsVerified)
                     {
                         <div class="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column align-items-center justify-content-center bg-white bg-opacity-75" style="z-index: 10; backdrop-filter: blur(5px);">
                             <div class="icon-circle bg-secondary text-white mb-3 shadow-sm" style="width: 60px; height: 60px; font-size: 1.5rem;">
@@ -339,7 +337,7 @@
                             @if (Model.HasSecurityPin)
                             {
                                 <p class="text-muted small mb-3">@Localizer["Enter PIN to view"]</p>
-                                <button class="btn btn-primary rounded-pill px-4 shadow-sm fw-bold" onclick="showPinModal()">
+                                <button class="btn btn-primary rounded-pill px-4 shadow-sm fw-bold" onclick="showPinModal('Habit')">
                                     <i class="bi bi-key-fill me-2"></i> @Localizer["Unlock"]
                                 </button>
                             }
@@ -349,7 +347,7 @@
                             }
                         </div>
                     }
-                    <div class="card-body p-4 d-flex flex-column" style="@(!Model.IsPinVerified ? "filter: blur(5px); pointer-events: none;" : "")">
+                    <div class="card-body p-4 d-flex flex-column" style="@(!Model.IsHabitsVerified ? "filter: blur(5px); pointer-events: none;" : "")">
                         <div class="d-flex justify-content-between align-items-center mb-4">
                             <div class="d-flex align-items-center">
                                 <div class="icon-circle bg-success text-white me-3" style="width: 50px; height: 50px; font-size: 1.2rem;">
@@ -625,7 +623,7 @@
             <!-- PDF Converter Card -->
             <div class="col-md-4">
                 <div class="card h-100 shadow border-0 rounded-4 glass-card position-relative overflow-hidden">
-                    @if (!Model.IsPinVerified)
+                    @if (!Model.IsPdfVerified)
                     {
                         <div class="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column align-items-center justify-content-center bg-white bg-opacity-75" style="z-index: 10; backdrop-filter: blur(5px);">
                             <div class="icon-circle bg-secondary text-white mb-3 shadow-sm" style="width: 60px; height: 60px; font-size: 1.5rem;">
@@ -635,7 +633,7 @@
                             @if (Model.HasSecurityPin)
                             {
                                 <p class="text-muted small mb-3">@Localizer["Enter PIN to view"]</p>
-                                <button class="btn btn-primary rounded-pill px-4 shadow-sm fw-bold" onclick="showPinModal()">
+                                <button class="btn btn-primary rounded-pill px-4 shadow-sm fw-bold" onclick="showPinModal('PDF')">
                                     <i class="bi bi-key-fill me-2"></i> @Localizer["Unlock"]
                                 </button>
                             }
@@ -645,7 +643,7 @@
                             }
                         </div>
                     }
-                    <div class="card-body p-4 d-flex flex-column" style="@(!Model.IsPinVerified ? "filter: blur(5px); pointer-events: none;" : "")">
+                    <div class="card-body p-4 d-flex flex-column" style="@(!Model.IsPdfVerified ? "filter: blur(5px); pointer-events: none;" : "")">
                         <div class="d-flex justify-content-between align-items-center mb-4">
                             <div class="d-flex align-items-center">
                                 <div class="icon-circle bg-primary text-white me-3" style="width: 50px; height: 50px; font-size: 1.2rem; background: linear-gradient(135deg, #FF512F 0%, #DD2476 100%) !important;">
@@ -715,6 +713,113 @@
                                     @Localizer["Merge to PDF"]
                                 </button>
                             </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        @if (User.IsInRole("Admin") || Model.PermittedWidgets.Contains("Goal Tracking"))
+        {
+            <!-- Goal Tracking Card -->
+            <div class="col-md-4">
+                <div class="card h-100 shadow border-0 rounded-4 glass-card position-relative overflow-hidden">
+                    <div class="card-body p-4 d-flex flex-column">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <div class="d-flex align-items-center">
+                                <div class="icon-circle text-white me-3" style="width: 50px; height: 50px; font-size: 1.2rem; background: linear-gradient(135deg, #8E2DE2 0%, #4A00E0 100%) !important;">
+                                    <i class="bi bi-trophy-fill"></i>
+                                </div>
+                                <div>
+                                    <h6 class="card-title fw-bold mb-0">@Localizer["Goal Tracking"]</h6>
+                                    <p class="text-muted small mb-0">@Localizer["Achieve your targets"]</p>
+                                </div>
+                            </div>
+                            <button class="btn btn-primary rounded-pill px-4 shadow-sm fw-bold text-white" style="background: linear-gradient(135deg, #8E2DE2 0%, #4A00E0 100%) !important; border: none;" data-bs-toggle="modal" data-bs-target="#addGoalModal">
+                                <i class="bi bi-plus-lg me-2"></i> @Localizer["Add Goal"]
+                            </button>
+                        </div>
+
+                                    <!-- Goal Stats Summary -->
+                        <div class="row g-2 mb-3">
+                            <div class="col-3">
+                                <div class="p-2 rounded-3 bg-light border text-center">
+                                    <div class="smaller text-muted fw-bold text-uppercase">@Localizer["Total"]</div>
+                                    <div class="h5 fw-bold text-dark mb-0">@Model.TotalGoals</div>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="p-2 rounded-3 bg-success bg-opacity-10 border border-success border-opacity-25 text-center">
+                                    <div class="smaller text-success fw-bold text-uppercase">@Localizer["Done"]</div>
+                                    <div class="h5 fw-bold text-success mb-0">@Model.CompletedGoals</div>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="p-2 rounded-3 bg-primary bg-opacity-10 border border-primary border-opacity-25 text-center">
+                                    <div class="smaller text-primary fw-bold text-uppercase">@Localizer["Active"]</div>
+                                    <div class="h5 fw-bold text-primary mb-0">@Model.ActiveGoals</div>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="p-2 rounded-3 bg-danger bg-opacity-10 border border-danger border-opacity-25 text-center">
+                                    <div class="smaller text-danger fw-bold text-uppercase">@Localizer["Late"]</div>
+                                    <div class="h5 fw-bold text-danger mb-0">@Model.OverdueGoals</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="goals-container" class="row g-3" style="max-height: 300px; overflow-y: auto;">
+                            @if (Model.RecentGoals.Any())
+                            {
+                                @foreach (var goal in Model.RecentGoals) 
+                                {
+                                    <div class="col-12">
+                                        <div class="goal-item p-3 rounded-4 bg-light border shadow-sm">
+                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <h6 class="fw-bold mb-0">@goal.Title</h6>
+                                                    <span class="badge rounded-pill bg-secondary bg-opacity-25 text-dark" style="font-size: 0.65rem;">@goal.Category</span>
+                                                </div>
+                                                <span class="badge rounded-pill @(goal.Status == "Completed" ? "bg-success" : (goal.Status == "Overdue" ? "bg-danger" : "bg-primary"))">@Localizer[goal.Status]</span>
+                                            </div>
+                                            
+                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                 <span class="badge rounded-pill border text-muted" style="font-size: 0.65rem;">@goal.Priority</span>
+                                            </div>
+                                            
+                                            <div class="d-flex justify-content-between small mb-1">
+                                                <span class="text-muted">@Localizer["Target"]: @goal.TargetValue</span>
+                                                <span class="fw-bold @(goal.Status == "Overdue" ? "text-danger" : "text-primary")">@goal.CurrentValue / @goal.TargetValue</span>
+                                            </div>
+                                            
+                                            <div class="progress rounded-pill mb-2" style="height: 8px;">
+                                                <div class="progress-bar @goal.ProgressBarColor" role="progressbar" style="width: @goal.ProgressPercentage%" aria-valuenow="@goal.ProgressPercentage" aria-valuemin="0" aria-valuemax="100"></div>
+                                            </div>
+
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <small class="text-muted"><i class="bi bi-calendar-event me-1"></i> @goal.TargetDate.ToString("MMM dd, yyyy")</small>
+                                                <div class="btn-group">
+                                                    <button class="btn btn-link btn-sm text-primary p-0 me-2" onclick="openUpdateGoalModal(@goal.Id, '@goal.Title', @goal.CurrentValue, @goal.TargetValue)" title="@Localizer["Update Progress"]">
+                                                        <i class="bi bi-sliders"></i>
+                                                    </button>
+                                                    <button class="btn btn-link btn-sm text-info p-0 me-2" onclick="openEditGoalModal(@goal.Id, '@goal.Title', @goal.TargetValue, '@goal.TargetDate.ToString("yyyy-MM-dd")', '@goal.Category', '@goal.Priority')" title="@Localizer["Edit Goal"]">
+                                                        <i class="bi bi-pencil-square"></i>
+                                                    </button>
+                                                    <button class="btn btn-link btn-sm text-danger p-0" onclick="deleteGoal(@goal.Id)" title="@Localizer["Delete Goal"]">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                <div class="col-12 text-center py-5">
+                                    <div class="text-muted mb-2 opacity-25"><i class="bi bi-flag" style="font-size: 3rem;"></i></div>
+                                    <p class="text-muted">@Localizer["No goals set. Start tracking now!"]</p>
+                                </div>
+                            }
                         </div>
                     </div>
                 </div>
@@ -986,6 +1091,245 @@
 </style>
 
 
+<!-- Add Goal Modal -->
+<div class="modal fade" id="addGoalModal" tabindex="-1" aria-labelledby="addGoalModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 rounded-4 shadow-lg">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold" id="addGoalModalLabel">@Localizer["Add New Goal"]</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="addGoalForm" method="post" onsubmit="saveNewGoal(event)">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="goal-title" class="form-label small text-muted fw-bold text-uppercase ls-1">@Localizer["Title"]</label>
+                        <input type="text" id="goal-title" name="Title" class="form-control rounded-pill bg-light border-0 px-3" placeholder="@Localizer["e.g. Save $5000"]" required minlength="3">
+                    </div>
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                            <label for="goal-category" class="form-label small text-muted fw-bold text-uppercase ls-1">@Localizer["Category"]</label>
+                            <select id="goal-category" name="Category" class="form-select form-select-sm rounded-pill bg-light border-0 px-3 py-2">
+                                <option value="Personal">Personal</option>
+                                <option value="Health">Health</option>
+                                <option value="Finance">Finance</option>
+                                <option value="Study">Study</option>
+                            </select>
+                        </div>
+                        <div class="col-6">
+                            <label for="goal-priority" class="form-label small text-muted fw-bold text-uppercase ls-1">@Localizer["Priority"]</label>
+                            <select id="goal-priority" name="Priority" class="form-select form-select-sm rounded-pill bg-light border-0 px-3 py-2">
+                                <option value="Low">Low</option>
+                                <option value="Medium" selected>Medium</option>
+                                <option value="High">High</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                            <label for="goal-target-value" class="form-label small text-muted fw-bold text-uppercase ls-1">@Localizer["Target Value"]</label>
+                            <input type="number" id="goal-target-value" name="TargetValue" class="form-control rounded-pill bg-light border-0 px-3" placeholder="0" required step="0.1" min="0.1">
+                        </div>
+                        <div class="col-6">
+                            <label for="goal-target-date" class="form-label small text-muted fw-bold text-uppercase ls-1">@Localizer["Target Date"]</label>
+                            <input type="date" id="goal-target-date" name="TargetDate" class="form-control rounded-pill bg-light border-0 px-3" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">@Localizer["Cancel"]</button>
+                    <button type="submit" class="btn btn-primary rounded-pill px-4 text-white fw-bold" style="background: linear-gradient(135deg, #8E2DE2 0%, #4A00E0 100%) !important; border: none;">@Localizer["Save Goal"]</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Update Goal Progress Modal -->
+<div class="modal fade" id="updateGoalModal" tabindex="-1" aria-labelledby="updateGoalModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 rounded-4 shadow-lg">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold" id="updateGoalModalLabel">@Localizer["Update Progress"]</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="updateGoalForm" method="post" onsubmit="saveGoalProgress(event)">
+                <div class="modal-body">
+                    <input type="hidden" id="update-goal-id" name="id">
+                    <h6 id="update-goal-title" class="fw-bold mb-3 text-center text-primary"></h6>
+                    <div class="mb-3">
+                        <label for="goal-current-value" class="form-label small text-muted fw-bold text-uppercase ls-1">@Localizer["Current Value"]</label>
+                        <div class="input-group">
+                            <input type="number" id="goal-current-value" name="currentValue" class="form-control rounded-start-pill bg-light border-0 px-3" placeholder="0" required step="0.1">
+                            <span class="input-group-text bg-light border-0 rounded-end-pill text-muted small">/ <span id="update-goal-target-display" class="ms-1"></span></span>
+                        </div>
+                    </div>
+                     <div class="mb-3">
+                        <label class="form-label small text-muted fw-bold text-uppercase ls-1">@Localizer["Quick Add"]</label>
+                        <div class="d-flex gap-2">
+                            <button type="button" class="btn btn-outline-primary btn-sm rounded-pill flex-grow-1" onclick="adjustGoalProgress(1)">+1</button>
+                            <button type="button" class="btn btn-outline-primary btn-sm rounded-pill flex-grow-1" onclick="adjustGoalProgress(10)">+10</button>
+                            <button type="button" class="btn btn-outline-primary btn-sm rounded-pill flex-grow-1" onclick="adjustGoalProgress(100)">+100</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">@Localizer["Cancel"]</button>
+                    <button type="submit" class="btn btn-primary rounded-pill px-4 text-white fw-bold" style="background: linear-gradient(135deg, #8E2DE2 0%, #4A00E0 100%) !important; border: none;">@Localizer["Update"]</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Goal Modal -->
+<div class="modal fade" id="editGoalModal" tabindex="-1" aria-labelledby="editGoalModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 rounded-4 shadow-lg">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold" id="editGoalModalLabel">@Localizer["Edit Goal"]</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="editGoalForm" method="post" onsubmit="saveEditedGoal(event)">
+                <div class="modal-body">
+                    <input type="hidden" id="edit-goal-id" name="Id">
+                    <div class="mb-3">
+                        <label for="edit-goal-title" class="form-label small text-muted fw-bold text-uppercase ls-1">@Localizer["Title"]</label>
+                        <input type="text" id="edit-goal-title" name="Title" class="form-control rounded-pill bg-light border-0 px-3" required minlength="3">
+                    </div>
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                            <label for="edit-goal-category" class="form-label small text-muted fw-bold text-uppercase ls-1">@Localizer["Category"]</label>
+                            <select id="edit-goal-category" name="Category" class="form-select form-select-sm rounded-pill bg-light border-0 px-3 py-2">
+                                <option value="Personal">Personal</option>
+                                <option value="Health">Health</option>
+                                <option value="Finance">Finance</option>
+                                <option value="Study">Study</option>
+                            </select>
+                        </div>
+                        <div class="col-6">
+                            <label for="edit-goal-priority" class="form-label small text-muted fw-bold text-uppercase ls-1">@Localizer["Priority"]</label>
+                            <select id="edit-goal-priority" name="Priority" class="form-select form-select-sm rounded-pill bg-light border-0 px-3 py-2">
+                                <option value="Low">Low</option>
+                                <option value="Medium">Medium</option>
+                                <option value="High">High</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                            <label for="edit-goal-target-value" class="form-label small text-muted fw-bold text-uppercase ls-1">@Localizer["Target Value"]</label>
+                            <input type="number" id="edit-goal-target-value" name="TargetValue" class="form-control rounded-pill bg-light border-0 px-3" required step="0.1" min="0.1">
+                        </div>
+                        <div class="col-6">
+                            <label for="edit-goal-target-date" class="form-label small text-muted fw-bold text-uppercase ls-1">@Localizer["Target Date"]</label>
+                            <input type="date" id="edit-goal-target-date" name="TargetDate" class="form-control rounded-pill bg-light border-0 px-3" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">@Localizer["Cancel"]</button>
+                    <button type="submit" class="btn btn-primary rounded-pill px-4 text-white fw-bold" style="background: linear-gradient(135deg, #8E2DE2 0%, #4A00E0 100%) !important; border: none;">@Localizer["Save Changes"]</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    function saveNewGoal(event) {
+        if (event) event.preventDefault();
+        
+        const form = document.getElementById('addGoalForm');
+        if (!form.checkValidity()) {
+            form.reportValidity();
+            return;
+        }
+
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData.entries());
+
+        $.post('/Dashboard/AddGoal', data, function(response) {
+            if (response.success) {
+                location.reload();
+            } else {
+                alert(response.message);
+            }
+        });
+    }
+
+    function openUpdateGoalModal(id, title, current, target) {
+        document.getElementById('update-goal-id').value = id;
+        document.getElementById('update-goal-title').innerText = title;
+        document.getElementById('goal-current-value').value = current;
+        document.getElementById('update-goal-target-display').innerText = target;
+        new bootstrap.Modal(document.getElementById('updateGoalModal')).show();
+    }
+
+    function adjustGoalProgress(amount) {
+        const input = document.getElementById('goal-current-value');
+        input.value = parseFloat(input.value || 0) + amount;
+    }
+
+    function saveGoalProgress(event) {
+        if (event) event.preventDefault();
+
+        const id = document.getElementById('update-goal-id').value;
+        const currentValue = document.getElementById('goal-current-value').value;
+
+        $.post('/Dashboard/UpdateGoalProgress', { id, currentValue }, function(response) {
+             if (response.success) {
+                location.reload();
+            } else {
+                alert(response.message);
+            }
+        });
+    }
+
+    function openEditGoalModal(id, title, target, date, category, priority) {
+        document.getElementById('edit-goal-id').value = id;
+        document.getElementById('edit-goal-title').value = title;
+        document.getElementById('edit-goal-target-value').value = target;
+        document.getElementById('edit-goal-target-date').value = date;
+        document.getElementById('edit-goal-category').value = category;
+        document.getElementById('edit-goal-priority').value = priority;
+        new bootstrap.Modal(document.getElementById('editGoalModal')).show();
+    }
+
+    function saveEditedGoal(event) {
+        if (event) event.preventDefault();
+        
+        const form = document.getElementById('editGoalForm');
+        if (!form.checkValidity()) {
+            form.reportValidity();
+            return;
+        }
+
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData.entries());
+
+        $.post('/Dashboard/EditGoal', data, function(response) {
+            if (response.success) {
+                location.reload();
+            } else {
+                alert(response.message);
+            }
+        });
+    }
+
+    function deleteGoal(id) {
+        if (confirm('@Localizer["Are you sure you want to delete this goal?"]')) {
+            $.post('/Dashboard/DeleteGoal', { id }, function(response) {
+                 if (response.success) {
+                    location.reload();
+                } else {
+                    alert(response.message);
+                }
+            });
+        }
+    }
+</script>
+
 @section Scripts {
     <!-- Security PIN Modal -->
     <div class="modal fade" id="pinModal" tabindex="-1" aria-hidden="true">
@@ -1012,7 +1356,10 @@
     <script src="~/js/emergency_data.js"></script>
     <script>
         // --- Security PIN Logic ---
-        function showPinModal() {
+        let currentLockWidget = '';
+
+        function showPinModal(widgetName = '') {
+            currentLockWidget = widgetName;
             const modal = new bootstrap.Modal(document.getElementById('pinModal'));
             modal.show();
             setTimeout(() => document.getElementById('security-pin-input').focus(), 500);
@@ -1026,7 +1373,7 @@
                 const response = await fetch('/Dashboard/VerifyPin', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: `pin=${encodeURIComponent(pin)}`
+                    body: `pin=${encodeURIComponent(pin)}&widgetName=${encodeURIComponent(currentLockWidget)}`
                 });
                 const result = await response.json();
                 if (result.success) {
@@ -1062,14 +1409,9 @@
                         fetchWeather(`${latitude},${longitude}`);
                     },
                     (error) => {
-                        console.warn('Geolocation error:', error.message);
-                        content.innerHTML = `
-                            <div class="text-center p-4">
-                                <i class="bi bi-geo-alt-fill text-muted fs-1 d-block mb-3"></i>
-                                <p class="text-secondary fw-medium mb-0">@Localizer["Location access denied."]</p>
-                                <p class="small text-muted">@Localizer["Please search for your city manually above."]</p>
-                            </div>
-                        `;
+                        console.warn('Geolocation error:', error.code, error.message);
+                        // Automatic fallback on any error (denied, unavailable, timeout)
+                        this.detectLocationByIP();
                     },
                     { 
                         timeout: 5000,
@@ -1077,11 +1419,34 @@
                     }
                 );
             } else {
+                this.detectLocationByIP();
+            }
+        }
+
+        async function detectLocationByIP() {
+            const content = document.getElementById('weather-content');
+            try {
+                // Using ipapi.co for free IP-based geolocation
+                const res = await fetch('https://ipapi.co/json/');
+                if (!res.ok) throw new Error('IP detection failed');
+                const data = await res.json();
+                
+                if (data.latitude && data.longitude) {
+                    console.log('IP Location fallback success:', data.city);
+                    fetchWeather(`${data.latitude},${data.longitude}`);
+                } else {
+                    throw new Error('Incomplete data from IP service');
+                }
+            } catch (ipError) {
+                console.error('IP Fallback failed:', ipError);
                 content.innerHTML = `
                     <div class="text-center p-4">
-                        <i class="bi bi-exclamation-circle text-muted fs-1 d-block mb-3"></i>
-                        <p class="text-secondary fw-medium mb-0">@Localizer["Geolocation not supported."]</p>
-                        <p class="small text-muted">@Localizer["Please search for your city manually above."]</p>
+                        <i class="bi bi-geo-alt-fill text-muted fs-1 d-block mb-3"></i>
+                        <p class="text-secondary fw-medium mb-0">@Localizer["Location blocked by browser."]</p>
+                        <p class="small text-muted mb-3">@Localizer["Your browser has blocked location access. Please search for your city manually above or reset site permissions."]</p>
+                        <button onclick="detectLocationAndFetchWeather()" class="btn btn-outline-primary btn-sm rounded-pill px-3">
+                            <i class="bi bi-arrow-clockwise me-1"></i> @Localizer["Try Again"]
+                        </button>
                     </div>
                 `;
             }
@@ -1111,12 +1476,14 @@
             `;
 
             try {
-                // Using wttr.in for weather data
-                // Forced metric (m) to ensure Celsius and km/h
-                const culture = window.APP_CULTURE ? window.APP_CULTURE.split('-')[0] : 'en';
-                const response = await fetch(`https://wttr.in/${location || ''}?m&format=j1&lang=${culture}`);
+                // Using backend proxy to avoid CORS issues
+                const response = await fetch(`/Dashboard/GetWeather?location=${encodeURIComponent(location || '')}`);
                 if (!response.ok) throw new Error('Location not found');
                 const data = await response.json();
+
+                if (data.success === false) {
+                    throw new Error(data.message || 'Failed to fetch weather');
+                }
                 
                 const current = data?.current_condition?.[0] || {};
                 const weatherToday = data?.weather?.[0] || {};
@@ -1597,95 +1964,75 @@
 
 
         // --- News Logic ---
-        async function fetchNews(query = '', country = '') {
-            if (!country) {
-                country = document.getElementById('news-country-select')?.value || 'in';
-            }
+        async function fetchNews(query = '') {
             const container = document.getElementById('news-container');
             
             // Show loading state
             container.innerHTML = `
-                <div class="col-12 text-center py-5">
-                    <div class="spinner-border text-danger" role="status">
-                        <span class="visually-hidden">Loading...</span>
-                    </div>
+                <div class="text-center py-5">
+                    <div class="spinner-border text-danger spinner-border-sm" role="status"></div>
+                    <p class="mt-2 text-muted small">@Localizer["Fetching global news..."]</p>
                 </div>
             `;
             
             try {
-                // Using the new GetCityNews for real-time trusted sources
-                let url = `/News/GetCityNews?city=${encodeURIComponent(query)}&country=${encodeURIComponent(country)}`;
-
+                const url = query ? `/News/GetGlobalNews?q=${encodeURIComponent(query)}` : '/News/GetGlobalNews';
                 const response = await fetch(url); 
                 const data = await response.json();
                 
                 if (data.status === 'ok' && data.articles) {
                     container.innerHTML = '';
-                    const articles = data.articles.filter(a => a.title && a.urlToImage).slice(0, 5);
+                    const articles = data.articles;
                     
                     if (articles.length === 0) {
-                        container.innerHTML = `<p class="small text-muted text-center">@Localizer["No recent news found."]</p>`;
+                        container.innerHTML = `<div class="text-center py-5 text-muted small">@Localizer["No global news found."]</div>`;
                         return;
                     }
 
-                    let carouselHtml = `
-                        <div id="newsCarousel" class="carousel slide" data-bs-ride="carousel" style="width: 100%;">
-                            <div class="carousel-inner rounded-3 overflow-hidden">
-                    `;
-
-                    articles.forEach((article, index) => {
+                    let html = '<div class="d-flex flex-column gap-3">';
+                    articles.forEach((article) => {
                         const imgUrl = article.urlToImage || 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?q=80&w=640&auto=format&fit=crop';
-                        const date = new Date(article.publishedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+                        const date = new Date(article.publishedAt).toLocaleString(undefined, { 
+                            month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' 
+                        });
                         
-                        carouselHtml += `
-                            <div class="carousel-item ${index === 0 ? 'active' : ''}">
-                                <div class="position-relative">
-                                    <img src="${imgUrl}" class="d-block w-100 object-fit-cover" alt="News" style="height: 160px;" onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?q=80&w=640&auto=format&fit=crop'">
-                                    <div class="position-absolute bottom-0 start-0 w-100 p-2 text-white" style="background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);">
-                                        <span class="badge bg-danger shadow-sm" style="font-size: 0.6rem;">${article.source.name}</span>
+                        html += `
+                            <div class="news-item-compact p-2 rounded-3 border bg-light bg-opacity-50 position-relative transition-all hover-elevate">
+                                <div class="d-flex gap-3">
+                                    <div class="flex-shrink-0" style="width: 70px; height: 70px;">
+                                        <img src="${imgUrl}" class="rounded-3 w-100 h-100 object-fit-cover shadow-sm" alt="News" 
+                                             referrerpolicy="no-referrer" loading="lazy"
+                                             onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?q=80&w=640&auto=format&fit=crop'">
                                     </div>
-                                </div>
-                                <div class="mt-2">
-                                    <h6 class="fw-bold mb-1 line-clamp-2" style="font-size: 0.85rem;">
-                                        <a href="${article.url}" target="_blank" class="text-decoration-none stretched-link">${article.title}</a>
-                                    </h6>
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <span class="smaller text-muted">${date}</span>
-                                        <span class="badge bg-light text-warning smaller shadow-none border py-0 px-1" style="font-size: 0.6rem;">LIVE</span>
+                                    <div class="flex-grow-1 min-width-0">
+                                        <div class="d-flex justify-content-between align-items-center mb-1">
+                                            <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-10 smaller" style="font-size: 0.6rem;">
+                                                ${article.source.name}
+                                            </span>
+                                            <span class="smaller text-muted" style="font-size: 0.6rem;">${date}</span>
+                                        </div>
+                                        <h6 class="fw-bold mb-0 text-dark line-clamp-2" style="font-size: 0.78rem; line-height: 1.3;">
+                                            <a href="${article.url}" target="_blank" class="text-decoration-none text-dark stretched-link">${article.title}</a>
+                                        </h6>
                                     </div>
                                 </div>
                             </div>
                         `;
                     });
-
-                    carouselHtml += `</div></div>`;
-                    container.innerHTML = carouselHtml;
+                    html += '</div>';
+                    container.innerHTML = html;
                     
-                    // Trigger translation for news container
+                    // Trigger translation
                     if (window.TranslationManager) {
                         window.TranslationManager.translateElement(container);
                     }
                 } else {
-                     const msg = data.message || '@Localizer["Unable to load news."]';
-                     container.innerHTML = `<div class="text-center py-5"><p class="small text-muted mb-0"><i class="bi bi-exclamation-circle me-1"></i>${msg}</p></div>`;
+                    const msg = data.message || '@Localizer["Unable to load news."]';
+                    container.innerHTML = `<div class="text-center py-5 text-muted small"><i class="bi bi-exclamation-circle me-1"></i>${msg}</div>`;
                 }
             } catch (error) {
                 console.error('News error:', error);
-                container.innerHTML = `<p class="small text-muted text-center">@Localizer["Unable to load news."]</p>`;
-            }
-        }
-
-        function searchNews() {
-            const query = document.getElementById('news-search-input').value.trim();
-            const countrySelect = document.getElementById('news-country-select');
-            const countryName = countrySelect.options[countrySelect.selectedIndex].text;
-            
-            if (query) {
-                // Redirect to the dedicated City News page with both parameters
-                window.location.href = `/News/CityNews?city=${encodeURIComponent(query)}&country=${encodeURIComponent(countryName)}`;
-            } else {
-                // If query is empty, just refresh the widget with the selected country
-                fetchNews('', countrySelect.value);
+                container.innerHTML = `<div class="text-center py-5 text-muted small">@Localizer["Unable to load global news."]</div>`;
             }
         }
 

@@ -95,12 +95,7 @@
                     <label class="form-label small text-muted text-uppercase fw-bold ls-1">@Localizer["Permitted Dashboard Widgets"]</label>
                     <div class="row g-2 p-3 bg-light rounded-4 border">
                         @{
-                            var widgets = new[] { 
-                                "Weather Details", "Currency Conversion", "Time Conversion", 
-                                "Headlines / News", "World Countries", "Personal Notes", 
-                                "Habit Tracker", "Emergency Numbers", "Language Translator",
-                                "PDF Converter"
-                            };
+                            var widgets = ViewBag.AllWidgets as List<string> ?? new List<string>();
                         }
                         @foreach (var widget in widgets)
                         {

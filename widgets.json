@@ -1,0 +1,42 @@
+[
+  {
+    "Id": 1,
+    "Name": "Weather Details"
+  },
+  {
+    "Id": 2,
+    "Name": "Currency Conversion"
+  },
+  {
+    "Id": 3,
+    "Name": "Time Conversion"
+  },
+  {
+    "Id": 4,
+    "Name": "Headlines / News"
+  },
+  {
+    "Id": 5,
+    "Name": "World Countries"
+  },
+  {
+    "Id": 6,
+    "Name": "Personal Notes"
+  },
+  {
+    "Id": 7,
+    "Name": "Habit Tracker"
+  },
+  {
+    "Id": 8,
+    "Name": "Emergency Numbers"
+  },
+  {
+    "Id": 9,
+    "Name": "Language Translator"
+  },
+  {
+    "Id": 10,
+    "Name": "PDF Converter"
+  }
+]

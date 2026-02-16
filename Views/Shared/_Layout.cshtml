@@ -15,9 +15,14 @@
     <link rel="stylesheet" href="~/EmployeeCrudApp.styles.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/EmployeeCrudApp.styles.css" asp-append-version="true" />
     <script>
-        // Immediate theme application to prevent flash
+        // Immediate theme application to prevent flash with storage resiliency
         (function() {
-            const theme = localStorage.getItem('app_theme') || 'light';
+            let theme = 'light';
+            try {
+                theme = localStorage.getItem('app_theme') || 'light';
+            } catch (e) {
+                console.warn('Storage blocked during theme init');
+            }
             document.documentElement.setAttribute('data-theme', theme);
         })();
         window.APP_CULTURE = '@System.Globalization.CultureInfo.CurrentUICulture.Name';

@@ -228,6 +228,8 @@
             stopTimer();
 
             try {
+                // If it looks like a category (no spaces, common category names), 
+                // we'll let the controller handle it with top-headlines.
                 let url = `/News/GetCityNews?city=${encodeURIComponent(city)}&country=${encodeURIComponent(country)}`;
                 const response = await fetch(url);
                 const data = await response.json();
@@ -269,7 +271,15 @@
         function renderNews(articles, locationName) {
             let html = "";
             articles.forEach((article, index) => {
-                const imgUrl = article.urlToImage || 'https://images.unsplash.com/photo-1585829365234-78d9bce44b82?q=80&w=800&auto=format&fit=crop';
+                // Heuristic: Some news sources provide their logo as urlToImage when no article image is available.
+                // We'll check if the URL looks like a generic placeholder/logo or is missing.
+                let imgUrl = article.urlToImage;
+                const isGenericInImage = imgUrl && (imgUrl.includes('logo') || imgUrl.includes('default') || imgUrl.includes('placeholder'));
+                
+                if (!imgUrl || isGenericInImage) {
+                    imgUrl = 'https://images.unsplash.com/photo-1585829365234-78d9bce44b82?q=80&w=800&auto=format&fit=crop';
+                }
+
                 const publishedDate = new Date(article.publishedAt);
                 const culture = window.APP_CULTURE || 'en-US';
                 const timeString = publishedDate.toLocaleString(culture, { 

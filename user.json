@@ -41,14 +41,15 @@
     "IsEmailVerified": true,
     "Otp": null,
     "OtpExpiry": null,
-    "LoginCount": 2,
-    "TodayLoginCount": 2,
+    "LoginCount": 3,
+    "TodayLoginCount": 3,
     "CreatedDate": "2026-02-12T16:05:46.2975356+05:30",
-    "LastLoginDate": "2026-02-12T16:13:25.2569366+05:30",
+    "LastLoginDate": "2026-02-12T18:40:01.7035235+05:30",
     "Role": "User",
     "LoginHistory": [
       "2026-02-12T16:07:54.760412+05:30",
-      "2026-02-12T16:13:25.2569366+05:30"
+      "2026-02-12T16:13:25.2569366+05:30",
+      "2026-02-12T18:40:01.7035235+05:30"
     ],
     "PermittedWidgets": [
       "Weather Details",
@@ -59,30 +60,7 @@
       "Habit Tracker",
       "PDF Converter"
     ],
-    "SecurityPin": "1111"
-  },
-  {
-    "Id": 21,
-    "Name": "charmi",
-    "Email": "charmimarakana@gmail.com",
-    "Password": "1919",
-    "IsEmailVerified": true,
-    "Otp": null,
-    "OtpExpiry": null,
-    "LoginCount": 1,
-    "TodayLoginCount": 1,
-    "CreatedDate": "2026-02-12T16:43:08.6297431+05:30",
-    "LastLoginDate": "2026-02-12T16:44:05.4956107+05:30",
-    "Role": "User",
-    "LoginHistory": [
-      "2026-02-12T16:44:05.4956107+05:30"
-    ],
-    "PermittedWidgets": [
-      "Weather Details",
-      "Time Conversion",
-      "PDF Converter"
-    ],
-    "SecurityPin": "1919"
+    "SecurityPin": null
   },
   {
     "Id": 22,
@@ -92,14 +70,33 @@
     "IsEmailVerified": true,
     "Otp": null,
     "OtpExpiry": null,
-    "LoginCount": 2,
-    "TodayLoginCount": 2,
+    "LoginCount": 21,
+    "TodayLoginCount": 6,
     "CreatedDate": "2026-02-12T16:55:53.4201956+05:30",
-    "LastLoginDate": "2026-02-12T17:56:54.8315195+05:30",
+    "LastLoginDate": "2026-02-16T13:18:57.1273856+05:30",
     "Role": "Admin",
     "LoginHistory": [
       "2026-02-12T16:56:14.9963346+05:30",
-      "2026-02-12T17:56:54.8315195+05:30"
+      "2026-02-12T17:56:54.8315195+05:30",
+      "2026-02-12T18:12:52.0370945+05:30",
+      "2026-02-12T18:30:14.1126918+05:30",
+      "2026-02-13T10:42:30.0394011+05:30",
+      "2026-02-13T10:44:11.4090628+05:30",
+      "2026-02-13T10:44:53.9544579+05:30",
+      "2026-02-13T12:28:05.7130625+05:30",
+      "2026-02-13T13:03:08.242214+05:30",
+      "2026-02-13T13:05:08.8304078+05:30",
+      "2026-02-13T13:12:46.0415175+05:30",
+      "2026-02-13T13:40:57.1826149+05:30",
+      "2026-02-13T14:29:50.6206334+05:30",
+      "2026-02-13T15:30:00.0511884+05:30",
+      "2026-02-13T16:41:43.5153871+05:30",
+      "2026-02-16T11:39:23.1824942+05:30",
+      "2026-02-16T11:53:49.191614+05:30",
+      "2026-02-16T12:02:26.9343185+05:30",
+      "2026-02-16T12:11:14.2826611+05:30",
+      "2026-02-16T12:14:05.6945408+05:30",
+      "2026-02-16T13:18:57.1273856+05:30"
     ],
     "PermittedWidgets": [
       "Headlines / News",
@@ -107,5 +104,27 @@
       "PDF Converter"
     ],
     "SecurityPin": "11111"
+  },
+  {
+    "Id": 23,
+    "Name": "charmi",
+    "Email": "charmimarakana@gmail.com",
+    "Password": "1919",
+    "IsEmailVerified": true,
+    "Otp": null,
+    "OtpExpiry": null,
+    "LoginCount": 1,
+    "TodayLoginCount": 1,
+    "CreatedDate": "2026-02-13T13:06:11.4956323+05:30",
+    "LastLoginDate": "2026-02-13T13:12:23.6287013+05:30",
+    "Role": "Private",
+    "LoginHistory": [
+      "2026-02-13T13:12:23.6287013+05:30"
+    ],
+    "PermittedWidgets": [
+      "Emergency Numbers",
+      "PDF Converter"
+    ],
+    "SecurityPin": "1919"
   }
 ]

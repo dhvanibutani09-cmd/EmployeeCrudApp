@@ -7,7 +7,12 @@ class ThemeManager {
     }
 
     init() {
-        const stored = localStorage.getItem(this.storageKey);
+        let stored = null;
+        try {
+            stored = localStorage.getItem(this.storageKey);
+        } catch (e) {
+            console.warn('Storage access blocked:', e);
+        }
         const theme = stored || this.defaultTheme;
         if (this.currentTheme !== theme) {
             this.applyTheme(theme);
@@ -49,7 +54,11 @@ class ThemeManager {
     }
 
     saveTheme(theme) {
-        localStorage.setItem(this.storageKey, theme);
+        try {
+            localStorage.setItem(this.storageKey, theme);
+        } catch (e) {
+            console.warn('Could not save theme to storage:', e);
+        }
     }
 
     updateIcon(btn, theme) {

@@ -12,11 +12,14 @@ namespace EmployeeCrudApp.Controllers
         private readonly IEmailService _emailService;
         private readonly Microsoft.Extensions.Localization.IStringLocalizer<UserController> _localizer;
 
-        public UserController(IUserRepository userRepository, IEmailService emailService, Microsoft.Extensions.Localization.IStringLocalizer<UserController> localizer)
+        private readonly IWidgetRepository _widgetRepository;
+
+        public UserController(IUserRepository userRepository, IEmailService emailService, Microsoft.Extensions.Localization.IStringLocalizer<UserController> localizer, IWidgetRepository widgetRepository)
         {
             _userRepository = userRepository;
             _emailService = emailService;
             _localizer = localizer;
+            _widgetRepository = widgetRepository;
         }
 
         public IActionResult Index(string sortOrder, string currentFilter, string searchString, string filter = null)
@@ -110,6 +113,7 @@ namespace EmployeeCrudApp.Controllers
         public IActionResult Create()
         {
             ViewBag.Role = string.Empty;
+            ViewBag.AllWidgets = _widgetRepository.GetAll().Select(w => w.Name).ToList();
             return View();
         }
 
@@ -130,6 +134,7 @@ namespace EmployeeCrudApp.Controllers
                 {
                     ModelState.AddModelError("Email", _localizer["Email already exists."]);
                     ViewBag.Role = role;
+                    ViewBag.AllWidgets = _widgetRepository.GetAll().Select(w => w.Name).ToList();
                     return View(user);
                 }
 
@@ -141,6 +146,7 @@ namespace EmployeeCrudApp.Controllers
                 user.Otp = otp;
                 user.OtpExpiry = DateTime.Now.AddMinutes(5);
                 user.PermittedWidgets = user.PermittedWidgets ?? new List<string>();
+                user.Role = role;
 
                 var userJson = System.Text.Json.JsonSerializer.Serialize(user);
                 TempData["PendingUser"] = userJson;
@@ -151,6 +157,7 @@ namespace EmployeeCrudApp.Controllers
                 return RedirectToAction(nameof(VerifyAddUserOtp));
             }
             ViewBag.Role = role;
+            ViewBag.AllWidgets = _widgetRepository.GetAll().Select(w => w.Name).ToList();
             return View(user);
         }
 

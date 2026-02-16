@@ -93,7 +93,7 @@
                         {
                             <div class="col-md-6">
                                 <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="PermittedWidgets" value="@widget" id="chk-@widget.Replace(" ", "-").Replace("/", "-")" @(Model.PermittedWidgets.Contains(widget) ? "checked" : "")>
+                                    <input class="form-check-input" type="checkbox" name="PermittedWidgets" value="@widget" id="chk-@widget.Replace(" ", "-").Replace("/", "-")" @(Model.PermittedWidgets != null && Model.PermittedWidgets.Contains(widget) ? "checked" : "")>
                                     <label class="form-check-label small fw-bold" for="chk-@widget.Replace(" ", "-").Replace("/", "-")">@Localizer[widget]</label>
                                 </div>
                             </div>

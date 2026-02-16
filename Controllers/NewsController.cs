@@ -3,6 +3,9 @@ using Microsoft.Extensions.Configuration;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Text.Json;
+using System.Linq;
+using System.Collections.Generic;
+using System;
 
 namespace EmployeeCrudApp.Controllers
 {
@@ -16,7 +19,8 @@ namespace EmployeeCrudApp.Controllers
         {
             _configuration = configuration;
             _httpClientFactory = httpClientFactory;
-            _apiKey = _configuration["NewsApiSettings:ApiKey"] ?? string.Empty;
+            // Reading API Key from "NewsApi:ApiKey" for security, with fallback to old path
+            _apiKey = _configuration["NewsApi:ApiKey"] ?? _configuration["NewsApiSettings:ApiKey"] ?? string.Empty;
         }
 
         public IActionResult Index()
@@ -28,6 +32,87 @@ namespace EmployeeCrudApp.Controllers
         {
             ViewBag.Query = query;
             return View();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetGlobalNews(string q = "")
+        {
+            if (string.IsNullOrEmpty(_apiKey))
+            {
+                return Json(new { status = "error", message = "News API Key is missing in configuration." });
+            }
+
+            // Default to "latest" if search keyword is empty
+            string searchQuery = string.IsNullOrWhiteSpace(q) ? "latest" : q.Trim();
+
+            var client = _httpClientFactory.CreateClient();
+            client.DefaultRequestHeaders.Add("User-Agent", "EmployeeCrudApp/1.0");
+            // User requirements: 
+            // - Pass apiKey in query string
+            // - Always sort by publishedAt
+            // - Limit results to 20 using pageSize=20
+            // - Use everything endpoint
+            string url = $"https://newsapi.org/v2/everything?q={System.Net.WebUtility.UrlEncode(searchQuery)}&sortBy=publishedAt&pageSize=20&apiKey={_apiKey}";
+
+            try
+            {
+                var response = await client.GetAsync(url);
+                
+                // 1. Check if HTTP response status is successful
+                if (!response.IsSuccessStatusCode)
+                {
+                    var errorContent = await response.Content.ReadAsStringAsync();
+                    try {
+                        var errorData = JsonSerializer.Deserialize<JsonElement>(errorContent);
+                        if (errorData.TryGetProperty("message", out var apiMsg)) {
+                            return Json(new { status = "error", message = $"NewsAPI Error: {apiMsg.GetString()}" });
+                        }
+                    } catch { /* parse failed, fallback to status code */ }
+                    
+                    return Json(new { status = "error", message = $"HTTP Error: {response.StatusCode}. Unable to fetch news." });
+                }
+
+                var content = await response.Content.ReadAsStringAsync();
+                using var doc = JsonDocument.Parse(content);
+                var root = doc.RootElement;
+
+                // 2. Check if API returns status: "error" in the payload
+                if (root.TryGetProperty("status", out var status) && status.GetString() == "error")
+                {
+                    string errorMsg = root.TryGetProperty("message", out var m) ? m.GetString() : "Unknown NewsAPI error";
+                    return Json(new { status = "error", message = errorMsg });
+                }
+                
+                if (root.TryGetProperty("articles", out var articles))
+                {
+                    // Backend sorting as a safety measure and filtering
+                    var sortedArticles = articles.EnumerateArray()
+                        .Where(a => {
+                            if (!a.TryGetProperty("title", out var t) || string.IsNullOrEmpty(t.GetString())) return false;
+                            if (t.GetString() == "[Removed]") return false;
+                            // Ensure publishedAt exists to avoid exceptions during sort
+                            if (!a.TryGetProperty("publishedAt", out var p) || string.IsNullOrEmpty(p.GetString())) return false;
+                            return true;
+                        })
+                        .OrderByDescending(a => a.GetProperty("publishedAt").GetString())
+                        .Take(20)
+                        .ToList();
+                    
+                    // Use explicit serialization to avoid issues with JsonResult and JsonElement collections
+                    var resultJson = JsonSerializer.Serialize(new { status = "ok", articles = sortedArticles });
+                    return Content(resultJson, "application/json");
+                }
+                
+                return Content(JsonSerializer.Serialize(new { status = "error", message = "No articles found in the response." }), "application/json");
+            }
+            catch (HttpRequestException httpEx)
+            {
+                return Json(new { status = "error", message = $"Network Error: {httpEx.Message}. Check your connection." });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { status = "error", message = $"System Error: {ex.Message}" });
+            }
         }
 
         [HttpGet]
@@ -191,7 +276,26 @@ namespace EmployeeCrudApp.Controllers
             }
 
             string domainsParam = !string.IsNullOrEmpty(domains) ? $"&domains={domains}" : "";
-            string everythingUrl = $"https://newsapi.org/v2/everything?q={System.Net.WebUtility.UrlEncode(query)}{domainsParam}&sortBy=publishedAt&pageSize=100&apiKey={_apiKey}{apiLangParam}";
+
+            // Detect if the query is a known NewsAPI category
+            string[] categories = { "business", "entertainment", "general", "health", "science", "sports", "technology" };
+            string lowerQuery = query.ToLower().Trim();
+            // Handle common variations like "sport" -> "sports"
+            if (lowerQuery == "sport") lowerQuery = "sports";
+            
+            bool isCategory = categories.Contains(lowerQuery);
+
+            string everythingUrl;
+            if (isCategory)
+            {
+                // If it's a category, use top-headlines for better quality and images
+                string countryCode = country.ToLower() == "india" ? "in" : (country.Length == 2 ? country.ToLower() : "in");
+                everythingUrl = $"https://newsapi.org/v2/top-headlines?category={lowerQuery}&country={countryCode}&pageSize=100&apiKey={_apiKey}{apiLangParam}";
+            }
+            else
+            {
+                everythingUrl = $"https://newsapi.org/v2/everything?q={System.Net.WebUtility.UrlEncode(query)}{domainsParam}&sortBy=publishedAt&pageSize=100&apiKey={_apiKey}{apiLangParam}";
+            }
 
             try
             {

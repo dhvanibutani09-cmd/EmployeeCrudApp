@@ -13,16 +13,24 @@ class TimeTracker {
     }
 
     loadState() {
-        const state = JSON.parse(localStorage.getItem('tt_state') || '{}');
+        let state = {};
         const today = new Date().toDateString();
-        const savedDate = localStorage.getItem('tt_date');
+        let savedDate = null;
 
-        if (savedDate !== today) {
-            this.dailyTotal = 0;
-            localStorage.setItem('tt_date', today);
-            localStorage.setItem('tt_daily_total', '0');
-        } else {
-            this.dailyTotal = parseInt(localStorage.getItem('tt_daily_total') || '0');
+        try {
+            state = JSON.parse(localStorage.getItem('tt_state') || '{}');
+            savedDate = localStorage.getItem('tt_date');
+
+            if (savedDate !== today) {
+                this.dailyTotal = 0;
+                localStorage.setItem('tt_date', today);
+                localStorage.setItem('tt_daily_total', '0');
+            } else {
+                this.dailyTotal = parseInt(localStorage.getItem('tt_daily_total') || '0');
+            }
+        } catch (e) {
+            console.warn('Storage access blocked for time tracker:', e);
+            this.dailyTotal = 0; // Fallback for the current session
         }
 
         this.status = state.status || 'stopped';
@@ -45,8 +53,12 @@ class TimeTracker {
             startTime: this.startTime,
             taskName: this.taskName
         };
-        localStorage.setItem('tt_state', JSON.stringify(state));
-        localStorage.setItem('tt_daily_total', this.dailyTotal.toString());
+        try {
+            localStorage.setItem('tt_state', JSON.stringify(state));
+            localStorage.setItem('tt_daily_total', this.dailyTotal.toString());
+        } catch (e) {
+            console.warn('Could not save time tracker state to storage:', e);
+        }
     }
 
     initUI() {

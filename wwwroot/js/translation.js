@@ -3,7 +3,12 @@ class TranslationManager {
         this.apiEndpoint = '/api/translation/translate';
 
         // 1. Storage or Browser Detection
-        const storedLang = localStorage.getItem('app_language');
+        let storedLang = null;
+        try {
+            storedLang = localStorage.getItem('app_language');
+        } catch (e) {
+            console.warn('Storage access blocked for translations:', e);
+        }
         const browserLang = navigator.language.split('-')[0];
         // Supported langs in our UI (expanded for regional support)
         const supported = ['en', 'hi', 'gu', 'mr', 'bn', 'ta', 'es', 'fr', 'de'];
@@ -147,7 +152,11 @@ class TranslationManager {
         if (this.currentLang === lang) return;
 
         this.currentLang = lang;
-        localStorage.setItem('app_language', lang);
+        try {
+            localStorage.setItem('app_language', lang);
+        } catch (e) {
+            console.warn('Could not save language to storage:', e);
+        }
 
         if (window.APP_CULTURE) {
             window.APP_CULTURE = lang;
