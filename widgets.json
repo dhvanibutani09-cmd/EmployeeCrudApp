@@ -38,5 +38,9 @@
   {
     "Id": 10,
     "Name": "PDF Converter"
+  },
+  {
+    "Id": 11,
+    "Name": "Goal Tracking"
   }
 ]

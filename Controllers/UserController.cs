@@ -145,7 +145,7 @@ namespace EmployeeCrudApp.Controllers
                 user.IsEmailVerified = false;
                 user.Otp = otp;
                 user.OtpExpiry = DateTime.Now.AddMinutes(5);
-                user.PermittedWidgets = user.PermittedWidgets ?? new List<string>();
+                user.PermittedWidgets = GetAuthorizedWidgets(role, user.PermittedWidgets ?? new List<string>());
                 user.Role = role;
 
                 var userJson = System.Text.Json.JsonSerializer.Serialize(user);
@@ -239,7 +239,7 @@ namespace EmployeeCrudApp.Controllers
                 existingUser.Email = user.Email;
                 existingUser.SecurityPin = user.SecurityPin;
                 existingUser.IsEmailVerified = user.IsEmailVerified;
-                existingUser.PermittedWidgets = user.PermittedWidgets ?? new List<string>();
+                existingUser.PermittedWidgets = GetAuthorizedWidgets(user.Role, user.PermittedWidgets ?? new List<string>());
                 // Only update role if current user is admin (security check handled by [Authorize(Roles="Admin")] but good practice)
                 existingUser.Role = user.Role; 
 
@@ -302,6 +302,25 @@ namespace EmployeeCrudApp.Controllers
             }
 
             return PartialView("_LoginHistoryPartial", history.ToList());
+        }
+
+        private List<string> GetAuthorizedWidgets(string role, List<string> requestedWidgets)
+        {
+            if (role == "Admin") return requestedWidgets; // Admins can have anything
+
+            if (role == "User") // Normal User
+            {
+                var allowed = new List<string> { "Weather Details", "Currency Conversion", "Time Conversion", "Headlines / News", "World Countries", "Emergency Numbers", "Language Translator", "Goal Tracking" };
+                return requestedWidgets.Where(w => allowed.Contains(w)).ToList();
+            }
+
+            if (role == "Private") // Private User
+            {
+                var allowed = new List<string> { "Weather Details", "Time Conversion", "Personal Notes", "Emergency Numbers", "Language Translator" };
+                return requestedWidgets.Where(w => allowed.Contains(w)).ToList();
+            }
+
+            return new List<string>();
         }
     }
 }

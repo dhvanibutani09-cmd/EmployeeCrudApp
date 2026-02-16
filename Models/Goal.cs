@@ -14,13 +14,12 @@ public class Goal
     public string Description { get; set; } = string.Empty;
     
     [Required]
-    [FutureDate(ErrorMessage = "Target Date must be in the future.")]
-    public DateTime TargetDate { get; set; }
-    
+    public DateTime StartDate { get; set; } = DateTime.Now;
+
     [Required]
-    [Range(0.1, double.MaxValue, ErrorMessage = "Target Value must be greater than 0.")]
-    public decimal TargetValue { get; set; }
-    public decimal CurrentValue { get; set; }
+    public DateTime EndDate { get; set; } = DateTime.Now.AddDays(7);
+    
+    public bool IsCompleted { get; set; } = false;
     
     public string Category { get; set; } = "Personal"; // Health, Finance, Study, Personal
     public string Priority { get; set; } = "Medium"; // Low, Medium, High
@@ -31,34 +30,25 @@ public class Goal
     {
         get
         {
-            if (CurrentValue >= TargetValue) return "Completed";
-            if (DateTime.Now.Date > TargetDate.Date && ProgressPercentage < 100) return "Overdue";
+            if (IsCompleted) return "Done";
+            var today = DateTime.Now.Date;
+            if (today < StartDate.Date) return "Upcoming";
+            if (today > EndDate.Date) return "Late";
             return "Active";
         }
     }
 
-    public int ProgressPercentage
+    public string StatusColor
     {
         get
         {
-            if (TargetValue == 0) return 0;
-            var percentage = (int)((CurrentValue * 100) / TargetValue);
-            return Math.Min(percentage, 100); // Cap at 100%
-        }
-    }
-
-    public string ProgressBarColor
-    {
-        get
-        {
-            if (Status == "Completed") return "bg-success";
-            if (Status == "Overdue") return "bg-danger";
-            
-            var p = ProgressPercentage;
-            if (p < 25) return "bg-danger";
-            if (p < 50) return "bg-warning";
-            if (p < 75) return "bg-info";
-            return "bg-primary";
+            return Status switch
+            {
+                "Done" => "bg-success",
+                "Late" => "bg-danger",
+                "Upcoming" => "bg-secondary",
+                _ => "bg-primary"
+            };
         }
     }
 }

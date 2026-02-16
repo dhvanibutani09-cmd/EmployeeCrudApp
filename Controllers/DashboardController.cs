@@ -196,14 +196,14 @@ namespace EmployeeCrudApp.Controllers
                 IsTranslatorVerified = HttpContext.Session.GetString("PinVerified_Translator") == "true",
                 IsPdfVerified = HttpContext.Session.GetString("PinVerified_PDF") == "true",
                 Goals = allGoals,
-                RecentGoals = allGoals.Take(3).ToList()
+                RecentGoals = allGoals
             };
 
             // Calculate Goal Stats
             viewModel.TotalGoals = viewModel.Goals.Count;
-            viewModel.CompletedGoals = viewModel.Goals.Count(g => g.Status == "Completed");
+            viewModel.CompletedGoals = viewModel.Goals.Count(g => g.Status == "Done");
             viewModel.ActiveGoals = viewModel.Goals.Count(g => g.Status == "Active");
-            viewModel.OverdueGoals = viewModel.Goals.Count(g => g.Status == "Overdue");
+            viewModel.OverdueGoals = viewModel.Goals.Count(g => g.Status == "Late");
 
             return View(viewModel);
         }
@@ -344,7 +344,7 @@ namespace EmployeeCrudApp.Controllers
             if (ModelState.IsValid)
             {
                 goal.UserId = User.FindFirst("Email")?.Value ?? User.Identity?.Name ?? string.Empty;
-                goal.CurrentValue = 0;
+                goal.IsCompleted = false;
                 goal.CreatedDate = DateTime.Now;
                 
                 _goalRepository.Add(goal);
@@ -356,13 +356,13 @@ namespace EmployeeCrudApp.Controllers
         }
 
         [HttpPost]
-        public IActionResult UpdateGoalProgress(int id, decimal currentValue)
+        public IActionResult ToggleGoalCompletion(int id)
         {
             var userId = User.FindFirst("Email")?.Value ?? User.Identity?.Name ?? string.Empty;
             var goal = _goalRepository.GetById(id);
             if (goal != null && goal.UserId == userId)
             {
-                goal.CurrentValue = currentValue;
+                goal.IsCompleted = !goal.IsCompleted;
                 _goalRepository.Update(goal);
                 return Json(new { success = true });
             }
@@ -380,8 +380,8 @@ namespace EmployeeCrudApp.Controllers
                 if (existingGoal != null && existingGoal.UserId == userId)
                 {
                     existingGoal.Title = goal.Title;
-                    existingGoal.TargetValue = goal.TargetValue;
-                    existingGoal.TargetDate = goal.TargetDate;
+                    existingGoal.StartDate = goal.StartDate;
+                    existingGoal.EndDate = goal.EndDate;
                     existingGoal.Category = goal.Category;
                     existingGoal.Priority = goal.Priority;
                     

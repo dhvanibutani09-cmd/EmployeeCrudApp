@@ -132,18 +132,31 @@
     <script>
         function handleRoleChange(role) {
             const checkboxes = document.querySelectorAll('.widget-checkbox');
+            // First uncheck all
+            checkboxes.forEach(cb => cb.checked = false);
+
             if (role === 'Admin') {
                 checkboxes.forEach(cb => cb.checked = true);
-            } else {
-                checkboxes.forEach(cb => cb.checked = false);
+            } else if (role === 'User') {
+                const normalWidgets = ['Weather Details', 'Currency Conversion', 'Time Conversion', 'Headlines / News', 'World Countries', 'Emergency Numbers', 'Language Translator', 'Goal Tracking'];
+                checkboxes.forEach(cb => {
+                    if (normalWidgets.includes(cb.value)) cb.checked = true;
+                });
+            } else if (role === 'Private') {
+                const privateWidgets = ['Weather Details', 'Time Conversion', 'Personal Notes', 'Emergency Numbers', 'Language Translator'];
+                checkboxes.forEach(cb => {
+                    if (privateWidgets.includes(cb.value)) cb.checked = true;
+                });
             }
         }
 
-        // Initialize checkboxes based on current selection (if any, e.g. on validation error)
         document.addEventListener('DOMContentLoaded', () => {
             const roleSelect = document.getElementById('user-role-select');
-            if (roleSelect && roleSelect.value === 'Admin' && !document.querySelector('.widget-checkbox:checked')) {
-                 handleRoleChange('Admin');
+            if (roleSelect && roleSelect.value) {
+                 // Trigger handleRoleChange only if no checkboxes are checked (e.g. first load)
+                 if (!document.querySelector('.widget-checkbox:checked')) {
+                    handleRoleChange(roleSelect.value);
+                 }
             }
         });
     </script>
