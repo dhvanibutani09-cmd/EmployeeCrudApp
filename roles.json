@@ -1,0 +1,83 @@
+[
+  {
+    "Id": 1,
+    "Name": "Admin",
+    "PermittedWidgets": [
+      "Weather Details",
+      "Currency Conversion",
+      "Time Conversion",
+      "Headlines",
+      "World Countries",
+      "Notes",
+      "Habit Tracker",
+      "Emergency Number",
+      "Language Translator",
+      "PDF Converter",
+      "Goal Tracker"
+    ],
+    "CanViewUsers": true,
+    "CanAddUser": true,
+    "CanEditUser": true,
+    "CanDeleteUser": true,
+    "CanAccessDashboard": true,
+    "CanAccessWidgets": true,
+    "CanAccessSettings": true
+  },
+  {
+    "Id": 2,
+    "Name": "User",
+    "PermittedWidgets": [
+      "Weather Details",
+      "Currency Conversion",
+      "Time Conversion",
+      "Headlines",
+      "World Countries",
+      "Emergency Number",
+      "Goal Tracker"
+    ],
+    "CanViewUsers": true,
+    "CanAddUser": false,
+    "CanEditUser": false,
+    "CanDeleteUser": false,
+    "CanAccessDashboard": true,
+    "CanAccessWidgets": true,
+    "CanAccessSettings": false
+  },
+  {
+    "Id": 3,
+    "Name": "Private",
+    "PermittedWidgets": [
+      "Weather Details",
+      "Time Conversion",
+      "Notes",
+      "Emergency Number",
+      "Language Translator"
+    ],
+    "CanViewUsers": false,
+    "CanAddUser": false,
+    "CanEditUser": false,
+    "CanDeleteUser": false,
+    "CanAccessDashboard": true,
+    "CanAccessWidgets": true,
+    "CanAccessSettings": false
+  },
+  {
+    "Id": 4,
+    "Name": "Visitor",
+    "PermittedWidgets": [
+      "Weather Details",
+      "Currency Conversion",
+      "Time Conversion",
+      "Headlines",
+      "World Countries",
+      "Emergency Number"
+    ],
+    "CanViewUsers": false,
+    "CanAddUser": false,
+    "CanEditUser": false,
+    "CanDeleteUser": false,
+    "CanAccessDashboard": true,
+    "CanAccessWidgets": false,
+    "CanAccessSettings": false
+  }
+]

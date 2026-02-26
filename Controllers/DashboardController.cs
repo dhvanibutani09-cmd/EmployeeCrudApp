@@ -201,8 +201,8 @@ namespace EmployeeCrudApp.Controllers
 
             // Calculate Goal Stats
             viewModel.TotalGoals = viewModel.Goals.Count;
-            viewModel.CompletedGoals = viewModel.Goals.Count(g => g.Status == "Done");
-            viewModel.ActiveGoals = viewModel.Goals.Count(g => g.Status == "Active");
+            viewModel.CompletedGoals = viewModel.Goals.Count(g => g.Status == "Completed");
+            viewModel.ActiveGoals = viewModel.Goals.Count(g => g.Status == "On Track" || g.Status == "Behind");
             viewModel.OverdueGoals = viewModel.Goals.Count(g => g.Status == "Late");
 
             return View(viewModel);
@@ -231,6 +231,7 @@ namespace EmployeeCrudApp.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin,User,Private")]
         public IActionResult AddNote(string text)
         {
             if (!string.IsNullOrWhiteSpace(text))
@@ -243,6 +244,7 @@ namespace EmployeeCrudApp.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin,User,Private")]
         public IActionResult EditNote(int id, string text)
         {
             if (!string.IsNullOrWhiteSpace(text))
@@ -256,6 +258,7 @@ namespace EmployeeCrudApp.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin,User,Private")]
         public IActionResult DeleteNote(int id)
         {
             var userId = User.Identity?.Name ?? string.Empty;
@@ -264,6 +267,7 @@ namespace EmployeeCrudApp.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin,User,Private")]
         public IActionResult AddHabit(string name, string description, string frequency, string customDays, DateTime? startDate)
         {
             if (!string.IsNullOrWhiteSpace(name))
@@ -296,6 +300,7 @@ namespace EmployeeCrudApp.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin,User,Private")]
         public IActionResult ToggleHabit(int id)
         {
             var userId = User.Identity?.Name ?? string.Empty;
@@ -319,6 +324,7 @@ namespace EmployeeCrudApp.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin,User,Private")]
         public IActionResult DeleteHabit(int id)
         {
              var userId = User.Identity?.Name ?? string.Empty;
@@ -339,6 +345,7 @@ namespace EmployeeCrudApp.Controllers
 
 
         [HttpPost]
+        [Authorize(Roles = "Admin,User,Private")]
         public IActionResult AddGoal(Goal goal)
         {
             if (ModelState.IsValid)
@@ -346,6 +353,9 @@ namespace EmployeeCrudApp.Controllers
                 goal.UserId = User.FindFirst("Email")?.Value ?? User.Identity?.Name ?? string.Empty;
                 goal.IsCompleted = false;
                 goal.CreatedDate = DateTime.Now;
+                
+                // Initialize Daily Logs using the model's logic
+                goal.SyncDailyLogs();
                 
                 _goalRepository.Add(goal);
                 return Json(new { success = true });
@@ -356,6 +366,7 @@ namespace EmployeeCrudApp.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin,User,Private")]
         public IActionResult ToggleGoalCompletion(int id)
         {
             var userId = User.FindFirst("Email")?.Value ?? User.Identity?.Name ?? string.Empty;
@@ -370,6 +381,7 @@ namespace EmployeeCrudApp.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin,User,Private")]
         public IActionResult EditGoal(Goal goal)
         {
             if (ModelState.IsValid)
@@ -384,6 +396,11 @@ namespace EmployeeCrudApp.Controllers
                     existingGoal.EndDate = goal.EndDate;
                     existingGoal.Category = goal.Category;
                     existingGoal.Priority = goal.Priority;
+                    existingGoal.Difficulty = goal.Difficulty;
+                    existingGoal.TargetValue = goal.TargetValue;
+                    
+                    // Sync logs in case dates or target value changed
+                    existingGoal.SyncDailyLogs();
                     
                     _goalRepository.Update(existingGoal);
                     return Json(new { success = true });
@@ -396,6 +413,93 @@ namespace EmployeeCrudApp.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin,User,Private")]
+        public IActionResult LogGoalProgress(int id, decimal progress)
+        {
+            var userId = User.FindFirst("Email")?.Value ?? User.Identity?.Name ?? string.Empty;
+            var goal = _goalRepository.GetById(id);
+            if (goal != null && goal.UserId == userId)
+            {
+                var today = DateTime.Now.Date;
+                var log = goal.DailyLogs.FirstOrDefault(l => l.Date.Date == today);
+                
+                if (log != null)
+                {
+                    log.Actual += progress;
+                }
+                else
+                {
+                    // If log for today doesn't exist (e.g. goal started in past but log missing), add it
+                    goal.DailyLogs.Add(new Goal.DailyLogEntry { Date = today, Actual = progress, Target = goal.DailyTarget });
+                }
+
+                goal.CurrentValue = goal.DailyLogs.Sum(l => l.Actual);
+                _goalRepository.Update(goal);
+                return Json(new { success = true, newValue = goal.CurrentValue });
+            }
+            return Json(new { success = false, message = "Goal not found." });
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Admin,User,Private")]
+        public IActionResult UpdateDailyLog(int goalId, DateTime date, decimal actual)
+        {
+            var userId = User.FindFirst("Email")?.Value ?? User.Identity?.Name ?? string.Empty;
+            var goal = _goalRepository.GetById(goalId);
+            if (goal != null && goal.UserId == userId)
+            {
+                var log = goal.DailyLogs.FirstOrDefault(l => l.Date.Date == date.Date);
+                if (log != null)
+                {
+                    log.Actual = actual;
+                    goal.CurrentValue = goal.DailyLogs.Sum(l => l.Actual);
+                    _goalRepository.Update(goal);
+                    return Json(new { success = true });
+                }
+                return Json(new { success = false, message = "Log for selected date not found." });
+            }
+            return Json(new { success = false, message = "Goal not found." });
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Admin,User,Private")]
+        public IActionResult ExtendGoalDeadline(int id, int additionalDays)
+        {
+            var userId = User.FindFirst("Email")?.Value ?? User.Identity?.Name ?? string.Empty;
+            var goal = _goalRepository.GetById(id);
+            if (goal != null && goal.UserId == userId)
+            {
+                goal.EndDate = goal.EndDate.AddDays(additionalDays);
+                goal.SyncDailyLogs();
+                _goalRepository.Update(goal);
+                return Json(new { success = true, newEndDate = goal.EndDate.ToString("yyyy-MM-dd") });
+            }
+            return Json(new { success = false, message = "Goal not found." });
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "Admin,User,Private")]
+        public IActionResult GetCategoryAnalytics()
+        {
+            var email = User.FindFirst("Email")?.Value ?? User.Identity?.Name ?? string.Empty;
+            var goals = _goalRepository.GetAll(email).ToList();
+
+            var analytics = goals.GroupBy(g => g.Category)
+                .Select(group => new
+                {
+                    Category = group.Key,
+                    Count = group.Count(),
+                    AvgProgress = group.Average(g => g.ProgressPercentage),
+                    AvgHealth = group.Average(g => g.HealthScore),
+                    StatusSummary = group.GroupBy(g => g.Status)
+                                         .Select(s => new { Status = s.Key, Count = s.Count() })
+                });
+
+            return Json(analytics);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Admin,User,Private")]
         public IActionResult DeleteGoal(int id)
         {
             var userId = User.FindFirst("Email")?.Value ?? User.Identity?.Name ?? string.Empty;

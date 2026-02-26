@@ -87,6 +87,7 @@
                             <option value="Admin" selected="@(role == "Admin")">@Localizer["Admin User"]</option>
                             <option value="User" selected="@(role == "User")">@Localizer["Normal User"]</option>
                             <option value="Private" selected="@(role == "Private")">@Localizer["Private User"]</option>
+                            <option value="Visitor" selected="@(role == "Visitor")">@Localizer["Visitor"]</option>
                         </select>
                     </div>
                 </div>
@@ -132,20 +133,42 @@
     <script>
         function handleRoleChange(role) {
             const checkboxes = document.querySelectorAll('.widget-checkbox');
-            // First uncheck all
-            checkboxes.forEach(cb => cb.checked = false);
+            // First uncheck and enable all
+            checkboxes.forEach(cb => {
+                cb.checked = false;
+                cb.disabled = false;
+            });
 
             if (role === 'Admin') {
-                checkboxes.forEach(cb => cb.checked = true);
+                checkboxes.forEach(cb => {
+                    cb.checked = true;
+                });
             } else if (role === 'User') {
                 const normalWidgets = ['Weather Details', 'Currency Conversion', 'Time Conversion', 'Headlines / News', 'World Countries', 'Emergency Numbers', 'Language Translator', 'Goal Tracking'];
                 checkboxes.forEach(cb => {
-                    if (normalWidgets.includes(cb.value)) cb.checked = true;
+                    if (normalWidgets.includes(cb.value)) {
+                        cb.checked = true;
+                    } else {
+                        cb.disabled = true;
+                    }
                 });
             } else if (role === 'Private') {
                 const privateWidgets = ['Weather Details', 'Time Conversion', 'Personal Notes', 'Emergency Numbers', 'Language Translator'];
                 checkboxes.forEach(cb => {
-                    if (privateWidgets.includes(cb.value)) cb.checked = true;
+                    if (privateWidgets.includes(cb.value)) {
+                        cb.checked = true;
+                    } else {
+                        cb.disabled = true;
+                    }
+                });
+            } else if (role === 'Visitor') {
+                const visitorWidgets = ['Weather Details', 'Currency Conversion', 'Time Conversion', 'Headlines / News', 'World Countries', 'Emergency Numbers'];
+                checkboxes.forEach(cb => {
+                    if (visitorWidgets.includes(cb.value)) {
+                        cb.checked = true;
+                    } else {
+                        cb.disabled = true;
+                    }
                 });
             }
         }

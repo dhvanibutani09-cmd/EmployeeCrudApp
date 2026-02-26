@@ -1,58 +1,182 @@
 [
   {
-    "Id": 5,
-    "UserId": "dhvanibutani09@gmail.com",
-    "Title": "coding",
-    "Description": "",
-    "StartDate": "2026-02-10T00:00:00",
-    "EndDate": "2026-02-14T00:00:00",
-    "IsCompleted": false,
-    "Category": "Study",
-    "Priority": "High",
-    "CreatedDate": "2026-02-16T14:19:08.4812518+05:30",
-    "Status": "Late",
-    "StatusColor": "bg-danger"
-  },
-  {
-    "Id": 6,
+    "Id": 1,
     "UserId": "dhvanibutani09@gmail.com",
     "Title": "gym",
     "Description": "",
-    "StartDate": "2026-02-13T00:00:00",
-    "EndDate": "2026-02-16T00:00:00",
-    "IsCompleted": true,
-    "Category": "Personal",
+    "StartDate": "2026-02-24T00:00:00",
+    "EndDate": "2026-03-01T00:00:00",
+    "IsCompleted": false,
+    "TargetValue": 100,
+    "CurrentValue": 1,
+    "Category": "Health",
     "Priority": "Medium",
-    "CreatedDate": "2026-02-16T14:19:58.8168005+05:30",
-    "Status": "Done",
-    "StatusColor": "bg-success"
+    "Difficulty": "Medium",
+    "CreatedDate": "2026-02-25T14:43:30.874705+05:30",
+    "LastReminderDate": null,
+    "TotalDays": 6,
+    "DailyTarget": 16.666666666666666666666666667,
+    "DaysPassed": 1,
+    "DaysRemaining": 4,
+    "ExpectedProgress": 33.333333333333333333333333334,
+    "ProgressPercentage": 1,
+    "DailyLogs": [
+      {
+        "Date": "2026-02-24T00:00:00",
+        "Target": 16.666666666666666666666666667,
+        "Actual": 1,
+        "IsToday": false,
+        "IsPast": true,
+        "IsFuture": false
+      },
+      {
+        "Date": "2026-02-25T00:00:00",
+        "Target": 16.666666666666666666666666667,
+        "Actual": 0,
+        "IsToday": true,
+        "IsPast": false,
+        "IsFuture": false
+      },
+      {
+        "Date": "2026-02-26T00:00:00",
+        "Target": 16.666666666666666666666666667,
+        "Actual": 0,
+        "IsToday": false,
+        "IsPast": false,
+        "IsFuture": true
+      },
+      {
+        "Date": "2026-02-27T00:00:00",
+        "Target": 16.666666666666666666666666667,
+        "Actual": 0,
+        "IsToday": false,
+        "IsPast": false,
+        "IsFuture": true
+      },
+      {
+        "Date": "2026-02-28T00:00:00",
+        "Target": 16.666666666666666666666666667,
+        "Actual": 0,
+        "IsToday": false,
+        "IsPast": false,
+        "IsFuture": true
+      },
+      {
+        "Date": "2026-03-01T00:00:00",
+        "Target": 16.666666666666666666666666667,
+        "Actual": 0,
+        "IsToday": false,
+        "IsPast": false,
+        "IsFuture": true
+      }
+    ],
+    "CurrentVelocity": 1,
+    "RequiredVelocity": 24.75,
+    "PerformanceEfficiency": 3,
+    "HealthScore": 2,
+    "RemainingTimeDisplay": "4d 8h remaining",
+    "SmartSuggestion": "High risk! You need 24.8 per day to recover this goal.",
+    "AchievementBadges": [],
+    "EstimatedCompletionDate": "2026-06-04T00:00:00+05:30",
+    "Status": "Behind",
+    "StatusColor": "bg-warning"
   },
   {
-    "Id": 7,
+    "Id": 2,
     "UserId": "dhvanibutani09@gmail.com",
-    "Title": "enjoy",
+    "Title": "devloper",
     "Description": "",
-    "StartDate": "2026-02-14T00:00:00",
-    "EndDate": "2026-02-17T00:00:00",
+    "StartDate": "2026-02-25T00:00:00",
+    "EndDate": "2026-03-04T00:00:00",
     "IsCompleted": false,
-    "Category": "Personal",
+    "TargetValue": 100,
+    "CurrentValue": 1,
+    "Category": "Work",
     "Priority": "Medium",
-    "CreatedDate": "2026-02-16T14:21:46.3848015+05:30",
-    "Status": "Active",
-    "StatusColor": "bg-primary"
-  },
-  {
-    "Id": 8,
-    "UserId": "dhvanibutani09@gmail.com",
-    "Title": "reading",
-    "Description": "",
-    "StartDate": "2026-02-16T00:00:00",
-    "EndDate": "2026-02-23T00:00:00",
-    "IsCompleted": false,
-    "Category": "Study",
-    "Priority": "Low",
-    "CreatedDate": "2026-02-16T17:07:35.1144776+05:30",
-    "Status": "Active",
-    "StatusColor": "bg-primary"
+    "Difficulty": "Medium",
+    "CreatedDate": "2026-02-25T15:17:08.2236633+05:30",
+    "LastReminderDate": null,
+    "TotalDays": 8,
+    "DailyTarget": 12.5,
+    "DaysPassed": 0,
+    "DaysRemaining": 7,
+    "ExpectedProgress": 12.5,
+    "ProgressPercentage": 1,
+    "DailyLogs": [
+      {
+        "Date": "2026-02-25T00:00:00",
+        "Target": 12.5,
+        "Actual": 0,
+        "IsToday": true,
+        "IsPast": false,
+        "IsFuture": false
+      },
+      {
+        "Date": "2026-02-26T00:00:00",
+        "Target": 12.5,
+        "Actual": 1,
+        "IsToday": false,
+        "IsPast": false,
+        "IsFuture": true
+      },
+      {
+        "Date": "2026-02-27T00:00:00",
+        "Target": 12.5,
+        "Actual": 0,
+        "IsToday": false,
+        "IsPast": false,
+        "IsFuture": true
+      },
+      {
+        "Date": "2026-02-28T00:00:00",
+        "Target": 12.5,
+        "Actual": 0,
+        "IsToday": false,
+        "IsPast": false,
+        "IsFuture": true
+      },
+      {
+        "Date": "2026-03-01T00:00:00",
+        "Target": 12.5,
+        "Actual": 0,
+        "IsToday": false,
+        "IsPast": false,
+        "IsFuture": true
+      },
+      {
+        "Date": "2026-03-02T00:00:00",
+        "Target": 12.5,
+        "Actual": 0,
+        "IsToday": false,
+        "IsPast": false,
+        "IsFuture": true
+      },
+      {
+        "Date": "2026-03-03T00:00:00",
+        "Target": 12.5,
+        "Actual": 0,
+        "IsToday": false,
+        "IsPast": false,
+        "IsFuture": true
+      },
+      {
+        "Date": "2026-03-04T00:00:00",
+        "Target": 12.5,
+        "Actual": 0,
+        "IsToday": false,
+        "IsPast": false,
+        "IsFuture": true
+      }
+    ],
+    "CurrentVelocity": 1,
+    "RequiredVelocity": 14.142857142857142857142857143,
+    "PerformanceEfficiency": 8,
+    "HealthScore": 5,
+    "RemainingTimeDisplay": "7d 8h remaining",
+    "SmartSuggestion": "High risk! You need 14.1 per day to recover this goal.",
+    "AchievementBadges": [],
+    "EstimatedCompletionDate": null,
+    "Status": "Behind",
+    "StatusColor": "bg-warning"
   }
 ]

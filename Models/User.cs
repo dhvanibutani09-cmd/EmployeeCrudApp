@@ -39,9 +39,12 @@ public class User
     public DateTime CreatedDate { get; set; } = DateTime.Now;
     public DateTime? LastLoginDate { get; set; }
 
+    public int RoleId { get; set; } = 2; // Default to User role
     public string Role { get; set; } = "User";
 
     public List<DateTime> LoginHistory { get; set; } = new List<DateTime>();
+    
+    [System.Text.Json.Serialization.JsonIgnore]
     public List<string> PermittedWidgets { get; set; } = new List<string>();
 
     [Display(Name = "Security PIN")]
@@ -49,5 +52,9 @@ public class User
     [RegularExpression(@"^\d+$", ErrorMessage = "PIN must be numeric")]
     public string? SecurityPin { get; set; }
 
+    public bool RoleLocked { get; set; } = false;
+    public bool WidgetLocked { get; set; } = false;
 
+    [System.Text.Json.Serialization.JsonIgnore]
+    public bool IsEditable { get; set; } = false;
 }

@@ -13,7 +13,7 @@
   },
   {
     "Id": 4,
-    "Name": "Headlines / News"
+    "Name": "Headlines"
   },
   {
     "Id": 5,
@@ -21,7 +21,7 @@
   },
   {
     "Id": 6,
-    "Name": "Personal Notes"
+    "Name": "Notes"
   },
   {
     "Id": 7,
@@ -29,7 +29,7 @@
   },
   {
     "Id": 8,
-    "Name": "Emergency Numbers"
+    "Name": "Emergency Number"
   },
   {
     "Id": 9,
@@ -41,6 +41,6 @@
   },
   {
     "Id": 11,
-    "Name": "Goal Tracking"
+    "Name": "Goal Tracker"
   }
 ]

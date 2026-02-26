@@ -1,9 +1,73 @@
 @model DashboardViewModel
 @using Microsoft.AspNetCore.Mvc.Localization
+@using System.Text.Json
 @inject IViewLocalizer Localizer
 @{
     ViewData["Title"] = Localizer["Dashboard"];
 }
+
+<style>
+    .goal-item {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 1px solid rgba(0,0,0,0.05) !important;
+    }
+    .goal-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.08) !important;
+        border-color: rgba(37, 117, 252, 0.2) !important;
+    }
+    .glass-card {
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    [data-theme="dark"] .glass-card {
+        background: rgba(22, 27, 34, 0.7) !important;
+    }
+    .progress-bar {
+        transition: width 1s ease-in-out;
+    }
+    .pulse-warning {
+        animation: pulse-orange 2s infinite;
+    }
+    @@keyframes pulse-orange {
+        0% { box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.4); }
+        70% { box-shadow: 0 0 0 10px rgba(255, 193, 7, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(255, 193, 7, 0); }
+    }
+    .status-badge-float {
+        position: absolute;
+        top: -10px;
+        right: 15px;
+        z-index: 5;
+    }
+    .analytic-card {
+        transition: transform 0.3s ease;
+    }
+    .analytic-card:hover {
+        transform: scale(1.02);
+    }
+    .goal-logs-container {
+        height: 260px;
+        overflow-y: auto;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(0,0,0,0.1) transparent;
+    }
+    .goal-logs-container::-webkit-scrollbar {
+        width: 6px;
+    }
+    .goal-logs-container::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    .goal-logs-container::-webkit-scrollbar-thumb {
+        background: rgba(0,0,0,0.1);
+        border-radius: 10px;
+    }
+    .goal-logs-container::-webkit-scrollbar-thumb:hover {
+        background: rgba(0,0,0,0.2);
+    }
+</style>
 
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
@@ -283,9 +347,12 @@
                                     <p class="text-muted small mb-0">@Localizer["Capture your thoughts"]</p>
                                 </div>
                             </div>
-                            <button class="btn btn-warning rounded-pill px-4 shadow-sm fw-bold text-white" data-bs-toggle="modal" data-bs-target="#addNoteModal">
-                                <i class="bi bi-plus-lg me-2"></i> @Localizer["Add Note"]
-                            </button>
+                            @if (!User.IsInRole("Visitor"))
+                            {
+                                <button class="btn btn-warning rounded-pill px-4 shadow-sm fw-bold text-white" data-bs-toggle="modal" data-bs-target="#addNoteModal">
+                                    <i class="bi bi-plus-lg me-2"></i> @Localizer["Add Note"]
+                                </button>
+                            }
                         </div>
 
                         <div id="notes-container" class="row g-3">
@@ -301,8 +368,11 @@
                                                     <i class="bi bi-clock me-1"></i> @note.CreatedAt.ToString("MMM dd, HH:mm")
                                                 </span>
                                                 <div class="btn-group">
-                                                    <button class="btn btn-link btn-sm text-dark p-0 me-2" onclick="openEditModal(@note.Id, `@(note.Text.Replace("`", "\\`"))`)"><i class="bi bi-pencil"></i></button>
-                                                    <button class="btn btn-link btn-sm text-danger p-0" onclick="deleteNote(@note.Id)"><i class="bi bi-trash"></i></button>
+                                                    @if (!User.IsInRole("Visitor"))
+                                                    {
+                                                        <button class="btn btn-link btn-sm text-dark p-0 me-2" onclick="openEditModal(@note.Id, `@(note.Text.Replace("`", "\\`"))`)"><i class="bi bi-pencil"></i></button>
+                                                        <button class="btn btn-link btn-sm text-danger p-0" onclick="deleteNote(@note.Id)"><i class="bi bi-trash"></i></button>
+                                                    }
                                                 </div>
                                             </div>
                                         </div>
@@ -362,9 +432,12 @@
                                 <button class="btn btn-outline-dark rounded-pill px-3 shadow-sm border small fw-bold" data-bs-toggle="modal" data-bs-target="#allHabitsModal" title="@Localizer["View All Saved Habits"]">
                                     <i class="bi bi-list-ul me-1"></i> @Localizer["Stored"]
                                 </button>
-                                <button class="btn btn-success rounded-pill px-4 shadow-sm fw-bold text-white small" data-bs-toggle="modal" data-bs-target="#addHabitModal">
-                                    <i class="bi bi-plus-lg me-1"></i> @Localizer["Add"]
-                                </button>
+                                @if (!User.IsInRole("Visitor"))
+                                {
+                                    <button class="btn btn-success rounded-pill px-4 shadow-sm fw-bold text-white small" data-bs-toggle="modal" data-bs-target="#addHabitModal">
+                                        <i class="bi bi-plus-lg me-1"></i> @Localizer["Add"]
+                                    </button>
+                                }
                             </div>
                         </div>
 
@@ -446,9 +519,12 @@
                                                         <i class="bi bi-fire me-1 text-danger"></i>@habit.CurrentStreak
                                                     </span>
                                                 }
-                                                <button class="btn btn-link btn-sm text-danger p-0 ms-1 opacity-50 hover-opacity-100" onclick="deleteHabit(@habit.Id)" title="@Localizer["Delete Habit"]">
-                                                    <i class="bi bi-x-circle-fill"></i>
-                                                </button>
+                                                @if (!User.IsInRole("Visitor"))
+                                                {
+                                                    <button class="btn btn-link btn-sm text-danger p-0 ms-1 opacity-50 hover-opacity-100" onclick="deleteHabit(@habit.Id)" title="@Localizer["Delete Habit"]">
+                                                        <i class="bi bi-x-circle-fill"></i>
+                                                    </button>
+                                                }
                                             </div>
                                         </div>
                                     }
@@ -718,105 +794,191 @@
                 </div>
             </div>
         }
+
         @if (User.IsInRole("Admin") || Model.PermittedWidgets.Contains("Goal Tracking"))
         {
-            <!-- Goal Tracking Card -->
-            <div class="col-md-4">
+            <!-- Advanced Goal Tracking Card -->
+            <div class="col-md-4 mb-4">
                 <div class="card h-100 shadow border-0 rounded-4 glass-card position-relative overflow-hidden">
                     <div class="card-body p-4 d-flex flex-column">
                         <div class="d-flex justify-content-between align-items-center mb-4">
                             <div class="d-flex align-items-center">
-                                <div class="icon-circle text-white me-3" style="width: 50px; height: 50px; font-size: 1.2rem; background: linear-gradient(135deg, #8E2DE2 0%, #4A00E0 100%) !important;">
-                                    <i class="bi bi-trophy-fill"></i>
+                                <div class="icon-circle text-white me-3" style="width: 50px; height: 50px; font-size: 1.2rem; background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%) !important;">
+                                    <i class="bi bi-rocket-takeoff-fill"></i>
                                 </div>
                                 <div>
-                                    <h6 class="card-title fw-bold mb-0">@Localizer["Goal Tracking"]</h6>
-                                    <p class="text-muted small mb-0">@Localizer["Achieve your targets"]</p>
+                                    <h6 class="card-title fw-bold mb-0">@Localizer["Smart Goal Tracker"]</h6>
+                                    <p class="text-muted small mb-0">@Localizer["Performance Analytics"]</p>
                                 </div>
                             </div>
-                            <button class="btn btn-primary rounded-pill px-4 shadow-sm fw-bold text-white" style="background: linear-gradient(135deg, #8E2DE2 0%, #4A00E0 100%) !important; border: none;" data-bs-toggle="modal" data-bs-target="#addGoalModal">
-                                <i class="bi bi-plus-lg me-2"></i> @Localizer["Add Goal"]
-                            </button>
+                            @if (!User.IsInRole("Visitor"))
+                            {
+                                <div class="btn-group">
+                                    <button class="btn btn-outline-primary rounded-pill px-3 shadow-sm fw-bold border-0 me-2" style="background: rgba(106, 17, 203, 0.1);" onclick="openAnalytics()">
+                                        <i class="bi bi-bar-chart-fill"></i>
+                                    </button>
+                                    <button class="btn btn-primary rounded-pill px-4 shadow-sm fw-bold text-white border-0" style="background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%) !important;" data-bs-toggle="modal" data-bs-target="#addGoalModal">
+                                        <i class="bi bi-plus-lg me-2"></i> @Localizer["Target"]
+                                    </button>
+                                </div>
+                            }
                         </div>
 
-                                    <!-- Goal Stats Summary -->
+                        <!-- Mini Stats Dashboard -->
                         <div class="row g-2 mb-3">
-                            <div class="col-3">
+                            <div class="col-4">
                                 <div class="p-2 rounded-3 bg-light border text-center">
-                                    <div class="smaller text-muted fw-bold text-uppercase">@Localizer["Total"]</div>
-                                    <div class="h5 fw-bold text-dark mb-0">@Model.TotalGoals</div>
+                                    <div class="smaller text-muted fw-bold text-uppercase" style="font-size: 0.5rem;">@Localizer["Total"]</div>
+                                    <div class="fw-bold text-dark mb-0">@Model.TotalGoals</div>
                                 </div>
                             </div>
-                            <div class="col-3">
+                            <div class="col-4">
                                 <div class="p-2 rounded-3 bg-success bg-opacity-10 border border-success border-opacity-25 text-center">
-                                    <div class="smaller text-success fw-bold text-uppercase">@Localizer["Done"]</div>
-                                    <div class="h5 fw-bold text-success mb-0">@Model.CompletedGoals</div>
+                                    <div class="smaller text-success fw-bold text-uppercase" style="font-size: 0.5rem;">@Localizer["Done"]</div>
+                                    <div class="fw-bold text-success mb-0">@Model.CompletedGoals</div>
                                 </div>
                             </div>
-                            <div class="col-3">
-                                <div class="p-2 rounded-3 bg-primary bg-opacity-10 border border-primary border-opacity-25 text-center">
-                                    <div class="smaller text-primary fw-bold text-uppercase">@Localizer["Active"]</div>
-                                    <div class="h5 fw-bold text-primary mb-0">@Model.ActiveGoals</div>
-                                </div>
-                            </div>
-                            <div class="col-3">
+                            <div class="col-4">
                                 <div class="p-2 rounded-3 bg-danger bg-opacity-10 border border-danger border-opacity-25 text-center">
-                                    <div class="smaller text-danger fw-bold text-uppercase">@Localizer["Late"]</div>
-                                    <div class="h5 fw-bold text-danger mb-0">@Model.OverdueGoals</div>
+                                    <div class="smaller text-danger fw-bold text-uppercase" style="font-size: 0.5rem;">@Localizer["Late"]</div>
+                                    <div class="fw-bold text-danger mb-0">@Model.OverdueGoals</div>
                                 </div>
                             </div>
                         </div>
 
-                        <div id="goals-container" class="row g-3" style="max-height: 450px; overflow-y: auto; overflow-x: hidden;">
+                        <div id="goals-container" class="row g-3 flex-grow-1" style="max-height: 500px; overflow-y: auto; overflow-x: hidden;">
                             @if (Model.RecentGoals.Any())
                             {
                                 @foreach (var goal in Model.RecentGoals) 
                                 {
                                     <div class="col-12">
-                                        <div class="goal-item p-3 rounded-4 bg-light border shadow-sm">
-                                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                                <div class="d-flex align-items-center gap-2 text-truncate">
-                                                    <h6 class="fw-bold mb-0 text-truncate @(goal.IsCompleted ? "text-decoration-line-through text-muted" : "")">@goal.Title</h6>
-                                                    <span class="badge rounded-pill bg-secondary bg-opacity-25 text-dark" style="font-size: 0.65rem;">@goal.Category</span>
+                                        <div class="goal-item p-3 rounded-4 bg-light bg-opacity-50 border shadow-sm">
+                                            <!-- Title & Status -->
+                                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <h6 class="fw-bold mb-0 @(goal.IsCompleted ? "text-decoration-line-through text-muted" : "text-dark")">@goal.Title</h6>
+                                                    <span class="badge rounded-pill bg-white border text-muted" style="font-size: 0.6rem;">@goal.Category</span>
                                                 </div>
-                                                <span class="badge rounded-pill @goal.StatusColor">@Localizer[goal.Status]</span>
+                                                <span class="badge rounded-pill @goal.StatusColor shadow-sm">@Localizer[goal.Status]</span>
                                             </div>
-                                            
-                                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                                 <span class="badge rounded-pill border text-muted" style="font-size: 0.65rem;">@goal.Priority</span>
-                                            </div>
-                                            
-                                            <div class="row g-2 mb-3">
-                                                <div class="col-6">
-                                                    <div class="p-2 rounded-3 bg-white border border-opacity-50 text-center">
-                                                        <span class="d-block smaller text-muted">@Localizer["Start"]</span>
-                                                        <span class="fw-bold small"><i class="bi bi-calendar-check me-1"></i>@goal.StartDate.ToString("MMM dd")</span>
+
+                                            <!-- Live Countdown Timer -->
+                                            <div class="countdown-timer text-center p-2 rounded-3 bg-dark text-white mb-3 shadow-sm" data-end-date="@goal.EndDate.ToString("yyyy-MM-ddTHH:mm:ss")" id="timer-@goal.Id">
+                                                <div class="row g-0">
+                                                    <div class="col-4 border-end border-secondary border-opacity-25">
+                                                        <span class="d-block h6 fw-bold mb-0 days">00</span>
+                                                        <span class="smaller opacity-50 text-uppercase" style="font-size: 0.5rem;">@Localizer["Days"]</span>
                                                     </div>
-                                                </div>
-                                                <div class="col-6">
-                                                    <div class="p-2 rounded-3 bg-white border border-opacity-50 text-center">
-                                                        <span class="d-block smaller text-muted">@Localizer["End"]</span>
-                                                        <span class="fw-bold small"><i class="bi bi-calendar-x me-1"></i>@goal.EndDate.ToString("MMM dd")</span>
+                                                    <div class="col-4 border-end border-secondary border-opacity-25">
+                                                        <span class="d-block h6 fw-bold mb-0 hours">00</span>
+                                                        <span class="smaller opacity-50 text-uppercase" style="font-size: 0.5rem;">@Localizer["Hours"]</span>
+                                                    </div>
+                                                    <div class="col-4">
+                                                        <span class="d-block h6 fw-bold mb-0 minutes">00</span>
+                                                        <span class="smaller opacity-50 text-uppercase" style="font-size: 0.5rem;">@Localizer["Mins"]</span>
                                                     </div>
                                                 </div>
                                             </div>
 
-                                            <div class="d-flex justify-content-between align-items-center">
-                                                <button class="btn btn-sm rounded-pill px-3 fw-bold @(goal.IsCompleted ? "btn-success" : "btn-outline-success")" onclick="toggleGoalCompletion(@goal.Id)">
-                                                    @if (goal.IsCompleted) {
-                                                        <i class="bi bi-check-circle-fill me-1"></i> @Localizer["Done"]
-                                                    } else {
-                                                        <i class="bi bi-circle me-1"></i> @Localizer["Mark Done"]
-                                                    }
-                                                </button>
-                                                <div class="btn-group">
-                                                    <button class="btn btn-link btn-sm text-info p-0 me-2" onclick="openEditGoalModal(@goal.Id, '@goal.Title.Replace("'", "\\'")', '@goal.StartDate.ToString("yyyy-MM-dd")', '@goal.EndDate.ToString("yyyy-MM-dd")', '@goal.Category', '@goal.Priority')" title="@Localizer["Edit Goal"]">
-                                                        <i class="bi bi-pencil-square"></i>
+                                            <!-- Progress Bar -->
+                                            <div class="d-flex justify-content-between align-items-end mb-1">
+                                                <span class="smaller fw-bold text-uppercase ls-1" style="font-size: 0.6rem;">@Localizer["Overall Progress"]</span>
+                                                <span class="smaller fw-bold text-primary">@goal.ProgressPercentage.ToString("F1")%</span>
+                                            </div>
+                                            <div class="progress rounded-pill mb-3" style="height: 10px; background-color: rgba(0,0,0,0.05);">
+                                                <div class="progress-bar progress-bar-striped progress-bar-animated @goal.StatusColor shadow-sm" role="progressbar" style="width: @goal.ProgressPercentage.ToString().Replace(',', '.')%" aria-valuenow="@goal.ProgressPercentage.ToString().Replace(',', '.')" aria-valuemin="0" aria-valuemax="100"></div>
+                                            </div>
+
+                                            <!-- Daily Target Calculator -->
+                                            <div class="p-2 rounded-3 bg-white border mb-3 text-center">
+                                                <div class="smaller text-muted text-uppercase fw-bold ls-1" style="font-size: 0.55rem;">@Localizer["Daily Target required"]</div>
+                                                <div class="h6 fw-bold text-primary mb-0">@goal.RequiredVelocity.ToString("F1") <span class="smaller text-muted fw-normal">/ day</span></div>
+                                            </div>
+
+                                            <!-- Auto-Generated Daily Log System -->
+                                            <div class="daily-logs-system mb-3">
+                                                <div class="btn-group w-100 mb-2">
+                                                    <button class="btn btn-outline-secondary btn-sm rounded-start-pill py-1 border-dashed" type="button" data-bs-toggle="collapse" data-bs-target="#logs-@goal.Id" style="font-size: 0.65rem;">
+                                                        <i class="bi bi-calendar3 me-1"></i> @Localizer["Logs"]
                                                     </button>
-                                                    <button class="btn btn-link btn-sm text-danger p-0" onclick="deleteGoal(@goal.Id)" title="@Localizer["Delete Goal"]">
-                                                        <i class="bi bi-trash"></i>
+                                                    <button class="btn btn-outline-primary btn-sm rounded-end-pill py-1 border-dashed" type="button" data-bs-toggle="collapse" data-bs-target="#graph-collapse-@goal.Id" style="font-size: 0.65rem;" onclick="initGoalChart(@goal.Id, @JsonSerializer.Serialize(goal.DailyLogs.OrderBy(l => l.Date).Select(l => l.Date.ToString("MMM dd"))), @JsonSerializer.Serialize(goal.DailyLogs.OrderBy(l => l.Date).Select(l => l.Target)), @JsonSerializer.Serialize(goal.DailyLogs.OrderBy(l => l.Date).Select(l => l.Actual)))">
+                                                        <i class="bi bi-graph-up me-1"></i> @Localizer["Stats"]
                                                     </button>
                                                 </div>
+                                                <div class="collapse" id="graph-collapse-@goal.Id">
+                                                    <div class="p-2 bg-white rounded-4 border shadow-sm mb-2" style="height: 150px;">
+                                                        <canvas id="graph-@goal.Id"></canvas>
+                                                    </div>
+                                                </div>
+                                                <div class="collapse" id="logs-@goal.Id">
+                                                    <div class="list-group list-group-flush border rounded-4 shadow-sm bg-white goal-logs-container">
+                                                        @foreach (var log in goal.DailyLogs.OrderByDescending(l => l.Date))
+                                                        {
+                                                            <div class="list-group-item d-flex justify-content-between align-items-center py-2 px-3 @(log.IsToday ? "bg-primary bg-opacity-10" : "")">
+                                                                <div>
+                                                                    <div class="fw-bold smaller @(log.IsToday ? "text-primary" : "")">@log.Date.ToString("MMM dd") @(log.IsToday ? "(" + Localizer["Today"] + ")" : "")</div>
+                                                                    <div class="smaller text-muted" style="font-size: 0.6rem;">@Localizer["Target"]: @log.Target.ToString("F1")</div>
+                                                                </div>
+                                                                <div class="d-flex align-items-center gap-2">
+                                                                    <input type="number" class="form-control form-control-sm text-center fw-bold p-1" value="@log.Actual.ToString().Replace(',', '.')" 
+                                                                           style="width: 50px; font-size: 0.7rem;" 
+                                                                           onchange="updateDailyLog(@goal.Id, '@log.Date.ToString("yyyy-MM-dd")', this.value)">
+                                                                    @if (log.Actual >= log.Target)
+                                                                    {
+                                                                        <i class="bi bi-check-circle-fill text-success"></i>
+                                                                    }
+                                                                    else if (log.IsPast && log.Actual < log.Target)
+                                                                    {
+                                                                        <i class="bi bi-exclamation-circle-fill text-danger" style="font-size: 0.7rem;"></i>
+                                                                    }
+                                                                </div>
+                                                            </div>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Smart Status Indicator -->
+                                            <div class="smart-suggestion p-2 rounded-3 mb-3 border border-dashed @(goal.Status == "At Risk" || goal.Status == "Behind" ? "bg-warning bg-opacity-10 border-warning" : "bg-light")">
+                                                <div class="d-flex gap-2 align-items-center">
+                                                    <i class="bi bi-lightbulb-fill @(goal.Status == "At Risk" || goal.Status == "Behind" ? "text-warning" : "text-primary")"></i>
+                                                    <div class="smaller text-dark lh-sm" style="font-size: 0.65rem;">
+                                                        <span class="fw-bold text-uppercase ls-1">@Localizer["Coach Advice"]:</span> @goal.SmartSuggestion
+                                                        @if (goal.Status == "At Risk" || goal.Status == "Behind" || goal.Status == "Late")
+                                                        {
+                                                            <br/>
+                                                            <button class="btn btn-link btn-sm p-0 smaller text-warning mt-1 text-decoration-none fw-bold" onclick="extendDeadline(@goal.Id)">
+                                                                <i class="bi bi-calendar-plus me-1"></i>@Localizer["Need more time? Extend Deadline"]
+                                                            </button>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Actions Area -->
+                                            <div class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top border-dashed">
+                                                @if (!User.IsInRole("Visitor"))
+                                                {
+                                                    <button class="btn btn-sm rounded-pill px-3 fw-bold @(goal.IsCompleted ? "btn-success shadow-success" : "btn-outline-success")" onclick="toggleGoalCompletion(@goal.Id)" style="font-size: 0.7rem;">
+                                                        @if (goal.IsCompleted) {
+                                                            <i class="bi bi-check-circle-fill me-1"></i> @Localizer["Finished"]
+                                                        } else {
+                                                            <i class="bi bi-check2 me-1"></i> @Localizer["Complete"]
+                                                        }
+                                                    </button>
+                                                    <div class="btn-group">
+                                                        <button class="btn btn-link btn-sm text-info p-0 me-2" onclick="openEditGoalModal(@goal.Id, '@goal.Title.Replace("'", "\\'")', '@goal.StartDate.ToString("yyyy-MM-dd")', '@goal.EndDate.ToString("yyyy-MM-dd")', '@goal.Category', '@goal.Priority', '@goal.Difficulty', @goal.TargetValue.ToString().Replace(',', '.'), @goal.CurrentValue.ToString().Replace(',', '.'))" title="@Localizer["Edit"]">
+                                                            <i class="bi bi-pencil-square"></i>
+                                                        </button>
+                                                        <button class="btn btn-link btn-sm text-danger p-0" onclick="deleteGoal(@goal.Id)" title="@Localizer["Remove"]">
+                                                            <i class="bi bi-trash3"></i>
+                                                        </button>
+                                                    </div>
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted smaller"><i class="bi bi-eye me-1"></i>@Localizer["Read Only"]</span>
+                                                }
                                             </div>
                                         </div>
                                     </div>
@@ -825,8 +987,8 @@
                             else
                             {
                                 <div class="col-12 text-center py-5">
-                                    <div class="text-muted mb-2 opacity-25"><i class="bi bi-flag" style="font-size: 3rem;"></i></div>
-                                    <p class="text-muted">@Localizer["No goals set. Start tracking now!"]</p>
+                                    <div class="text-muted mb-2 opacity-25"><i class="bi bi-rocket-takeoff" style="font-size: 3rem;"></i></div>
+                                    <p class="text-muted">@Localizer["No active missions. Ignite your potential!"]</p>
                                 </div>
                             }
                         </div>
@@ -837,6 +999,149 @@
         </div>
     </div>
 
+
+
+<!-- Add Goal Modal -->
+<div class="modal fade" id="addGoalModal" tabindex="-1" aria-labelledby="addGoalModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 rounded-4 shadow-lg overflow-hidden">
+            <div class="modal-header border-0 text-white p-4" style="background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%) !important;">
+                <h5 class="modal-title fw-bold" id="addGoalModalLabel"><i class="bi bi-rocket me-2"></i> @Localizer["Set New Target"]</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4 bg-light">
+                <form id="addGoalForm" onsubmit="saveNewGoal(event)">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-muted text-uppercase">@Localizer["Goal Title"]</label>
+                        <input type="text" name="Title" class="form-control rounded-3 border-0 shadow-sm p-3" placeholder="@Localizer["What do you want to achieve?"]" required minlength="3">
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <label class="form-label fw-bold small text-muted text-uppercase">@Localizer["Start Date"]</label>
+                            <input type="date" id="addGoalStart" name="StartDate" class="form-control rounded-3 border-0 shadow-sm p-3" value="@DateTime.Now.ToString("yyyy-MM-dd")" required>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label fw-bold small text-muted text-uppercase">@Localizer["Deadline"]</label>
+                            <input type="date" id="addGoalEnd" name="EndDate" class="form-control rounded-3 border-0 shadow-sm p-3" value="@DateTime.Now.AddDays(7).ToString("yyyy-MM-dd")" required>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <label class="form-label fw-bold small text-muted text-uppercase">@Localizer["Category"]</label>
+                            <select name="Category" class="form-select rounded-3 border-0 shadow-sm p-3">
+                                <option value="Personal">Personal</option>
+                                <option value="Work">Work</option>
+                                <option value="Health">Health</option>
+                                <option value="Finance">Finance</option>
+                                <option value="Study">Study</option>
+                            </select>
+                        </div>
+                        <div class="col-4">
+                            <label class="form-label fw-bold small text-muted text-uppercase">@Localizer["Priority"]</label>
+                            <select name="Priority" class="form-select rounded-3 border-0 shadow-sm p-3">
+                                <option value="Low">Low</option>
+                                <option value="Medium" selected>Medium</option>
+                                <option value="High">High</option>
+                            </select>
+                        </div>
+                        <div class="col-4">
+                            <label class="form-label fw-bold small text-muted text-uppercase">@Localizer["Difficulty"]</label>
+                            <select name="Difficulty" class="form-select rounded-3 border-0 shadow-sm p-3">
+                                <option value="Easy">Easy</option>
+                                <option value="Medium" selected>Medium</option>
+                                <option value="Hard">Hard</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-muted text-uppercase">@Localizer["Target Value (Total)"]</label>
+                        <div class="input-group">
+                            <span class="input-group-text border-0 bg-white rounded-start-3 p-3"><i class="bi bi-bullseye text-primary"></i></span>
+                            <input type="number" id="addGoalTarget" name="TargetValue" class="form-control border-0 shadow-sm p-3" value="100" step="0.01" required>
+                        </div>
+                    </div>
+
+                    <div class="d-grid mt-4">
+                        <button type="submit" class="btn btn-primary rounded-pill py-3 fw-bold shadow border-0" style="background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%) !important;">
+                            @Localizer["Launch Mission"]
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Goal Modal -->
+<div class="modal fade" id="editGoalModal" tabindex="-1" aria-labelledby="editGoalModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 rounded-4 shadow-lg overflow-hidden">
+            <div class="modal-header border-0 text-white p-4" style="background: linear-gradient(135deg, #0dcaf0 0%, #0d6efd 100%) !important;">
+                <h5 class="modal-title fw-bold" id="editGoalModalLabel"><i class="bi bi-pencil-square me-2"></i> @Localizer["Modify Mission"]</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4 bg-light">
+                <form id="editGoalForm" onsubmit="saveEditedGoal(event)">
+                    <input type="hidden" id="editGoalId" name="Id">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-muted text-uppercase">@Localizer["Goal Title"]</label>
+                        <input type="text" id="editGoalTitle" name="Title" class="form-control rounded-3 border-0 shadow-sm p-3" required minlength="3">
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <label class="form-label fw-bold small text-muted text-uppercase">@Localizer["Start Date"]</label>
+                            <input type="date" id="editGoalStart" name="StartDate" class="form-control rounded-3 border-0 shadow-sm p-3" required>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label fw-bold small text-muted text-uppercase">@Localizer["Deadline"]</label>
+                            <input type="date" id="editGoalEnd" name="EndDate" class="form-control rounded-3 border-0 shadow-sm p-3" required>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <label class="form-label fw-bold small text-muted text-uppercase">@Localizer["Category"]</label>
+                            <select id="editGoalCategory" name="Category" class="form-select rounded-3 border-0 shadow-sm p-3">
+                                <option value="Personal">Personal</option>
+                                <option value="Work">Work</option>
+                                <option value="Health">Health</option>
+                                <option value="Finance">Finance</option>
+                                <option value="Study">Study</option>
+                            </select>
+                        </div>
+                        <div class="col-4">
+                            <label class="form-label fw-bold small text-muted text-uppercase">@Localizer["Priority"]</label>
+                            <select id="editGoalPriority" name="Priority" class="form-select rounded-3 border-0 shadow-sm p-3">
+                                <option value="Low">Low</option>
+                                <option value="Medium">Medium</option>
+                                <option value="High">High</option>
+                            </select>
+                        </div>
+                        <div class="col-4">
+                            <label class="form-label fw-bold small text-muted text-uppercase">@Localizer["Difficulty"]</label>
+                            <select id="editGoalDifficulty" name="Difficulty" class="form-select rounded-3 border-0 shadow-sm p-3">
+                                <option value="Easy">Easy</option>
+                                <option value="Medium">Medium</option>
+                                <option value="Hard">Hard</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <label class="form-label fw-bold small text-muted text-uppercase">@Localizer["Target Value (Total)"]</label>
+                            <input type="number" id="editGoalTarget" name="TargetValue" class="form-control rounded-3 border-0 shadow-sm p-3" step="0.01" required>
+                        </div>
+                    </div>
+
+                    <div class="d-grid mt-4">
+                        <button type="submit" class="btn btn-info rounded-pill py-3 fw-bold shadow text-white border-0" style="background: linear-gradient(135deg, #0dcaf0 0%, #0d6efd 100%) !important;">
+                            @Localizer["Save Changes"]
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
 <!-- Add Note Modal -->
 <div class="modal fade" id="addNoteModal" tabindex="-1" aria-labelledby="addNoteModalLabel" aria-hidden="true">
@@ -1100,205 +1405,11 @@
 </style>
 
 
-<!-- Add Goal Modal -->
-<div class="modal fade" id="addGoalModal" tabindex="-1" aria-labelledby="addGoalModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-0 rounded-4 shadow-lg">
-            <div class="modal-header border-0 pb-0">
-                <h5 class="modal-title fw-bold" id="addGoalModalLabel">@Localizer["Add New Goal"]</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form id="addGoalForm" method="post" onsubmit="saveNewGoal(event)">
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="goal-title" class="form-label small text-muted fw-bold text-uppercase ls-1">@Localizer["Title"]</label>
-                        <input type="text" id="goal-title" name="Title" class="form-control rounded-pill bg-light border-0 px-3" placeholder="@Localizer["e.g. Save $5000"]" required minlength="3">
-                    </div>
-                    <div class="row g-2 mb-3">
-                        <div class="col-6">
-                            <label for="goal-category" class="form-label small text-muted fw-bold text-uppercase ls-1">@Localizer["Category"]</label>
-                            <select id="goal-category" name="Category" class="form-select form-select-sm rounded-pill bg-light border-0 px-3 py-2">
-                                <option value="Personal">Personal</option>
-                                <option value="Health">Health</option>
-                                <option value="Finance">Finance</option>
-                                <option value="Study">Study</option>
-                            </select>
-                        </div>
-                        <div class="col-6">
-                            <label for="goal-priority" class="form-label small text-muted fw-bold text-uppercase ls-1">@Localizer["Priority"]</label>
-                            <select id="goal-priority" name="Priority" class="form-select form-select-sm rounded-pill bg-light border-0 px-3 py-2">
-                                <option value="Low">Low</option>
-                                <option value="Medium" selected>Medium</option>
-                                <option value="High">High</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="row g-2 mb-3">
-                        <div class="col-6">
-                            <label for="goal-start-date" class="form-label small text-muted fw-bold text-uppercase ls-1">@Localizer["Start Date"]</label>
-                            <input type="date" id="goal-start-date" name="StartDate" class="form-control rounded-pill bg-light border-0 px-3" required>
-                        </div>
-                        <div class="col-6">
-                            <label for="goal-end-date" class="form-label small text-muted fw-bold text-uppercase ls-1">@Localizer["End Date"]</label>
-                            <input type="date" id="goal-end-date" name="EndDate" class="form-control rounded-pill bg-light border-0 px-3" required>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer border-0">
-                    <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">@Localizer["Cancel"]</button>
-                    <button type="submit" class="btn btn-primary rounded-pill px-4 text-white fw-bold" style="background: linear-gradient(135deg, #8E2DE2 0%, #4A00E0 100%) !important; border: none;">@Localizer["Save Goal"]</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
 
 
-<!-- Edit Goal Modal -->
-<div class="modal fade" id="editGoalModal" tabindex="-1" aria-labelledby="editGoalModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-0 rounded-4 shadow-lg">
-            <div class="modal-header border-0 pb-0">
-                <h5 class="modal-title fw-bold" id="editGoalModalLabel">@Localizer["Edit Goal"]</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form id="editGoalForm" method="post" onsubmit="saveEditedGoal(event)">
-                <div class="modal-body">
-                    <input type="hidden" id="edit-goal-id" name="Id">
-                    <div class="mb-3">
-                        <label for="edit-goal-title" class="form-label small text-muted fw-bold text-uppercase ls-1">@Localizer["Title"]</label>
-                        <input type="text" id="edit-goal-title" name="Title" class="form-control rounded-pill bg-light border-0 px-3" required minlength="3">
-                    </div>
-                    <div class="row g-2 mb-3">
-                        <div class="col-6">
-                            <label for="edit-goal-category" class="form-label small text-muted fw-bold text-uppercase ls-1">@Localizer["Category"]</label>
-                            <select id="edit-goal-category" name="Category" class="form-select form-select-sm rounded-pill bg-light border-0 px-3 py-2">
-                                <option value="Personal">Personal</option>
-                                <option value="Health">Health</option>
-                                <option value="Finance">Finance</option>
-                                <option value="Study">Study</option>
-                            </select>
-                        </div>
-                        <div class="col-6">
-                            <label for="edit-goal-priority" class="form-label small text-muted fw-bold text-uppercase ls-1">@Localizer["Priority"]</label>
-                            <select id="edit-goal-priority" name="Priority" class="form-select form-select-sm rounded-pill bg-light border-0 px-3 py-2">
-                                <option value="Low">Low</option>
-                                <option value="Medium">Medium</option>
-                                <option value="High">High</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="row g-2 mb-3">
-                        <div class="col-6">
-                            <label for="edit-goal-start-date" class="form-label small text-muted fw-bold text-uppercase ls-1">@Localizer["Start Date"]</label>
-                            <input type="date" id="edit-goal-start-date" name="StartDate" class="form-control rounded-pill bg-light border-0 px-3" required>
-                        </div>
-                        <div class="col-6">
-                            <label for="edit-goal-end-date" class="form-label small text-muted fw-bold text-uppercase ls-1">@Localizer["End Date"]</label>
-                            <input type="date" id="edit-goal-end-date" name="EndDate" class="form-control rounded-pill bg-light border-0 px-3" required>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer border-0">
-                    <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">@Localizer["Cancel"]</button>
-                    <button type="submit" class="btn btn-primary rounded-pill px-4 text-white fw-bold" style="background: linear-gradient(135deg, #8E2DE2 0%, #4A00E0 100%) !important; border: none;">@Localizer["Save Changes"]</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
 
 
 <script>
-    function saveNewGoal(event) {
-        if (event) event.preventDefault();
-        
-        const form = document.getElementById('addGoalForm');
-        const start = document.getElementById('goal-start-date').value;
-        const end = document.getElementById('goal-end-date').value;
-
-        if (new Date(start) > new Date(end)) {
-            alert('@Localizer["End Date must be after Start Date"]');
-            return;
-        }
-
-        if (!form.checkValidity()) {
-            form.reportValidity();
-            return;
-        }
-
-        const formData = new FormData(form);
-        const data = Object.fromEntries(formData.entries());
-
-        $.post('/Dashboard/AddGoal', data, function(response) {
-            if (response.success) {
-                location.reload();
-            } else {
-                alert(response.message);
-            }
-        });
-    }
-
-    function toggleGoalCompletion(id) {
-        $.post('/Dashboard/ToggleGoalCompletion', { id }, function(response) {
-            if (response.success) {
-                location.reload();
-            } else {
-                alert(response.message);
-            }
-        });
-    }
-
-    function openEditGoalModal(id, title, start, end, category, priority) {
-        document.getElementById('edit-goal-id').value = id;
-        document.getElementById('edit-goal-title').value = title;
-        document.getElementById('edit-goal-start-date').value = start;
-        document.getElementById('edit-goal-end-date').value = end;
-        document.getElementById('edit-goal-category').value = category;
-        document.getElementById('edit-goal-priority').value = priority;
-        new bootstrap.Modal(document.getElementById('editGoalModal')).show();
-    }
-
-    function saveEditedGoal(event) {
-        if (event) event.preventDefault();
-        
-        const form = document.getElementById('editGoalForm');
-        const start = document.getElementById('edit-goal-start-date').value;
-        const end = document.getElementById('edit-goal-end-date').value;
-
-        if (new Date(start) > new Date(end)) {
-            alert('@Localizer["End Date must be after Start Date"]');
-            return;
-        }
-
-        if (!form.checkValidity()) {
-            form.reportValidity();
-            return;
-        }
-
-        const formData = new FormData(form);
-        const data = Object.fromEntries(formData.entries());
-
-        $.post('/Dashboard/EditGoal', data, function(response) {
-            if (response.success) {
-                location.reload();
-            } else {
-                alert(response.message);
-            }
-        });
-    }
-
-    function deleteGoal(id) {
-        if (confirm('@Localizer["Are you sure you want to delete this goal?"]')) {
-            $.post('/Dashboard/DeleteGoal', { id }, function(response) {
-                 if (response.success) {
-                    location.reload();
-                } else {
-                    alert(response.message);
-                }
-            });
-        }
-    }
 </script>
 
 @section Scripts {
@@ -1595,6 +1706,287 @@
             const location = document.getElementById('location-input').value.trim();
             fetchWeather(location);
         }
+// Goal Management Functions
+function saveNewGoal(event) {
+    event.preventDefault();
+    const formData = new FormData(event.target);
+    $.post('/Dashboard/AddGoal', Object.fromEntries(formData), function(res) {
+        if (res.success) location.reload();
+        else alert(res.message);
+    });
+}
+
+function updateDailyLog(goalId, date, actual) {
+    $.post('/Dashboard/UpdateDailyLog', { goalId, date, actual: parseFloat(actual) || 0 }, function(res) {
+        if (res.success) {
+            // Briefly show success feedback or just reload for simplicity
+            // To be more responsive, we could update the UI elements directly
+            location.reload();
+        } else {
+            alert(res.message);
+        }
+    });
+}
+
+function toggleGoalCompletion(id) {
+    $.post('/Dashboard/ToggleGoalCompletion', { id }, function(res) {
+        if (res.success) location.reload();
+    });
+}
+
+function openEditGoalModal(id, title, start, end, category, priority, difficulty, target, current) {
+    $('#editGoalId').val(id);
+    $('#editGoalTitle').val(title);
+    $('#editGoalStart').val(start);
+    $('#editGoalEnd').val(end);
+    $('#editGoalCategory').val(category);
+    $('#editGoalPriority').val(priority);
+    $('#editGoalDifficulty').val(difficulty);
+    $('#editGoalTarget').val(target);
+    $('#editTargetPreview').html('');
+    const modal = new bootstrap.Modal(document.getElementById('editGoalModal'));
+    modal.show();
+}
+
+function saveEditedGoal(event) {
+    event.preventDefault();
+    const formData = new FormData(event.target);
+    $.post('/Dashboard/EditGoal', Object.fromEntries(formData), function(res) {
+        if (res.success) location.reload();
+        else alert(res.message);
+    });
+}
+
+// Analytics and Reporting Functions
+function openAnalytics() {
+    $.get('/Dashboard/GetCategoryAnalytics', function(data) {
+        const container = $('#analytics-container');
+        container.empty();
+        
+        data.forEach((item, index) => {
+            const chartId = `category-chart-${index}`;
+            const card = `
+                <div class="col-md-6 analytic-card">
+                    <div class="card border-0 shadow-sm rounded-4 p-3 h-100 bg-light animate__animated animate__zoomIn" style="animation-delay: ${index * 0.1}s">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h6 class="fw-bold mb-0 text-primary">${item.category}</h6>
+                            <span class="badge bg-white text-dark shadow-sm rounded-pill">${item.count} Goals</span>
+                        </div>
+                        <div class="row g-2 align-items-center mb-2">
+                            <div class="col-5">
+                                <div style="height: 80px; width: 80px;">
+                                    <canvas id="${chartId}"></canvas>
+                                </div>
+                            </div>
+                            <div class="col-7">
+                                <div class="smaller text-muted mb-1">Avg Progress: <strong>${item.avgProgress.toFixed(1)}%</strong></div>
+                                <div class="smaller text-muted mb-1">Avg Health: <strong>${item.avgHealth.toFixed(1)}%</strong></div>
+                                <div class="progress rounded-pill" style="height: 6px;">
+                                    <div class="progress-bar bg-success" style="width: ${item.avgProgress}%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-flex flex-wrap gap-1 mt-2">
+                            ${item.statusSummary.map(s => `
+                                <span class="badge bg-white border text-muted smaller animate__animated animate__fadeIn" style="font-size: 0.55rem;">
+                                    ${s.status}: ${s.count}
+                                </span>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+            container.append(card);
+            
+            // Render doughnut chart for status distribution
+            setTimeout(() => {
+                const ctx = document.getElementById(chartId).getContext('2d');
+                new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: item.statusSummary.map(s => s.status),
+                        datasets: [{
+                            data: item.statusSummary.map(s => s.count),
+                            backgroundColor: [
+                                '#0d6efd', '#28a745', '#ffc107', '#dc3545', '#17a2b8'
+                            ],
+                            borderWidth: 0
+                        }]
+                    },
+                    options: {
+                        plugins: { legend: { display: false } },
+                        cutout: '70%',
+                        responsive: true,
+                        maintainAspectRatio: true
+                    }
+                });
+            }, 300);
+        });
+        
+        const modal = new bootstrap.Modal(document.getElementById('categoryAnalyticsModal'));
+        modal.show();
+    });
+}
+
+function generateWeeklyReport() {
+    const element = document.getElementById('analytics-container');
+    const title = `<h2 class='text-center mb-4 fw-bold' style='color: #2575fc'>Weekly Goal Performance Report</h2>
+                   <p class='text-center text-muted'>Generated on ${new Date().toLocaleDateString()}</p>`;
+    
+    // Create a temporary clone for professional PDF layout
+    const clone = element.cloneNode(true);
+    const wrapper = document.createElement('div');
+    wrapper.style.padding = '40px';
+    wrapper.innerHTML = title;
+    wrapper.appendChild(clone);
+    
+    const opt = {
+        margin:       0.5,
+        filename:     'Weekly_Goal_Report.pdf',
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2, useCORS: true },
+        jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+    };
+    html2pdf().from(wrapper).set(opt).save();
+}
+
+function extendDeadline(id) {
+    const days = prompt("How many additional days do you need?", "7");
+    if (days && !isNaN(days)) {
+        $.post('/Dashboard/ExtendGoalDeadline', { id, additionalDays: parseInt(days) }, function(res) {
+            if (res.success) location.reload();
+            else alert(res.message);
+        });
+    }
+}
+
+// Line Graph Visualization
+function showGoalGraph(goalId, labels, expectedData, actualData) {
+    const ctx = document.getElementById(`graph-${goalId}`).getContext('2d');
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Expected',
+                data: expectedData,
+                borderColor: 'rgba(0, 123, 255, 0.5)',
+                borderDash: [5, 5],
+                fill: false,
+                tension: 0.1
+            }, {
+                label: 'Actual',
+                data: actualData,
+                borderColor: 'rgba(40, 167, 69, 1)',
+                backgroundColor: 'rgba(40, 167, 69, 0.1)',
+                fill: true,
+                tension: 0.1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                y: { beginAtZero: true }
+            }
+        }
+    });
+}
+
+function calculateDailyTarget(prefix) {
+    // Calculation result display removed as requested
+}
+
+function initGoalChart(id, labels, targets, actuals) {
+    setTimeout(() => {
+        showGoalGraph(id, labels, targets, actuals);
+    }, 200);
+}
+
+function deleteGoal(id) {
+    if (confirm('Are you sure you want to remove this mission?')) {
+        $.post('/Dashboard/DeleteGoal', { id }, function(res) {
+            if (res.success) location.reload();
+        });
+    }
+}
+
+// Real-time Countdown Timer Logic
+function updateTimers() {
+    $('.countdown-timer').each(function() {
+        const endDateStr = $(this).data('end-date');
+        const endDate = new Date(endDateStr);
+        // Add 1 day to end date to represent the "end" of that day (inclusive deadline)
+        const deadline = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate() + 1);
+        const now = new Date();
+        const diff = deadline - now;
+
+        if (diff <= 0) {
+            $(this).find('.days').text('00');
+            $(this).find('.hours').text('00');
+            $(this).find('.minutes').text('00');
+            $(this).siblings('.badge').text('Late').addClass('bg-danger');
+            return;
+        }
+
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+        $(this).find('.days').text(String(days).padStart(2, '0'));
+        $(this).find('.hours').text(String(hours).padStart(2, '0'));
+        $(this).find('.minutes').text(String(minutes).padStart(2, '0'));
+        
+        // Show seconds if less than an hour remains
+        if (days === 0 && hours === 0) {
+            $(this).find('.minutes-label').text(window.Localizer_Seconds || 'Secs');
+            $(this).find('.minutes').text(String(seconds).padStart(2, '0'));
+        }
+    });
+}
+
+// Browser Notification logic
+function checkGoalReminders() {
+    $('.goal-item').each(function() {
+        const title = $(this).find('h6').text();
+        const statusBadge = $(this).find('.badge').first();
+        const status = statusBadge.text().trim();
+        
+        if (status === 'Behind' || status === 'At Risk' || status === 'Late') {
+            if ("Notification" in window) {
+                if (Notification.permission === "granted") {
+                    // Only notify if not already notified in this session
+                    if (!window.sessionStorage.getItem('notified-' + title)) {
+                        new Notification("Goal Attention Required", {
+                            body: `Your mission "${title}" is ${status}. Stay focused!`,
+                            icon: "/favicon.ico"
+                        });
+                        window.sessionStorage.setItem('notified-' + title, 'true');
+                    }
+                } else if (Notification.permission !== "denied") {
+                    Notification.requestPermission();
+                }
+            }
+        }
+    });
+}
+
+// Start timers and update every second for high precision
+$(document).ready(function() {
+    updateTimers();
+    setInterval(updateTimers, 1000);
+    
+    // Check reminders after 5 seconds to not overwhelm
+    setTimeout(checkGoalReminders, 5000);
+
+    // Attach listeners for live calculator
+    $(document).on('change input', '#addGoalForm input', () => calculateDailyTarget('add'));
+    $(document).on('change input', '#editGoalForm input', () => calculateDailyTarget('edit'));
+});
 
         // --- Currency Logic ---
         let currencyInfoMap = {};
@@ -2737,3 +3129,28 @@
 
     </script>
 }
+<!-- Analytics Modal -->
+<div class="modal fade" id="categoryAnalyticsModal" tabindex="-1" aria-labelledby="categoryAnalyticsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 rounded-4 shadow-lg">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold" id="categoryAnalyticsModalLabel">@Localizer["Category-Based Performance"]</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div id="analytics-container" class="row g-4">
+                    <!-- Analytics will be loaded here -->
+                </div>
+                <div class="mt-4 pt-3 border-top d-flex justify-content-between">
+                    <button class="btn btn-primary rounded-pill px-4 fw-bold" onclick="generateWeeklyReport()">
+                        <i class="bi bi-file-earmark-pdf me-2"></i> @Localizer["Generate Weekly Report PDF"]
+                    </button>
+                    <button class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">@Localizer["Close"]</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>

@@ -1,0 +1,63 @@
+@model IEnumerable<EmployeeCrudApp.Models.Role>
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
+<div class="table-responsive">
+    <table class="table table-hover align-middle mb-0" id="rolePermissionsTable">
+        <thead class="bg-light">
+            <tr>
+                <th class="ps-3">@Localizer["Role Name"]</th>
+                <th class="text-center">@Localizer["View"]</th>
+                <th class="text-center">@Localizer["Add"]</th>
+                <th class="text-center">@Localizer["Edit"]</th>
+                <th class="text-center">@Localizer["Delete"]</th>
+                <th class="text-center">@Localizer["Dashboard"]</th>
+                <th class="text-center">@Localizer["Widgets"]</th>
+                <th class="text-center">@Localizer["Settings"]</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var role in Model)
+            {
+                <tr data-role-id="@role.Id" data-role-name="@role.Name">
+                    <td class="ps-3 fw-bold text-primary">@role.Name</td>
+                    <td class="text-center">
+                        <div class="form-check form-switch d-inline-block">
+                            <input class="form-check-input" type="checkbox" name="CanViewUsers" @(role.CanViewUsers ? "checked" : "")>
+                        </div>
+                    </td>
+                    <td class="text-center">
+                        <div class="form-check form-switch d-inline-block">
+                            <input class="form-check-input" type="checkbox" name="CanAddUser" @(role.CanAddUser ? "checked" : "")>
+                        </div>
+                    </td>
+                    <td class="text-center">
+                        <div class="form-check form-switch d-inline-block">
+                            <input class="form-check-input" type="checkbox" name="CanEditUser" @(role.CanEditUser ? "checked" : "")>
+                        </div>
+                    </td>
+                    <td class="text-center">
+                        <div class="form-check form-switch d-inline-block">
+                            <input class="form-check-input" type="checkbox" name="CanDeleteUser" @(role.CanDeleteUser ? "checked" : "")>
+                        </div>
+                    </td>
+                    <td class="text-center">
+                        <div class="form-check form-switch d-inline-block">
+                            <input class="form-check-input" type="checkbox" name="CanAccessDashboard" @(role.CanAccessDashboard ? "checked" : "")>
+                        </div>
+                    </td>
+                    <td class="text-center">
+                        <div class="form-check form-switch d-inline-block">
+                            <input class="form-check-input" type="checkbox" name="CanAccessWidgets" @(role.CanAccessWidgets ? "checked" : "")>
+                        </div>
+                    </td>
+                    <td class="text-center">
+                        <div class="form-check form-switch d-inline-block">
+                            <input class="form-check-input" type="checkbox" name="CanAccessSettings" @(role.CanAccessSettings ? "checked" : "")>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

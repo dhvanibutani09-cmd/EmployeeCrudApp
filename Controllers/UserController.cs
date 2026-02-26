@@ -11,15 +11,18 @@ namespace EmployeeCrudApp.Controllers
         private readonly IUserRepository _userRepository;
         private readonly IEmailService _emailService;
         private readonly Microsoft.Extensions.Localization.IStringLocalizer<UserController> _localizer;
-
+        private readonly IConfiguration _configuration;
         private readonly IWidgetRepository _widgetRepository;
+        private readonly IRoleRepository _roleRepository;
 
-        public UserController(IUserRepository userRepository, IEmailService emailService, Microsoft.Extensions.Localization.IStringLocalizer<UserController> localizer, IWidgetRepository widgetRepository)
+        public UserController(IUserRepository userRepository, IEmailService emailService, Microsoft.Extensions.Localization.IStringLocalizer<UserController> localizer, IConfiguration configuration, IWidgetRepository widgetRepository, IRoleRepository roleRepository)
         {
             _userRepository = userRepository;
             _emailService = emailService;
             _localizer = localizer;
+            _configuration = configuration;
             _widgetRepository = widgetRepository;
+            _roleRepository = roleRepository;
         }
 
         public IActionResult Index(string sortOrder, string currentFilter, string searchString, string filter = null)
@@ -125,40 +128,10 @@ namespace EmployeeCrudApp.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(User user, string role = "User")
+        public async Task<IActionResult> Create(User user)
         {
-            if (ModelState.IsValid)
-            {
-                var existingUser = _userRepository.GetByEmail(user.Email);
-                if (existingUser != null)
-                {
-                    ModelState.AddModelError("Email", _localizer["Email already exists."]);
-                    ViewBag.Role = role;
-                    ViewBag.AllWidgets = _widgetRepository.GetAll().Select(w => w.Name).ToList();
-                    return View(user);
-                }
-
-                // Generate OTP
-                var otp = new Random().Next(100000, 999999).ToString();
-                
-                // Store incomplete user in TempData
-                user.IsEmailVerified = false;
-                user.Otp = otp;
-                user.OtpExpiry = DateTime.Now.AddMinutes(5);
-                user.PermittedWidgets = GetAuthorizedWidgets(role, user.PermittedWidgets ?? new List<string>());
-                user.Role = role;
-
-                var userJson = System.Text.Json.JsonSerializer.Serialize(user);
-                TempData["PendingUser"] = userJson;
-
-                // Send Email
-                await _emailService.SendEmailAsync(user.Email, "Complete User Creation", $"Your verification code is: {otp}");
-                
-                return RedirectToAction(nameof(VerifyAddUserOtp));
-            }
-            ViewBag.Role = role;
-            ViewBag.AllWidgets = _widgetRepository.GetAll().Select(w => w.Name).ToList();
-            return View(user);
+            // Redirect to Index where the Modal handles creation
+            return RedirectToAction(nameof(Index));
         }
 
         [HttpGet]
@@ -197,6 +170,18 @@ namespace EmployeeCrudApp.Controllers
                         user.Otp = null;
                         user.OtpExpiry = null;
                         
+                        // Role inheritance is handled by RoleId in repository
+                        // Link RoleId if possible based on Role name for legacy support
+                        var role = _roleRepository.GetByName(user.Role);
+                        if (role != null)
+                        {
+                            user.RoleId = role.Id;
+                        }
+
+                        // Set Lock Flags
+                        user.RoleLocked = true;
+                        user.WidgetLocked = true;
+                        
                         _userRepository.Add(user);
                         
                         return RedirectToAction(nameof(Index));
@@ -213,6 +198,8 @@ namespace EmployeeCrudApp.Controllers
         {
             var user = _userRepository.GetById(id);
             if (user == null) return NotFound();
+            user.IsEditable = true;
+            ViewBag.AllWidgets = _widgetRepository.GetAll().Select(w => w.Name).ToList();
             return View(user);
         }
 
@@ -234,20 +221,50 @@ namespace EmployeeCrudApp.Controllers
 
             if (ModelState.IsValid)
             {
+                // Role and Widget Lock System Check
+                var submittedWidgets = user.PermittedWidgets ?? new List<string>();
+                var existingWidgets = existingUser.PermittedWidgets ?? new List<string>();
+                
+                bool roleChanged = existingUser.Role != user.Role;
+                bool widgetsChanged = !submittedWidgets.OrderBy(w => w).SequenceEqual(existingWidgets.OrderBy(w => w));
+
+                if (roleChanged || widgetsChanged)
+                {
+                    var currentUserEmail = User.FindFirst(System.Security.Claims.ClaimTypes.Name)?.Value;
+                    var adminEmails = _configuration.GetSection("AdminSettings:AdminEmails").Get<List<string>>();
+                    bool isSuperAdmin = adminEmails != null && !string.IsNullOrEmpty(currentUserEmail) && adminEmails.Contains(currentUserEmail);
+
+                    // Allow if it's from the User List Edit (IsEditable is true) OR if it's a Super Admin
+                    if (!user.IsEditable && !isSuperAdmin)
+                    {
+                        ModelState.AddModelError("Role", _localizer["Role and widget permissions cannot be modified from this source."]);
+                        ViewBag.AllWidgets = _widgetRepository.GetAll().Select(w => w.Name).ToList();
+                        return View(user);
+                    }
+                }
+
+                // Role and Widget update is handled by RoleId inheritance
+                // Update editable fields
+
                 // Update editable fields
                 existingUser.Name = user.Name;
                 existingUser.Email = user.Email;
                 existingUser.SecurityPin = user.SecurityPin;
                 existingUser.IsEmailVerified = user.IsEmailVerified;
-                existingUser.PermittedWidgets = GetAuthorizedWidgets(user.Role, user.PermittedWidgets ?? new List<string>());
-                // Only update role if current user is admin (security check handled by [Authorize(Roles="Admin")] but good practice)
-                existingUser.Role = user.Role; 
+                
+                // Update Role link
+                if (existingUser.RoleId != user.RoleId)
+                {
+                    existingUser.RoleId = user.RoleId;
+                    // Reset permitted widgets to new role defaults if role changes
+                    existingUser.PermittedWidgets = null; 
+                }
 
                 // Update password only if provided
                 if (!string.IsNullOrWhiteSpace(user.Password))
                 {
                     existingUser.Password = user.Password;
-                    existingUser.ConfirmPassword = user.ConfirmPassword; // Keep model consistent though not saved to DB usually
+                    existingUser.ConfirmPassword = user.ConfirmPassword;
                 }
 
                 _userRepository.Update(existingUser);
@@ -304,23 +321,156 @@ namespace EmployeeCrudApp.Controllers
             return PartialView("_LoginHistoryPartial", history.ToList());
         }
 
+        [HttpGet]
+        public IActionResult GetRolePermissions()
+        {
+            var roles = _roleRepository.GetAll();
+            return PartialView("_RolePermissionsModal", roles);
+        }
+
+        [HttpPost]
+        public IActionResult UpdateRolePermissions([FromBody] List<Role> roles)
+        {
+            try
+            {
+                foreach (var role in roles)
+                {
+                    var existingRole = _roleRepository.GetByName(role.Name);
+                    if (existingRole != null)
+                    {
+                        existingRole.CanViewUsers = role.CanViewUsers;
+                        existingRole.CanAddUser = role.CanAddUser;
+                        existingRole.CanEditUser = role.CanEditUser;
+                        existingRole.CanDeleteUser = role.CanDeleteUser;
+                        existingRole.CanAccessDashboard = role.CanAccessDashboard;
+                        existingRole.CanAccessWidgets = role.CanAccessWidgets;
+                        existingRole.CanAccessSettings = role.CanAccessSettings;
+                        _roleRepository.Update(existingRole);
+                    }
+                }
+                return Json(new { success = true, message = _localizer["Permissions updated successfully."].Value });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        [HttpGet]
+        public IActionResult GetRoles()
+        {
+            var roles = _roleRepository.GetAll();
+            return Json(roles.Select(r => new { 
+                id = r.Id, 
+                name = r.Name, 
+                defaultWidgets = r.PermittedWidgets 
+            }));
+        }
+
+        [HttpGet]
+        public IActionResult GetAvailableWidgets()
+        {
+            var widgets = _widgetRepository.GetAll().Select(w => w.Name).ToList();
+            return Json(widgets);
+        }
+
+        [HttpPost]
+        public IActionResult CreateAjax([FromBody] User user)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(user.Name) || string.IsNullOrWhiteSpace(user.Email) || string.IsNullOrWhiteSpace(user.Password))
+                {
+                    return Json(new { success = false, message = _localizer["All fields are required."].Value });
+                }
+
+                var existingUser = _userRepository.GetByEmail(user.Email);
+                if (existingUser != null)
+                {
+                    return Json(new { success = false, message = _localizer["Email already exists."].Value });
+                }
+
+                // Simplified creation for internal use
+                user.IsEmailVerified = true;
+                user.CreatedDate = DateTime.Now;
+                user.RoleLocked = true;
+                user.WidgetLocked = true;
+                
+                // Fetch the role's name and force role permissions
+                var role = _roleRepository.GetAll().FirstOrDefault(r => r.Id == user.RoleId);
+                if (role == null)
+                {
+                    return Json(new { success = false, message = _localizer["Invalid role selected."].Value });
+                }
+
+                user.Role = role.Name;
+                user.PermittedWidgets = role.PermittedWidgets; // Sync initially for verification
+
+                _userRepository.Add(user);
+                return Json(new { success = true, message = _localizer["User created successfully."].Value });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        [HttpGet]
+        public IActionResult RolePermissions()
+        {
+            var roles = _roleRepository.GetAll().ToList();
+            var widgets = _widgetRepository.GetAll().Select(w => w.Name).ToList();
+
+            var viewModel = new RolePermissionsViewModel
+            {
+                AllAvailableWidgets = widgets,
+                Roles = roles.Select(r => new RoleInfo
+                {
+                    RoleId = r.Id,
+                    RoleName = r.Name,
+                    PermittedWidgets = r.PermittedWidgets
+                }).ToList()
+            };
+
+            return View(viewModel);
+        }
+
+        [HttpPost]
+        public IActionResult SaveRolePermissions([FromBody] List<RoleUpdateModel> roleUpdates)
+        {
+            try
+            {
+                if (roleUpdates == null || !roleUpdates.Any())
+                    return Json(new { success = false, message = "No updates provided." });
+
+                foreach (var update in roleUpdates)
+                {
+                    var role = _roleRepository.GetAll().FirstOrDefault(r => r.Id == update.RoleId);
+                    if (role != null)
+                    {
+                        role.PermittedWidgets = update.PermittedWidgets ?? new List<string>();
+                        _roleRepository.Update(role);
+                    }
+                }
+
+                return Json(new { success = true, message = _localizer["Role permissions updated successfully."].Value });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        public class RoleUpdateModel
+        {
+            public int RoleId { get; set; }
+            public List<string> PermittedWidgets { get; set; }
+        }
+
         private List<string> GetAuthorizedWidgets(string role, List<string> requestedWidgets)
         {
-            if (role == "Admin") return requestedWidgets; // Admins can have anything
-
-            if (role == "User") // Normal User
-            {
-                var allowed = new List<string> { "Weather Details", "Currency Conversion", "Time Conversion", "Headlines / News", "World Countries", "Emergency Numbers", "Language Translator", "Goal Tracking" };
-                return requestedWidgets.Where(w => allowed.Contains(w)).ToList();
-            }
-
-            if (role == "Private") // Private User
-            {
-                var allowed = new List<string> { "Weather Details", "Time Conversion", "Personal Notes", "Emergency Numbers", "Language Translator" };
-                return requestedWidgets.Where(w => allowed.Contains(w)).ToList();
-            }
-
-            return new List<string>();
+            // Fully dynamic role-based system: trust the submitted widgets for the role
+            return requestedWidgets ?? new List<string>();
         }
     }
 }

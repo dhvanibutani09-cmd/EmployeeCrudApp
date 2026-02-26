@@ -80,20 +80,27 @@
                                     </span>
                                 </td>
                                 <td class="text-end pe-4 text-nowrap">
-                                    <button class="btn btn-link p-0 text-decoration-none action-icon" 
-                                            onclick="editEntry(@entry.Id, '@entry.TaskName', @entry.DurationInSeconds)" 
-                                            data-bs-toggle="tooltip" 
-                                            data-bs-placement="top" 
-                                            title="@Localizer["Edit Activity"]">
-                                        <i class="bi bi-pencil-fill fs-5"></i>
-                                    </button>
-                                    <button class="btn btn-link p-0 text-decoration-none action-icon ms-2" 
-                                            onclick="deleteEntry(@entry.Id)" 
-                                            data-bs-toggle="tooltip" 
-                                            data-bs-placement="top" 
-                                            title="@Localizer["Delete Activity"]">
-                                        <i class="bi bi-trash3-fill fs-5"></i>
-                                    </button>
+                                    @if (!User.IsInRole("Visitor"))
+                                    {
+                                        <button class="btn btn-link p-0 text-decoration-none action-icon" 
+                                                onclick="editEntry(@entry.Id, '@entry.TaskName', @entry.DurationInSeconds)" 
+                                                data-bs-toggle="tooltip" 
+                                                data-bs-placement="top" 
+                                                title="@Localizer["Edit Activity"]">
+                                            <i class="bi bi-pencil-fill fs-5"></i>
+                                        </button>
+                                        <button class="btn btn-link p-0 text-decoration-none action-icon ms-2" 
+                                                onclick="deleteEntry(@entry.Id)" 
+                                                data-bs-toggle="tooltip" 
+                                                data-bs-placement="top" 
+                                                title="@Localizer["Delete Activity"]">
+                                            <i class="bi bi-trash3-fill fs-5"></i>
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted small">@Localizer["View Only"]</span>
+                                    }
                                 </td>
                             </tr>
                         }

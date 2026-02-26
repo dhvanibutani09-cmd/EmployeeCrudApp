@@ -8,9 +8,12 @@
 
 <h1>@Localizer["Employees"]</h1>
 
-<p>
-    <a asp-action="Create" class="btn btn-primary">@Localizer["Create New"]</a>
-</p>
+@if (!User.IsInRole("Visitor"))
+{
+    <p>
+        <a asp-action="Create" class="btn btn-primary">@Localizer["Create New"]</a>
+    </p>
+}
 <table class="table">
     <thead>
         <tr>
@@ -29,9 +32,15 @@
             <td>@Html.DisplayFor(modelItem => item.Age)</td>
             <td>@Html.DisplayFor(modelItem => item.Email)</td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">@Localizer["Edit"]</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">@Localizer["View"]</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">@Localizer["Delete"]</a>
+                @if (!User.IsInRole("Visitor"))
+                {
+                    <a asp-action="Edit" asp-route-id="@item.Id">@Localizer["Edit"]</a> @:|
+                }
+                <a asp-action="Details" asp-route-id="@item.Id">@Localizer["View"]</a>
+                @if (!User.IsInRole("Visitor"))
+                {
+                    @:| <a asp-action="Delete" asp-route-id="@item.Id">@Localizer["Delete"]</a>
+                }
             </td>
         </tr>
 }

@@ -6,10 +6,12 @@ namespace EmployeeCrudApp.Services;
 public class JsonUserRepository : IUserRepository
 {
     private readonly string _filePath;
+    private readonly IRoleRepository _roleRepository;
 
-    public JsonUserRepository(IWebHostEnvironment webHostEnvironment)
+    public JsonUserRepository(IWebHostEnvironment webHostEnvironment, IRoleRepository roleRepository)
     {
         _filePath = Path.Combine(webHostEnvironment.ContentRootPath, "user.json");
+        _roleRepository = roleRepository;
         if (!File.Exists(_filePath))
         {
             File.WriteAllText(_filePath, "[]");
@@ -21,7 +23,24 @@ public class JsonUserRepository : IUserRepository
         if (!File.Exists(_filePath)) return new List<User>();
         var json = File.ReadAllText(_filePath);
         if (string.IsNullOrWhiteSpace(json)) return new List<User>();
-        return JsonSerializer.Deserialize<List<User>>(json) ?? new List<User>();
+        var users = JsonSerializer.Deserialize<List<User>>(json) ?? new List<User>();
+        
+        foreach (var user in users)
+        {
+            // RBAC Inheritance: Prioritize RoleId, fallback to Role name for legacy support
+            var role = _roleRepository.GetAll().FirstOrDefault(r => r.Id == user.RoleId) 
+                       ?? _roleRepository.GetByName(user.Role);
+            
+            if (role != null)
+            {
+                // Strict RBAC Inheritance: Users always use their role's defined permissions.
+                user.PermittedWidgets = role.PermittedWidgets;
+                user.Role = role.Name; // Sync name
+                user.RoleId = role.Id; // Sync ID
+            }
+        }
+        
+        return users;
     }
 
     private void WriteData(List<User> users)

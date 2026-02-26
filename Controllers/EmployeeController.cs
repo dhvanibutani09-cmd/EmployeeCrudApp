@@ -1,6 +1,7 @@
 using EmployeeCrudApp.Models;
 using EmployeeCrudApp.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace EmployeeCrudApp.Controllers;
 
@@ -19,6 +20,7 @@ public class EmployeeController : Controller
         return View(employees);
     }
 
+    [Authorize(Roles = "Admin,User,Private")]
     public IActionResult Create()
     {
         return View();
@@ -35,6 +37,7 @@ public class EmployeeController : Controller
         return View(employee);
     }
 
+    [Authorize(Roles = "Admin,User,Private")]
     public IActionResult Edit(int id)
     {
         var employee = _repository.GetById(id);
@@ -53,6 +56,7 @@ public class EmployeeController : Controller
         return View(employee);
     }
 
+    [Authorize(Roles = "Admin,User,Private")]
     public IActionResult Delete(int id)
     {
         var employee = _repository.GetById(id);

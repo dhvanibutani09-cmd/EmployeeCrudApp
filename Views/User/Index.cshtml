@@ -13,8 +13,11 @@
             <p class="text-muted small mb-0">@Localizer["Manage system access and account statuses"]</p>
         </div>
         <div class="d-flex gap-2">
-            <a asp-action="Create" class="btn btn-primary rounded-pill px-4 shadow-sm fw-bold">
+            <button type="button" class="btn btn-primary rounded-pill px-4 shadow-sm fw-bold" onclick="openAddUserModal()">
                 <i class="bi bi-person-plus-fill me-2"></i>@Localizer["Add User"]
+            </button>
+            <a asp-action="RolePermissions" class="btn btn-outline-primary rounded-pill px-4 shadow-sm fw-bold">
+                <i class="bi bi-shield-lock-fill me-2"></i>@Localizer["Role Permissions"]
             </a>
             @if (ViewBag.FilterType == "today")
             {
@@ -70,23 +73,17 @@
                         <tr>
                             <td class="ps-4 py-3">
                                 <div class="d-flex align-items-center">
-                                    <div class="avatar-circle me-3 @(user.Role == "Admin" ? "bg-danger" : (user.Role == "Private" ? "bg-secondary" : "bg-primary")) bg-opacity-25 @(user.Role == "Admin" ? "text-danger" : (user.Role == "Private" ? "text-secondary" : "text-primary")) fw-bold">
+                                    @{
+                                        var roleClass = user.RoleId == 1 ? "danger" : 
+                                                       user.RoleId == 3 ? "secondary" : 
+                                                       user.RoleId == 4 ? "success" : "primary";
+                                    }
+                                    <div class="avatar-circle me-3 bg-@roleClass bg-opacity-25 text-@roleClass fw-bold">
                                         @user.Name.Substring(0, Math.Min(1, user.Name.Length)).ToUpper()
                                     </div>
                                     <div class="fw-bold">
                                         @user.Name
-                                        @if (user.Role == "Admin")
-                                        {
-                                            <span class="badge bg-danger ms-2" style="font-size: 0.6rem;">@Localizer["ADMIN"]</span>
-                                        }
-                                        else if (user.Role == "Private")
-                                        {
-                                            <span class="badge bg-secondary ms-2" style="font-size: 0.6rem;">@Localizer["PRIVATE"]</span>
-                                        }
-                                        else
-                                        {
-                                            <span class="badge bg-primary ms-2" style="font-size: 0.6rem;">@Localizer["USER"]</span>
-                                        }
+                                        <span class="badge bg-@roleClass ms-2" style="font-size: 0.6rem;">@Localizer[user.Role.ToUpper()]</span>
                                     </div>
                                 </div>
                             </td>
@@ -196,6 +193,74 @@
                     </div>
                 </div>
             </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add User Modal -->
+<div class="modal fade" id="addUserModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+            <div class="modal-header bg-primary text-white p-4">
+                <h5 class="modal-title fw-bold">
+                    <i class="bi bi-person-plus-fill me-2"></i>@Localizer["Create New User"]
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4 bg-light">
+                <form id="addUserForm" onsubmit="saveNewUser(event)">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small">@Localizer["Full Name"]</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-white border-0 shadow-sm"><i class="bi bi-person text-primary"></i></span>
+                            <input type="text" name="Name" class="form-control border-0 shadow-sm p-3" placeholder="@Localizer["Enter full name"]" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small">@Localizer["Email Address"]</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-white border-0 shadow-sm"><i class="bi bi-envelope text-primary"></i></span>
+                            <input type="email" name="Email" class="form-control border-0 shadow-sm p-3" placeholder="@Localizer["Enter email address"]" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small">@Localizer["Password"]</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-white border-0 shadow-sm"><i class="bi bi-lock text-primary"></i></span>
+                            <input type="password" name="Password" class="form-control border-0 shadow-sm p-3" placeholder="@Localizer["Create password"]" required>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label fw-bold small">@Localizer["System Role"]</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-white border-0 shadow-sm"><i class="bi bi-shield-lock text-primary"></i></span>
+                            <select name="RoleId" id="roleSelect" class="form-select border-0 shadow-sm p-3" required onchange="onRoleChange()">
+                                <option value="">@Localizer["Select a role"]</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold small d-block mb-3">
+                            <i class="bi bi-grid-3x3-gap-fill me-2 text-primary"></i>@Localizer["Widget Permissions"]
+                        </label>
+                        <div id="widgetContainer" class="row g-2 p-3 bg-white rounded-4 shadow-sm border-0">
+                            <!-- Widgets will be loaded here -->
+                            <div class="text-center py-3 w-100">
+                                <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-grid mt-4">
+                        <button type="submit" class="btn btn-primary rounded-pill py-3 fw-bold shadow border-0">
+                            @Localizer["Create Account"]
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 </div>
@@ -203,10 +268,123 @@
 <script>
     var currentUserId = 0;
     var loginHistoryModal;
+    var addUserModal;
+    var allRoles = [];
 
     document.addEventListener("DOMContentLoaded", function() {
         loginHistoryModal = new bootstrap.Modal(document.getElementById('loginHistoryModal'));
+        addUserModal = new bootstrap.Modal(document.getElementById('addUserModal'));
     });
+
+    function openAddUserModal() {
+        // Fetch widgets first
+        fetch('@Url.Action("GetAvailableWidgets", "User")')
+            .then(response => response.json())
+            .then(widgets => {
+                const container = document.getElementById('widgetContainer');
+                container.innerHTML = '';
+                widgets.forEach(widget => {
+                    const col = document.createElement('div');
+                    col.className = 'col-6';
+                    col.innerHTML = `
+                        <div class="form-check custom-checkbox">
+                            <input class="form-check-input" type="checkbox" name="PermittedWidgets" value="${widget}" id="new-user-chk-${widget.replace(/\s+/g, '-').replace(/\//g, '-')}">
+                            <label class="form-check-label small fw-bold" for="new-user-chk-${widget.replace(/\s+/g, '-').replace(/\//g, '-')}">
+                                ${widget}
+                            </label>
+                        </div>
+                    `;
+                    container.appendChild(col);
+                });
+
+                // Then fetch roles
+                return fetch('@Url.Action("GetRoles", "User")');
+            })
+            .then(response => response.json())
+            .then(roles => {
+                allRoles = roles;
+                const select = document.getElementById('roleSelect');
+                select.innerHTML = '<option value="">@Localizer["Select a role"]</option>';
+                roles.forEach(role => {
+                    const opt = document.createElement('option');
+                    opt.value = role.id;
+                    opt.text = role.name;
+                    select.appendChild(opt);
+                });
+                
+                // Initialize widget state (all disabled initially since no role is selected)
+                onRoleChange();
+                
+                addUserModal.show();
+            });
+    }
+
+    function onRoleChange() {
+        const roleId = document.getElementById('roleSelect').value;
+        const role = allRoles.find(r => r.id == roleId);
+        const checkboxes = document.querySelectorAll('#widgetContainer input[type="checkbox"]');
+        
+        if (role && role.defaultWidgets) {
+            checkboxes.forEach(chk => {
+                const isPermitted = role.defaultWidgets.includes(chk.value);
+                chk.disabled = !isPermitted;
+                chk.checked = isPermitted;
+                
+                // Visual feedback for disabled state
+                const label = chk.closest('.form-check').querySelector('.form-check-label');
+                if (!isPermitted) {
+                    label.classList.add('text-muted');
+                    label.style.opacity = '0.5';
+                } else {
+                    label.classList.remove('text-muted');
+                    label.style.opacity = '1';
+                }
+            });
+        } else {
+            // Disable all if no role selected
+            checkboxes.forEach(chk => {
+                chk.disabled = true;
+                chk.checked = false;
+                const label = chk.closest('.form-check').querySelector('.form-check-label');
+                label.classList.add('text-muted');
+                label.style.opacity = '0.5';
+            });
+        }
+    }
+
+    function saveNewUser(event) {
+        event.preventDefault();
+        const formData = new FormData(event.target);
+        
+        // Convert FormData to object correctly for array property
+        const data = {
+            Name: formData.get('Name'),
+            Email: formData.get('Email'),
+            Password: formData.get('Password'),
+            RoleId: parseInt(formData.get('RoleId')),
+            PermittedWidgets: formData.getAll('PermittedWidgets')
+        };
+
+        fetch('@Url.Action("CreateAjax", "User")', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(res => {
+            if (res.success) {
+                alert(res.message);
+                location.reload();
+            } else {
+                alert('Error: ' + res.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Failed to create user.');
+        });
+    }
+
 
     function openLoginHistory(userId, userName) {
         currentUserId = userId;

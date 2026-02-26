@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using EmployeeCrudApp.Models;
 using EmployeeCrudApp.Services;
 using System.Net.Http;
@@ -23,6 +24,7 @@ namespace EmployeeCrudApp.Controllers
             return View(locations);
         }
 
+        [Authorize(Roles = "Admin,User,Private")]
         public IActionResult Create()
         {
             return View();
@@ -40,6 +42,7 @@ namespace EmployeeCrudApp.Controllers
             return View(location);
         }
 
+        [Authorize(Roles = "Admin,User,Private")]
         public async Task<IActionResult> Edit(int id)
         {
             var location = await _locationRepository.GetByIdAsync(id);
@@ -59,6 +62,7 @@ namespace EmployeeCrudApp.Controllers
             return View(location);
         }
 
+        [Authorize(Roles = "Admin,User,Private")]
         public async Task<IActionResult> Delete(int id)
         {
             var location = await _locationRepository.GetByIdAsync(id);
@@ -75,6 +79,7 @@ namespace EmployeeCrudApp.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin,User,Private")]
         public async Task<IActionResult> ImportCountries()
         {
             try

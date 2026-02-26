@@ -54,5 +54,12 @@
     "Age": 0,
     "Email": "majon28434@dnsclick.com",
     "Password": "111"
+  },
+  {
+    "Id": 10,
+    "Name": "marakana charmi",
+    "Age": 0,
+    "Email": "pcharmi230@gmail.com",
+    "Password": "230"
   }
 ]

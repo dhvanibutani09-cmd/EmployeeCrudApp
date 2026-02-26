@@ -21,14 +21,17 @@
             <h1 class="mb-0 fw-bold">@Localizer["Location Management"]</h1>
             <p class="text-muted small mb-0">@Localizer["Manage countries, cities, and villages for news targeting"]</p>
         </div>
-        <div class="d-flex gap-2">
-            <button onclick="importCountries()" class="btn btn-outline-primary rounded-pill px-4 shadow-sm fw-bold">
-                <i class="bi bi-download me-2"></i> @Localizer["Import Countries"]
-            </button>
-            <a asp-action="Create" class="btn btn-primary rounded-pill px-4 shadow-sm fw-bold">
-                <i class="bi bi-plus-lg me-2"></i> @Localizer["Add Location"]
-            </a>
-        </div>
+        @if (!User.IsInRole("Visitor"))
+        {
+            <div class="d-flex gap-2">
+                <button onclick="importCountries()" class="btn btn-outline-primary rounded-pill px-4 shadow-sm fw-bold">
+                    <i class="bi bi-download me-2"></i> @Localizer["Import Countries"]
+                </button>
+                <a asp-action="Create" class="btn btn-primary rounded-pill px-4 shadow-sm fw-bold">
+                    <i class="bi bi-plus-lg me-2"></i> @Localizer["Add Location"]
+                </a>
+            </div>
+        }
     </div>
 
     <div class="card glass-card border-0 shadow-lg rounded-4 overflow-hidden">
@@ -54,14 +57,21 @@
                             </td>
                             <td>@(item.CountryCode ?? "-")</td>
                             <td class="pe-4 text-end">
-                                <div class="btn-group shadow-sm">
-                                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-dark px-3" title="@Localizer["Edit"]">
-                                        <i class="bi bi-pencil-fill"></i>
-                                    </a>
-                                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger px-3 rounded-end-pill" title="@Localizer["Delete"]">
-                                        <i class="bi bi-trash-fill"></i>
-                                    </a>
-                                </div>
+                                @if (!User.IsInRole("Visitor"))
+                                {
+                                    <div class="btn-group shadow-sm">
+                                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-dark px-3" title="@Localizer["Edit"]">
+                                            <i class="bi bi-pencil-fill"></i>
+                                        </a>
+                                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger px-3 rounded-end-pill" title="@Localizer["Delete"]">
+                                            <i class="bi bi-trash-fill"></i>
+                                        </a>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <span class="text-muted small">@Localizer["View Only"]</span>
+                                }
                             </td>
                         </tr>
                     }

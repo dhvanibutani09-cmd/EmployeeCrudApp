@@ -44,6 +44,7 @@ builder.Services.AddScoped<EmployeeCrudApp.Services.ITimeTrackerRepository, Empl
 builder.Services.AddScoped<EmployeeCrudApp.Services.IEmailService, EmployeeCrudApp.Services.SmtpEmailService>();
 builder.Services.AddScoped<EmployeeCrudApp.Services.IWidgetRepository, EmployeeCrudApp.Services.JsonWidgetRepository>();
 builder.Services.AddScoped<EmployeeCrudApp.Services.IGoalRepository, EmployeeCrudApp.Services.JsonGoalRepository>();
+builder.Services.AddScoped<EmployeeCrudApp.Services.IRoleRepository, EmployeeCrudApp.Services.JsonRoleRepository>();
 builder.Services.AddHttpClient();
 builder.Services.AddMemoryCache();
 builder.Services.AddSingleton<EmployeeCrudApp.Services.ITranslationService, EmployeeCrudApp.Services.GoogleTranslationService>();

@@ -1,6 +1,7 @@
 using EmployeeCrudApp.Models;
 using EmployeeCrudApp.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 
 namespace EmployeeCrudApp.Controllers
@@ -24,6 +25,7 @@ namespace EmployeeCrudApp.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin,User,Private")]
         public IActionResult SaveEntry([FromBody] TimeEntry entry)
         {
             var userId = User.FindFirstValue(ClaimTypes.Name) ?? "";
@@ -34,6 +36,7 @@ namespace EmployeeCrudApp.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin,User,Private")]
         public IActionResult UpdateEntry([FromBody] TimeEntry entry)
         {
             var userId = User.FindFirstValue(ClaimTypes.Name) ?? "";
@@ -50,6 +53,7 @@ namespace EmployeeCrudApp.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin,User,Private")]
         public IActionResult DeleteEntry(int id)
         {
             var userId = User.FindFirstValue(ClaimTypes.Name) ?? "";

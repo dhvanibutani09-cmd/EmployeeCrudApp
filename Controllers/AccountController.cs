@@ -16,8 +16,9 @@ namespace EmployeeCrudApp.Controllers
         private readonly Microsoft.Extensions.Localization.IStringLocalizer<AccountController> _localizer;
         private readonly IConfiguration _configuration;
         private readonly IWidgetRepository _widgetRepository;
+        private readonly IRoleRepository _roleRepository;
 
-        public AccountController(IEmployeeRepository employeeRepository, IUserRepository userRepository, IEmailService emailService, Microsoft.Extensions.Localization.IStringLocalizer<AccountController> localizer, IConfiguration configuration, IWidgetRepository widgetRepository)
+        public AccountController(IEmployeeRepository employeeRepository, IUserRepository userRepository, IEmailService emailService, Microsoft.Extensions.Localization.IStringLocalizer<AccountController> localizer, IConfiguration configuration, IWidgetRepository widgetRepository, IRoleRepository roleRepository)
         {
             _employeeRepository = employeeRepository;
             _userRepository = userRepository;
@@ -25,6 +26,7 @@ namespace EmployeeCrudApp.Controllers
             _localizer = localizer;
             _configuration = configuration;
             _widgetRepository = widgetRepository;
+            _roleRepository = roleRepository;
         }
 
         [HttpGet]
@@ -142,7 +144,7 @@ namespace EmployeeCrudApp.Controllers
                         IsEmailVerified = false,
                         Otp = otp,
                         OtpExpiry = DateTime.Now.AddMinutes(5),
-                        PermittedWidgets = _widgetRepository.GetAll().Select(w => w.Name).ToList()
+                        Role = "Visitor"
                     };
                     _userRepository.Add(user);
                 }
@@ -203,11 +205,7 @@ namespace EmployeeCrudApp.Controllers
                     if (user.LoginHistory == null) user.LoginHistory = new List<DateTime>();
                     user.LoginHistory.Add(user.LastLoginDate.Value);
                     
-                    // Ensure widgets are assigned if empty (migration/failsafe)
-                    if (user.PermittedWidgets == null || !user.PermittedWidgets.Any())
-                    {
-                        user.PermittedWidgets = _widgetRepository.GetAll().Select(w => w.Name).ToList();
-                    }
+                    // Widgets are now handled by role reference in Repository
 
                     _userRepository.Update(user);
 
